@@ -24,6 +24,8 @@ public class APPlayerController : MonoBehaviour
 
     [SerializeField] private APCameraController _camera;
 
+    public bool CanAttack = false;
+
     private void Start()
     {
         dieActive = false;
@@ -53,13 +55,23 @@ public class APPlayerController : MonoBehaviour
 
         if (horizMove == 0.0f && verticalMove == 0.0f)
         {
-            anim.SetBool("Run", false);
-            _rb.velocity = new Vector3(0, 0, 0);
+            if (CanAttack)
+            {
+                if (target == null) target = TargetSelectController.GetTarget();
+                Attack();
+            }
+            else
+            {
+                if (anim.GetBool("Run")) anim.SetBool("Run", false);
+                _rb.velocity = new Vector3(0, 0, 0);
 
-            if (!dieActive) _camera.StopMove();
+                if (!dieActive) _camera.StopMove();
+            }
 
             return;
         }
+
+        if (doAttack) return;
 
         if (!dieActive) _camera.StartMove();
 
@@ -68,7 +80,56 @@ public class APPlayerController : MonoBehaviour
 
         _rb.velocity = new Vector3(horizMove * moveSpeed, 0, verticalMove * moveSpeed);
 
-        anim.SetBool("Run", true);
+        if (!anim.GetBool("Run")) anim.SetBool("Run", true);
+    }
+
+    [Header("Attack Setting")]
+    private APWarriorController target;
+    [SerializeField] private APPlayerAttackTargetController TargetSelectController;
+    [SerializeField] private float attackDistance = 1;
+    [SerializeField] private float attakCooldown = 1;
+    [SerializeField] private int attackDamage = 10;
+    [SerializeField] private string[] animTiggerAsset = new string[3];
+    private bool doAttack = false;
+
+    private void Attack()
+    {
+        if (target.warriorDie)
+        {
+            target = TargetSelectController.GetTarget();
+            return;
+        }
+
+        if (Vector3.Distance(transform.position, target.transform.position) > attackDistance)
+        {
+            if (doAttack) return;
+
+            Vector3 vec = target.transform.position - transform.position;
+            _rb.velocity = vec.normalized * moveSpeed;
+            visualPlayer.transform.LookAt(new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z));
+            if (!anim.GetBool("Run")) anim.SetBool("Run", true);
+        }
+        else
+        {
+            if (doAttack) return;
+
+            visualPlayer.transform.LookAt(new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z));
+            if (anim.GetBool("Run")) anim.SetBool("Run", false);
+            _rb.velocity = new Vector3(0, 0, 0);
+            if (!target.warriorDie) StartCoroutine(PanchAttack());
+        }
+    }
+
+    private IEnumerator PanchAttack()
+    {
+        doAttack = true;
+        anim.SetTrigger(animTiggerAsset[Random.Range(0, animTiggerAsset.Length)]);
+
+        yield return new WaitForSeconds(0.25f);
+        target.DamageIn(attackDamage);
+
+        yield return new WaitForSeconds(attakCooldown);
+        doAttack = false;
     }
 
     public void WinGame()
@@ -82,16 +143,6 @@ public class APPlayerController : MonoBehaviour
 
         anim.SetBool("Run", false);
         anim.SetBool("LoseGame", true);
-    }
-
-    public Vector3 CurrentSpawnPos()
-    {
-        return SpawnPos;
-    }
-
-    public void SetNewSpawnPos(Vector3 pos)
-    {
-        SpawnPos = pos;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -112,6 +163,16 @@ public class APPlayerController : MonoBehaviour
 
             other.GetComponent<APInteractbleObjController>().UseObject();
         }
+    }
+
+    public Vector3 CurrentSpawnPos()
+    {
+        return SpawnPos;
+    }
+
+    public void SetNewSpawnPos(Vector3 pos)
+    {
+        SpawnPos = pos;
     }
 
     private IEnumerator DieAnim()
