@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class APWarriorController : MonoBehaviour
 {
-    [SerializeField] private NavMeshAgent AI;
+    public NavMeshAgent AI;
 
     [Header("Move Setting")]
     [SerializeField] private float moveSpeed = 5;
@@ -21,11 +21,11 @@ public class APWarriorController : MonoBehaviour
     [SerializeField] private float healPoint = 50;
     [SerializeField] private ParticleSystem dieParticle; 
 
-    [SerializeField] private Animator anim; 
+    public Animator anim; 
 
     private Vector3 target;
 
-    private bool attackMode = false;
+    [HideInInspector] public bool attackMode = false;
 
     private void Start()
     {

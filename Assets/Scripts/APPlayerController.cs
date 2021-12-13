@@ -26,8 +26,30 @@ public class APPlayerController : MonoBehaviour
 
     public bool CanAttack = false;
 
+    [Header("Attack Setting")]
+    private APWarriorController target;
+    [SerializeField] private APPlayerAttackTargetController TargetSelectController;
+    [SerializeField] private float attackDistance = 1;
+    [SerializeField] private float attakCooldown = 1;
+    [SerializeField] private int attackDamage = 10;
+    [SerializeField] private string[] animTiggerAsset = new string[3];
+    private bool doAttack = false;
+
+    [Header("Skill_1")]
+    [SerializeField] private UnityEngine.UI.Image cooldownVisual;
+    [SerializeField] private float skill_1_Cooldown = 5;
+    private bool canUseSkill_1 = true;
+    [SerializeField] private int skill_1_Damage = 25;
+    [SerializeField] private float maxCastDistance = 5;
+    [SerializeField] private float minCastDistance = 2;
+    [SerializeField] private ParticleSystem skill_1_particle;
+    [SerializeField] private ParticleSystem skill_1_explosion_particle;
+
     private void Start()
     {
+        skill_1_particle.gameObject.SetActive(false);
+        visualPlayer.SetActive(true);
+
         dieActive = false;
         SpawnPos = gameObject.transform.position;
 
@@ -57,8 +79,9 @@ public class APPlayerController : MonoBehaviour
         {
             if (CanAttack)
             {
-                if (target == null) target = TargetSelectController.GetTarget();
-                Attack();
+                //if (target == null) 
+                    target = TargetSelectController.GetTarget();
+                if (target != null) Attack();
             }
             else
             {
@@ -83,15 +106,6 @@ public class APPlayerController : MonoBehaviour
         if (!anim.GetBool("Run")) anim.SetBool("Run", true);
     }
 
-    [Header("Attack Setting")]
-    private APWarriorController target;
-    [SerializeField] private APPlayerAttackTargetController TargetSelectController;
-    [SerializeField] private float attackDistance = 1;
-    [SerializeField] private float attakCooldown = 1;
-    [SerializeField] private int attackDamage = 10;
-    [SerializeField] private string[] animTiggerAsset = new string[3];
-    private bool doAttack = false;
-
     private void Attack()
     {
         if (target.warriorDie)
@@ -100,9 +114,16 @@ public class APPlayerController : MonoBehaviour
             return;
         }
 
-        if (Vector3.Distance(transform.position, target.transform.position) > attackDistance)
+        float distance = Vector3.Distance(transform.position, target.transform.position);
+        if (distance > attackDistance)
         {
             if (doAttack) return;
+
+            if (canUseSkill_1 && (distance < maxCastDistance && distance > minCastDistance))
+            {
+                if (!target.warriorDie) StartCoroutine(FireBall_Skill_1_Attack());
+                return;
+            }
 
             Vector3 vec = target.transform.position - transform.position;
             _rb.velocity = vec.normalized * moveSpeed;
@@ -114,10 +135,86 @@ public class APPlayerController : MonoBehaviour
             if (doAttack) return;
 
             visualPlayer.transform.LookAt(new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z));
-            if (anim.GetBool("Run")) anim.SetBool("Run", false);
+            if ((JoystickStickk.Instance.HorizontalAxis() == 0 && JoystickStickk.Instance.VerticalAxis() == 0) && anim.GetBool("Run")) anim.SetBool("Run", false);
             _rb.velocity = new Vector3(0, 0, 0);
             if (!target.warriorDie) StartCoroutine(PanchAttack());
         }
+    }
+
+    [SerializeField] private GameObject visualP;
+    private IEnumerator FireBall_Skill_1_Attack()
+    {
+        canUseSkill_1 = false;
+        doAttack = true;
+
+        visualPlayer.transform.LookAt(new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z));
+        yield return new WaitForSeconds(0.1f);
+
+        anim.SetTrigger(animTiggerAsset[animTiggerAsset.Length - 1]);
+        yield return new WaitForFixedUpdate();
+
+        visualP.SetActive(false);
+        skill_1_particle.gameObject.SetActive(true);
+
+        while (Vector3.Distance(transform.position, target.transform.position) > attackDistance)
+        {
+            if (Vector3.Distance(transform.position, target.transform.position) > maxCastDistance + 0.1f)
+            {
+                canUseSkill_1 = true;
+                doAttack = false;
+                visualP.SetActive(true);
+                skill_1_particle.gameObject.SetActive(false);
+
+                yield break;
+            } 
+
+            Vector3 vec = target.transform.position - transform.position;
+
+            _rb.velocity = vec.normalized * (moveSpeed * 1.5f);
+            yield return new WaitForFixedUpdate();
+        }
+
+        anim.SetTrigger(animTiggerAsset[animTiggerAsset.Length - 1]);
+
+        if (skill_1_explosion_particle != null) skill_1_explosion_particle.Play();
+        _rb.velocity = new Vector3(_rb.velocity.x * 0.8f, _rb.velocity.y, _rb.velocity.z * 0.8f);
+
+        visualP.SetActive(true);
+        skill_1_particle.gameObject.SetActive(false);
+        target.DamageIn(skill_1_Damage);
+
+        StartCoroutine(Skill_1_Cooldown());
+
+        yield return new WaitForSeconds(attakCooldown);
+        doAttack = false;
+    }
+
+    private IEnumerator Skill_1_Cooldown()
+    {
+        float _cd = 0;
+
+        Color color_1 = cooldownVisual.color;
+        cooldownVisual.color = Color.red;
+
+        while (_cd < skill_1_Cooldown)
+        {
+            yield return new WaitForFixedUpdate();
+
+            _cd += Time.deltaTime;
+            cooldownVisual.fillAmount = ((_cd * 100) / skill_1_Cooldown) / 100;
+        }
+
+        cooldownVisual.color = color_1;
+        cooldownVisual.rectTransform.sizeDelta = new Vector2(cooldownVisual.rectTransform.sizeDelta.x + 0.25f, cooldownVisual.rectTransform.sizeDelta.y + 0.25f);
+
+        yield return new WaitForSeconds(0.1f);
+
+        cooldownVisual.rectTransform.sizeDelta = new Vector2(cooldownVisual.rectTransform.sizeDelta.x - 0.25f, cooldownVisual.rectTransform.sizeDelta.y - 0.25f);
+
+        yield return new WaitForFixedUpdate();
+        cooldownVisual.fillAmount = 0;
+
+        canUseSkill_1 = true;
     }
 
     private IEnumerator PanchAttack()
@@ -177,6 +274,11 @@ public class APPlayerController : MonoBehaviour
 
     private IEnumerator DieAnim()
     {
+        visualP.SetActive(true);
+        skill_1_particle.gameObject.SetActive(false);
+        canUseSkill_1 = true;
+        doAttack = false;
+
         _camera.StopMove();
         dieActive = true;
 
