@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class APPlayerController : MonoBehaviour
@@ -72,8 +71,8 @@ public class APPlayerController : MonoBehaviour
 
     public void Move()
     {
-        float horizMove = JoystickStickk.Instance.HorizontalAxis();
-        float verticalMove = JoystickStickk.Instance.VerticalAxis();
+        float horizMove = 0;// JoystickStickk.Instance.HorizontalAxis();
+        float verticalMove = 0;// JoystickStickk.Instance.VerticalAxis();
 
         if (horizMove == 0.0f && verticalMove == 0.0f)
         {
@@ -135,7 +134,7 @@ public class APPlayerController : MonoBehaviour
             if (doAttack) return;
 
             visualPlayer.transform.LookAt(new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z));
-            if ((JoystickStickk.Instance.HorizontalAxis() == 0 && JoystickStickk.Instance.VerticalAxis() == 0) && anim.GetBool("Run")) anim.SetBool("Run", false);
+          //  if ((JoystickStickk.Instance.HorizontalAxis() == 0 && JoystickStickk.Instance.VerticalAxis() == 0) && anim.GetBool("Run")) anim.SetBool("Run", false);
             _rb.velocity = new Vector3(0, 0, 0);
             if (!target.warriorDie) StartCoroutine(PanchAttack());
         }
