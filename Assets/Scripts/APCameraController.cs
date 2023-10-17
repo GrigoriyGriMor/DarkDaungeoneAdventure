@@ -7,7 +7,6 @@ public class APCameraController : MonoBehaviour
     [SerializeField] private Transform cameraIdlePos;
     [SerializeField] private Transform cameraMovePos;
 
-    private Transform cameraPos;
     [SerializeField] private Transform target;
 
     [SerializeField] private float moveSpeed = 5;
@@ -16,23 +15,23 @@ public class APCameraController : MonoBehaviour
 
     private void Start()
     {
-        cameraPos = cameraIdlePos;
+        transform.SetParent(cameraIdlePos);
         moveS = moveSpeed / 5;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        gameObject.transform.position = Vector3.Lerp(transform.position, cameraPos.position, moveS * Time.deltaTime);
-        gameObject.transform.LookAt(target);
+        transform.localPosition = Vector3.Lerp(transform.localPosition, Vector3.zero, moveS * Time.deltaTime);
+        transform.LookAt(target);
     }
 
     private Coroutine coroutine;
 
     public void StartMove()
     {
-        if (cameraPos == cameraMovePos) return;
+        if (transform.parent == cameraMovePos) return;
 
-        cameraPos = cameraMovePos;
+        transform.SetParent(cameraMovePos);
 
         if (coroutine == null)
             coroutine = StartCoroutine(SpeedUp());
@@ -50,7 +49,7 @@ public class APCameraController : MonoBehaviour
 
     public void StopMove()
     {
-        if (cameraPos == cameraIdlePos) return;
+        if (transform.parent == cameraIdlePos) return;
 
         if (coroutine != null)
         {
@@ -58,7 +57,7 @@ public class APCameraController : MonoBehaviour
             coroutine = null;
         }
         
-        cameraPos = cameraIdlePos;
+        transform.SetParent(cameraIdlePos);
         moveS = moveSpeed / 5;
     }
 }
