@@ -13,10 +13,14 @@ namespace PlayerControllers
         private PlayerData _playerData = new();
 
         [Header("Moduls")]
+        [SerializeField] private Transform _modulsRoot;
+
+        [Header("")]
         [SerializeField] private LookModul _lookModule;
         [SerializeField] private MovmentModul _movementModul;
         [SerializeField] private PlayerSoundModul _playerSoundModul;
         [SerializeField] private HookingModul _hookingModul;
+        [SerializeField] private IGS_Modul _igsModul;
 
         [Header("Ground")]
         [SerializeField] private float _groundRayDistance = 0.25f;
@@ -26,12 +30,34 @@ namespace PlayerControllers
 
         public void Start()
         {
+            for (int i = 0; i < _modulsRoot.childCount; i++)
+            {
+                if (_modulsRoot.GetChild(i).TryGetComponent(out AbstractModul modul))
+                {
+                    if (modul is LookModul look)
+                        _lookModule = look;
+                    else
+                        if (modul is MovmentModul movment)
+                            _movementModul = movment;
+                    else
+                        if (modul is PlayerSoundModul sound)
+                            _playerSoundModul = sound;
+                    else
+                        if (modul is HookingModul hook)
+                            _hookingModul = hook;
+                    else
+                        if (modul is IGS_Modul igs)
+                            _igsModul = igs;
+                }
+            }
+
             _playerData = _characterData.GetPlayerData(); 
 
             _lookModule?.Init(_playerData, this);
             _movementModul?.Init(_playerData, this);
             _playerSoundModul?.Init(_playerData, this);
             _hookingModul?.Init(_playerData, this);
+            _igsModul?.Init(_playerData, this);
 
             isGround = false;
         }
@@ -65,5 +91,34 @@ namespace PlayerControllers
                 }
             }
         }
+
+
+        #region Collision Methods
+        public Action<Collider> OnTriggerEnterAction { get; set; }
+        public Action<Collider> OnTriggerExitAction { get; set; }
+        public Action<Collision> OnCollisionEnterAction { get; set; }
+        public Action<Collision> OnCollisionExitAction { get; set; }
+
+
+        private void OnTriggerEnter(Collider other)
+        {
+            OnTriggerEnterAction?.Invoke(other);
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            OnTriggerExitAction?.Invoke(other);
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            OnCollisionEnterAction?.Invoke(collision);
+        }
+
+        private void OnCollisionExit(Collision collision)
+        {
+            OnCollisionExitAction?.Invoke(collision);
+        }
+        #endregion
     }
 }

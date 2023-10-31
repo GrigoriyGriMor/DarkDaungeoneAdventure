@@ -17,7 +17,7 @@ namespace PlayerControllers
             _abstractMethod = this;
         }
 
-        public void Init(PlayerData playerData, PlayerController _player)
+        public virtual void Init(PlayerData playerData, PlayerController _player)
         {
             _playerData = playerData;
             _playerController = _player;

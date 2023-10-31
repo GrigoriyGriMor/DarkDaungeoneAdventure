@@ -1,8 +1,6 @@
 using PlayerControllers;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem.Utilities;
+using UnityEngine.UI;
 
 public class HookingModul : AbstractModul
 {
@@ -10,7 +8,11 @@ public class HookingModul : AbstractModul
     [SerializeField] private LineRenderer _lineRenderer;
 
     [SerializeField] private Transform _hookStartPoint;
-    [SerializeField] private float springDamping = 80f; 
+    [SerializeField] private float springDamping = 80f;
+
+    [Header("")]
+    [SerializeField] private Button _breakHookBtn; 
+
     private Rigidbody _hookConnectPoint;
     private HookObject _hookObj;
     private float connectLineDistance = 0;
@@ -21,14 +23,27 @@ public class HookingModul : AbstractModul
     {
         _lineRenderer.positionCount = 0;
         connectLineDistance = 0;
+
+        _breakHookBtn.onClick.AddListener(BreakConnectWithPoint);
+        _breakHookBtn.gameObject.SetActive(false);
     }
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0)/*Input.GetTouch()*/)
+#if UNITY_EDITOR
+        if (Input.GetMouseButtonDown(0))
         {
             ConnectToPoint();
         }
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            BreakConnectWithPoint();
+        }
+#elif UNITY_ANDROID
+        if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Began)
+            ConnectToPoint();
+#endif
 
         if (_lineRenderer.positionCount == 2 && _hookConnectPoint != null)
         {
@@ -42,11 +57,6 @@ public class HookingModul : AbstractModul
                 if (Vector3.Distance(_hookConnectPoint.position, _hookStartPoint.position) > connectLineDistance * 1.5f)
                     _playerData.PlayerRB.AddForce((_hookConnectPoint.position - _hookStartPoint.position).normalized * springDamping * 14, ForceMode.Force);
             }
-        }
-
-            if (Input.GetKeyDown(KeyCode.Q))
-        {
-            BreakConnectWithPoint();
         }
     }
 
@@ -71,6 +81,8 @@ public class HookingModul : AbstractModul
                 connectLineDistance = Vector3.Distance(hit.point, _hookStartPoint.position);
 
                 _playerController.IsHooking(true);
+
+                _breakHookBtn.gameObject.SetActive(true);
             }
             else
             {
@@ -92,5 +104,6 @@ public class HookingModul : AbstractModul
         }
 
         _playerController.IsHooking(false);
+        _breakHookBtn.gameObject.SetActive(false);
     }
 }
