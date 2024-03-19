@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Base;
+using UnityEditor.Experimental.GraphView;
 
 namespace PlayerControllers
 {
@@ -21,9 +22,13 @@ namespace PlayerControllers
         [SerializeField] private PlayerSoundModul _playerSoundModul;
         [SerializeField] private HookingModul _hookingModul;
         [SerializeField] private IGS_Modul _igsModul;
+        [SerializeField] private HealModule _healModule;
 
         [Header("Ground")]
         [SerializeField] private float _groundRayDistance = 0.25f;
+
+        [Header("When Obj Destroyed")]
+        [SerializeField] private DestroyObjModule _destroyModule;
 
         public Action<bool> IsGround { get; set; }
         bool isGround = false;
@@ -34,20 +39,31 @@ namespace PlayerControllers
             {
                 if (_modulsRoot.GetChild(i).TryGetComponent(out AbstractModul modul))
                 {
-                    if (modul is LookModul look)
-                        _lookModule = look;
-                    else
-                        if (modul is MovmentModul movment)
-                            _movementModul = movment;
-                    else
-                        if (modul is PlayerSoundModul sound)
-                            _playerSoundModul = sound;
-                    else
-                        if (modul is HookingModul hook)
-                            _hookingModul = hook;
-                    else
-                        if (modul is IGS_Modul igs)
-                            _igsModul = igs;
+                    switch (modul)
+                    {
+                        case LookModul _m:
+                            _lookModule = _m;
+                            break;
+                        case MovmentModul _m:
+                            _movementModul = _m;
+                            break;
+                        case PlayerSoundModul _m:
+                            _playerSoundModul = _m;
+                            break;
+                        case HookingModul _m:
+                            _hookingModul = _m;
+                            break;
+                        case IGS_Modul _m:
+                            _igsModul = _m;
+                            break;
+                        case HealModule _m:
+                            _healModule = _m;
+                            _healModule._die.AddListener(PlayerDie);
+                            break;
+                        default:
+                            Debug.LogError($"{modul.gameObject.name} - module is empty");
+                            break;
+                    }
                 }
             }
 
@@ -58,6 +74,7 @@ namespace PlayerControllers
             _playerSoundModul?.Init(_playerData, this);
             _hookingModul?.Init(_playerData, this);
             _igsModul?.Init(_playerData, this);
+            _healModule?.Init(_playerData, this);
 
             isGround = false;
         }
@@ -65,6 +82,18 @@ namespace PlayerControllers
         private void FixedUpdate()
         {
             GroundControll();
+        }
+
+        private void PlayerDie()
+        {
+            _lookModule?.SetModuleActivityType(false);
+            _movementModul?.SetModuleActivityType(false);
+            _playerSoundModul?.SetModuleActivityType(false);
+            _hookingModul?.SetModuleActivityType(false);
+            _igsModul?.SetModuleActivityType(false);
+            _healModule?.SetModuleActivityType(false);
+
+            _destroyModule.SwapObj();
         }
 
         public void IsHooking(bool hooking)
@@ -103,6 +132,11 @@ namespace PlayerControllers
         private void OnTriggerEnter(Collider other)
         {
             OnTriggerEnterAction?.Invoke(other);
+
+            if (other.TryGetComponent(out DangerObstacle _dangerObj))
+            {
+                _healModule.SetDamage(_dangerObj.GetDamage());
+            }
         }
 
         private void OnTriggerExit(Collider other)

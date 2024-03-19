@@ -30,6 +30,8 @@ public class HookingModul : AbstractModul
 
     private void Update()
     {
+        if (!moduleIsActive) return;
+
 #if UNITY_EDITOR
         if (Input.GetMouseButtonDown(0))
         {
@@ -86,7 +88,7 @@ public class HookingModul : AbstractModul
             }
             else
             {
-                Debug.LogError("Нужно подойти поближе");
+                Debug.LogError("distance error");
                 //отправляем сообщение в Answer контроллер
             }
         }
@@ -105,5 +107,12 @@ public class HookingModul : AbstractModul
 
         _playerController.IsHooking(false);
         _breakHookBtn.gameObject.SetActive(false);
+    }
+
+    public override void SetModuleActivityType(bool _modulIsActive)
+    {
+        base.SetModuleActivityType(_modulIsActive);
+
+        BreakConnectWithPoint();
     }
 }

@@ -17,5 +17,10 @@ namespace PlayerControllers
         {
 
         }
+
+        public override void SetModuleActivityType(bool _modulIsActive)
+        {
+            base.SetModuleActivityType(_modulIsActive);
+        }
     }
 }

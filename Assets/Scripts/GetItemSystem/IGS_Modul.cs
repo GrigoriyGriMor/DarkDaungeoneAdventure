@@ -88,4 +88,9 @@ public class IGS_Modul : AbstractModul
 
         _dropItemBtn.gameObject.SetActive(true);
     }
+
+    public override void SetModuleActivityType(bool _modulIsActive)
+    {
+        base.SetModuleActivityType(_modulIsActive);
+    }
 }

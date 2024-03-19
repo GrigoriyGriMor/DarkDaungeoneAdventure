@@ -24,6 +24,8 @@ namespace PlayerControllers
 
         private void FixedUpdate()
         {
+            if (!moduleIsActive) return;
+
             Move();
         }
 
@@ -34,7 +36,7 @@ namespace PlayerControllers
 
             if (horizMove == 0.0f && verticalMove == 0.0f)
             {
-                if (_playerData.PlayerAnimator.GetBool("Run")) 
+                if (_playerData.PlayerAnimator.GetBool("Run"))
                     _playerData.PlayerAnimator.SetBool("Run", false);
 
                 _playerData.PlayerRB.velocity = new Vector3(0, _playerData.PlayerRB.velocity.y, 0);
@@ -44,11 +46,11 @@ namespace PlayerControllers
                 return;
             }
 
-            _playerData.PlayerBase.localEulerAngles = 
+            _playerData.PlayerBase.localEulerAngles =
                 new Vector3(_playerData.PlayerBase.localEulerAngles.x, _playerData.CameraControlBlock.eulerAngles.y, _playerData.PlayerBase.localEulerAngles.z);
-            _playerData.CameraControlBlock.localEulerAngles = 
+            _playerData.CameraControlBlock.localEulerAngles =
                 new Vector3(_playerData.CameraControlBlock.localEulerAngles.x, 0, _playerData.CameraControlBlock.localEulerAngles.z);
-            
+
             float angle = Mathf.Atan2(horizMove, verticalMove) * Mathf.Rad2Deg;
             _playerData.PlayerVisual.transform.localRotation = Quaternion.Euler(0, angle, 0);
 
@@ -57,16 +59,22 @@ namespace PlayerControllers
 
             _playerData.PlayerMainCamera.StartMove();
 
-            if (!_playerData.PlayerAnimator.GetBool("Run")) 
+            if (!_playerData.PlayerAnimator.GetBool("Run"))
                 _playerData.PlayerAnimator.SetBool("Run", true);
         }
 
         void Jump()
         {
-            if (!_isGround) return;
+            if (!_isGround || !moduleIsActive) return;
 
             _playerData.PlayerRB.AddForce(_playerData.PlayerRB.transform.up * _jumpForce, ForceMode.Impulse);
             _playerData.PlayerAnimator.SetTrigger("Jump");
+        }
+
+        void ResetAllParam()
+        {
+            _playerData?.PlayerAnimator.SetBool("Run", false);
+            _mSpeed = 0;
         }
 
         public void IsHooking(bool hooking)
@@ -75,6 +83,14 @@ namespace PlayerControllers
                 _mSpeed = _moveSpeed / 2;
             else
                 _mSpeed = _moveSpeed;
+        }
+
+        public override void SetModuleActivityType(bool _modulIsActive)
+        {
+            base.SetModuleActivityType(_modulIsActive);
+
+            if (!_modulIsActive)
+                ResetAllParam();
         }
     }
 }

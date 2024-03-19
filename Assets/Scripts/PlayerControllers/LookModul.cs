@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace PlayerControllers
 {
@@ -31,6 +28,11 @@ namespace PlayerControllers
 
             _playerData.CameraControlBlock.transform.localRotation = Quaternion.Euler(yRotate, _playerData.CameraControlBlock.transform.localEulerAngles.y + xAxis, _playerData.CameraControlBlock.transform.localEulerAngles.z);
             yRotateCamera = yRotate;
+        }
+
+        public override void SetModuleActivityType(bool _modulIsActive)
+        {
+            base.SetModuleActivityType(_modulIsActive);
         }
     }
 }

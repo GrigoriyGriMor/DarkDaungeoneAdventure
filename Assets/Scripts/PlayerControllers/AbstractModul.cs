@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace PlayerControllers
@@ -12,6 +11,8 @@ namespace PlayerControllers
         private AbstractModul _abstractMethod;
         internal AbstractModul AbstractMethod { get => _abstractMethod; }
 
+        internal bool moduleIsActive = false;
+
         void Start()
         {
             _abstractMethod = this;
@@ -22,12 +23,19 @@ namespace PlayerControllers
             _playerData = playerData;
             _playerController = _player;
 
+            moduleIsActive = true;
+
             _player.IsGround += OnGround;
         }
 
         void OnGround(bool isGroundSet)
         {
             _isGround = isGroundSet;
+        }
+
+        public virtual void SetModuleActivityType(bool _modulIsActive)
+        {
+            moduleIsActive = _modulIsActive;
         }
     }
 }
