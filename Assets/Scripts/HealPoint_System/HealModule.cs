@@ -1,6 +1,8 @@
-﻿using PlayerControllers;
+﻿using BaseClasses;
+using PlayerControllers;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Rendering.PostProcessing;
 
 public class HealModule : AbstractModul
 {
@@ -9,6 +11,14 @@ public class HealModule : AbstractModul
 
     [SerializeField] private float healPrecent = 100;
 
+    private float lightDamagePrecentValue = 5f;
+    private float hardDamagePrecentValue = 10;
+
+    [Header("")]
+    [SerializeField] private float vingetteStartHealPrecent = 50f;
+    [SerializeField] private float vignetteMaxIntensity = 0.6f;
+
+    [Header("")]
     public UnityEvent _die = new UnityEvent();
 
     private void Start()
@@ -40,7 +50,30 @@ public class HealModule : AbstractModul
 
     void UpdatePrecentValue() 
     {
+        float lastPrecent = healPrecent;
+
         healPrecent = (currentHeal * 100) / maxHeal;
+
+        //проверяем процент полученного урона, если больше определенных порогов, то играем анимацию
+        float difference = lastPrecent - healPrecent;
+        if (difference > 0)
+        {
+            if (difference > hardDamagePrecentValue)
+                _playerData.PlayerAnimator.SetTrigger("HDamage");
+            else
+                if (difference > lightDamagePrecentValue)
+                    _playerData.PlayerAnimator.SetTrigger("LDamage");
+        }
+
+        if (healPrecent < vingetteStartHealPrecent)
+        {
+            float vengettePrecent = healPrecent * 100 / vingetteStartHealPrecent; 
+            
+            if (vengettePrecent > (100 - vignetteMaxIntensity * 100))
+                LevelManager.PostProcessManager.VignetteActivate(true, (100 - vengettePrecent) * 0.01f);
+        }
+        else
+            LevelManager.PostProcessManager.VignetteActivate(false);
     }
 
     public float GetCurrentHeal()
