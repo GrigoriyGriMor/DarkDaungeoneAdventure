@@ -93,6 +93,7 @@ namespace PlayerControllers
             _igsModul?.SetModuleActivityType(false);
             _healModule?.SetModuleActivityType(false);
 
+            _playerData.PlayerAnimator.SetTrigger("Die");
             _destroyModule.SwapObj();
         }
 

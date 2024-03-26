@@ -4,7 +4,9 @@ public class GameManager : SingeltonManager<GameManager>
 {
     void Start()
     {
-        DontDestroyOnLoad(gameObject);       
+        DontDestroyOnLoad(gameObject);
+
+        if (_localizationManager == null) Debug.LogError("GameManager havn't link to _localizationManager. You need Add this link to stability work system", gameObject);
     }
 
     [SerializeField]

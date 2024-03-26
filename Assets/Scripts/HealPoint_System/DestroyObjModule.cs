@@ -32,7 +32,8 @@ public class DestroyObjModule : MonoBehaviour
         yield return new WaitForSeconds(hideTinme);
 
         for (int i = 0; i < destroyGO.childCount; i++)
-            destroyGO.GetChild(i).GetComponent<Collider>().isTrigger = true;
+            if (destroyGO.GetChild(i).TryGetComponent(out Collider collider))
+                collider.isTrigger = true;
 
         yield return new WaitForSeconds(1);
 

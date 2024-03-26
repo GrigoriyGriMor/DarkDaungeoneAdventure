@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class LocalizationItem : MonoBehaviour
 {
-    [SerializeField] private TMP_Text text;
-    [SerializeField] private string textID = "baseText";
+    [SerializeField] private string textID = "none";
+
+    private TMP_Text text;
     [HideInInspector] public string TextID { get => textID; }
 
     private IEnumerator Start()
     {
+        text = GetComponent<TMP_Text>();
+        if (text == null)
+            Debug.LogError($"Localization Error: gameObjct: {gameObject.name}, text with ID {TextID} don't have a component TMP_Text.", gameObject);
+
         while (!GameManager.LocalizationManager.GetLoadingLocalizationStatus())
             yield return new WaitForFixedUpdate();
 
