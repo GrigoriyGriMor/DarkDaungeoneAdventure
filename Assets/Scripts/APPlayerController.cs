@@ -62,7 +62,7 @@ public class APPlayerController : MonoBehaviour
     {
         if (!APGameController.Instance.gameIsPlayed || dieActive)
         {
-            _rb.velocity = new Vector3(0, 0, 0);
+            _rb.linearVelocity = new Vector3(0, 0, 0);
             return;
         }
 
@@ -85,7 +85,7 @@ public class APPlayerController : MonoBehaviour
             else
             {
                 if (anim.GetBool("Run")) anim.SetBool("Run", false);
-                _rb.velocity = new Vector3(0, 0, 0);
+                _rb.linearVelocity = new Vector3(0, 0, 0);
 
                 if (!dieActive) _camera.StopMove();
             }
@@ -100,7 +100,7 @@ public class APPlayerController : MonoBehaviour
         float angle = Mathf.Atan2(horizMove, verticalMove) * Mathf.Rad2Deg;
         visualPlayer.transform.rotation = Quaternion.Euler(0, angle, 0);
 
-        _rb.velocity = new Vector3(horizMove * moveSpeed, 0, verticalMove * moveSpeed);
+        _rb.linearVelocity = new Vector3(horizMove * moveSpeed, 0, verticalMove * moveSpeed);
 
         if (!anim.GetBool("Run")) anim.SetBool("Run", true);
     }
@@ -125,7 +125,7 @@ public class APPlayerController : MonoBehaviour
             }
 
             Vector3 vec = target.transform.position - transform.position;
-            _rb.velocity = vec.normalized * moveSpeed;
+            _rb.linearVelocity = vec.normalized * moveSpeed;
             visualPlayer.transform.LookAt(new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z));
             if (!anim.GetBool("Run")) anim.SetBool("Run", true);
         }
@@ -135,7 +135,7 @@ public class APPlayerController : MonoBehaviour
 
             visualPlayer.transform.LookAt(new Vector3(target.transform.position.x, transform.position.y, target.transform.position.z));
           //  if ((JoystickStickk.Instance.HorizontalAxis() == 0 && JoystickStickk.Instance.VerticalAxis() == 0) && anim.GetBool("Run")) anim.SetBool("Run", false);
-            _rb.velocity = new Vector3(0, 0, 0);
+            _rb.linearVelocity = new Vector3(0, 0, 0);
             if (!target.warriorDie) StartCoroutine(PanchAttack());
         }
     }
@@ -169,14 +169,14 @@ public class APPlayerController : MonoBehaviour
 
             Vector3 vec = target.transform.position - transform.position;
 
-            _rb.velocity = vec.normalized * (moveSpeed * 1.5f);
+            _rb.linearVelocity = vec.normalized * (moveSpeed * 1.5f);
             yield return new WaitForFixedUpdate();
         }
 
         anim.SetTrigger(animTiggerAsset[animTiggerAsset.Length - 1]);
 
         if (skill_1_explosion_particle != null) skill_1_explosion_particle.Play();
-        _rb.velocity = new Vector3(_rb.velocity.x * 0.8f, _rb.velocity.y, _rb.velocity.z * 0.8f);
+        _rb.linearVelocity = new Vector3(_rb.linearVelocity.x * 0.8f, _rb.linearVelocity.y, _rb.linearVelocity.z * 0.8f);
 
         visualP.SetActive(true);
         skill_1_particle.gameObject.SetActive(false);
@@ -249,12 +249,12 @@ public class APPlayerController : MonoBehaviour
         {
             StartCoroutine(DieAnim());
 
-            if (SoundManagerAllControll.Instance) SoundManagerAllControll.Instance.ClipPlay(dieAudioClip);
+            //if (SoundManagerAllControll.Instance) SoundManagerAllControll.Instance.ClipPlay(dieAudioClip);
         }
 
         if (other.GetComponent<APInteractbleObjController>())
         {
-            if (SoundManagerAllControll.Instance) SoundManagerAllControll.Instance.ClipPlay(useObjAudioClip);
+            //if (SoundManagerAllControll.Instance) SoundManagerAllControll.Instance.ClipPlay(useObjAudioClip);
             anim.SetTrigger("UseItem");
 
             other.GetComponent<APInteractbleObjController>().UseObject();

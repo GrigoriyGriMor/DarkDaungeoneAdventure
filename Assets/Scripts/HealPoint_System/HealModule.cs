@@ -11,7 +11,7 @@ public class HealModule : AbstractModul
     private float healPrecent = 100;
 
     private float lightDamagePrecentValue = 5f;
-    private float hardDamagePrecentValue = 10;
+    private float hardDamagePrecentValue = 10f;
 
     [Header("Heal Bar Controller"), SerializeField]
     private HealBarController _healBarController;

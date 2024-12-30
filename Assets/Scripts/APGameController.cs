@@ -39,7 +39,7 @@ public class APGameController : MonoBehaviour
 
     private void Start()
     {
-        if (SoundManagerAllControll.Instance) SoundManagerAllControll.Instance.BackgroundClipPlay(backclip);
+        //if (SoundManagerAllControll.Instance) SoundManagerAllControll.Instance.BackgroundClipPlay(backclip);
         GameStarted();
     }
 

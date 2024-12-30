@@ -30,21 +30,16 @@ public class PostProcessingManager : MonoBehaviour
 
     public void VignetteActivate(bool _isActive, float _targetValue = 1)
     {
+        if (vignetteEffectCorutine != null)
+            StopCoroutine(vignetteEffectCorutine);
+
         if (_isActive)
         {
-            if (vignetteEffectCorutine != null)
-                StopCoroutine(vignetteEffectCorutine);
-
             targetValue = _targetValue;
             vignetteEffectCorutine = StartCoroutine(VignetteUpdate(targetValue));
         }
         else 
-        {
-            if (vignetteEffectCorutine != null)
-                StopCoroutine(vignetteEffectCorutine);
-
             vignetteEffectCorutine = StartCoroutine(VignetteEffectEnd());
-        }
     }
 
     private IEnumerator VignetteUpdate(float _targetValue)

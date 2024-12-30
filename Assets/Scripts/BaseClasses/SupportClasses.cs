@@ -1,11 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
+using UnityEngine;
 
 public static class SupportClasses
 {
+    public enum WindowName
+    {
+        None,
+        MMPanel,
+        MMSettingPanel,
+        MMExitPanel,
+        GMPanel,
+        GMSetting,
+    }
 
+    public enum WindowType
+    { 
+        None,
+        Window,
+        Notification,
+    }
 
 }
 

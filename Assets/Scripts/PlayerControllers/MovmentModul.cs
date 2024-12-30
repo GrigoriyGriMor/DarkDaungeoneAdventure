@@ -39,7 +39,7 @@ namespace PlayerControllers
                 if (_playerData.PlayerAnimator.GetBool("Run"))
                     _playerData.PlayerAnimator.SetBool("Run", false);
 
-                _playerData.PlayerRB.velocity = new Vector3(0, _playerData.PlayerRB.velocity.y, 0);
+                _playerData.PlayerRB.linearVelocity = new Vector3(0, _playerData.PlayerRB.linearVelocity.y, 0);
 
                 _playerData.PlayerMainCamera.StopMove();
 
@@ -54,8 +54,8 @@ namespace PlayerControllers
             float angle = Mathf.Atan2(horizMove, verticalMove) * Mathf.Rad2Deg;
             _playerData.PlayerVisual.transform.localRotation = Quaternion.Euler(0, angle, 0);
 
-            Vector3 vec = new Vector3(horizMove * _mSpeed, _playerData.PlayerRB.velocity.y, verticalMove * _mSpeed);
-            _playerData.PlayerRB.velocity = transform.TransformVector(vec);
+            Vector3 vec = new Vector3(horizMove * _mSpeed, _playerData.PlayerRB.linearVelocity.y, verticalMove * _mSpeed);
+            _playerData.PlayerRB.linearVelocity = transform.TransformVector(vec);
 
             _playerData.PlayerMainCamera.StartMove();
 

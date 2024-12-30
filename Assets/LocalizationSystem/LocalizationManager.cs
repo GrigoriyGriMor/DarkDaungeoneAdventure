@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Game.Core;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class LocalizationManager : MonoBehaviour
+public class LocalizationManager : AbstractManager
 {
     [Header("Localization File Name")]
     [SerializeField] private string _localizationFileName = "LocalizationData.json";
@@ -13,7 +14,6 @@ public class LocalizationManager : MonoBehaviour
     private string _currentLocalizationType = "";
 
     private List<LocalizationItem> itemList = new List<LocalizationItem>();
-    bool isReady = false;
 
     private void Start()
     {

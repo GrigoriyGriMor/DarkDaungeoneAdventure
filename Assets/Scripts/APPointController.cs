@@ -29,10 +29,10 @@ public class APPointController : MonoBehaviour
     {
         if (!itemBeUsed && other.gameObject.GetComponent<APPlayerController>())
         {
-            StartCoroutine(RespawnTime());
+            StartCoroutine(RespawnTime()); 
             APGameController.Instance.UpgradePoint(point);
 
-            if (SoundManagerAllControll.Instance && pointAudioClip != null) SoundManagerAllControll.Instance.ClipPlay(pointAudioClip);
+            //if (SoundManagerAllControll.Instance && pointAudioClip != null) SoundManagerAllControll.Instance.ClipPlay(pointAudioClip);
             if (pointUpParticle != null) pointUpParticle.Play();
 
             pointVisual.SetActive(false);

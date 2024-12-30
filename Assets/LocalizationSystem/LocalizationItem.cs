@@ -1,3 +1,4 @@
+using Game.Core;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -15,10 +16,10 @@ public class LocalizationItem : MonoBehaviour
         if (text == null)
             Debug.LogError($"Localization Error: gameObjct: {gameObject.name}, text with ID {TextID} don't have a component TMP_Text.", gameObject);
 
-        while (!GameManager.LocalizationManager.GetLoadingLocalizationStatus())
+        while (!GameManager.Instance.GetManager<LocalizationManager>().GetLoadingLocalizationStatus())
             yield return new WaitForFixedUpdate();
 
-        GameManager.LocalizationManager.InitItem(this);
+        GameManager.Instance.GetManager<LocalizationManager>().InitItem(this);
     }
 
     public void SetLocalizationText(string _text)

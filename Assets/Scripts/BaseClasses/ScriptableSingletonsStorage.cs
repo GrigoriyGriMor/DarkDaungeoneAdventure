@@ -30,7 +30,7 @@ namespace Config
             if (_instance == null)
             {
                 _instance = this;
-                //DontDestroyOnLoad(_instance);
+               //DontDestroyOnLoad(_instance);
             }
             else if (_instance != this)
             {

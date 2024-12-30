@@ -17,7 +17,7 @@ public class SpawnPointNEW : MonoBehaviour
         {
             if (particle != null) particle.Play();
 
-            if (clip != null && SoundManagerAllControll.Instance) SoundManagerAllControll.Instance.ClipPlay(clip);
+            //if (clip != null && SoundManagerAllControll.Instance) SoundManagerAllControll.Instance.ClipPlay(clip);
              canUse = false;
             other.GetComponent<APPlayerController>().SetNewSpawnPos(spawnPoint.position);
         }

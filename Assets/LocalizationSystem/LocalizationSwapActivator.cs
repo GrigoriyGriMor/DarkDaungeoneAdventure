@@ -1,3 +1,4 @@
+using Game.Core;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -6,21 +7,25 @@ public class LocalizationSwapActivator : MonoBehaviour
 {
     [SerializeField] private TMP_Dropdown _dropDownBtn;
 
+    private LocalizationManager _localizationManager;
+
     IEnumerator Start()
     {
         if (_dropDownBtn == null)
             _dropDownBtn = GetComponent<TMP_Dropdown>();
 
-        while (!GameManager.LocalizationManager.GetLoadingLocalizationStatus())
+        while (!GameManager.Instance.GetManager<LocalizationManager>().GetLoadingLocalizationStatus())
             yield return new WaitForFixedUpdate();
+
+        _localizationManager = GameManager.Instance.GetManager<LocalizationManager>();
 
         Init();
     }
 
     public void Init()
     {
-        string[] localizationTypes = GameManager.LocalizationManager.GetAllLocalizationTypes();
-        string currentType = GameManager.LocalizationManager.GetCurrentLocalizationType();
+        string[] localizationTypes = _localizationManager.GetAllLocalizationTypes();
+        string currentType = _localizationManager.GetCurrentLocalizationType();
 
         _dropDownBtn.options.Clear();
 
@@ -43,7 +48,7 @@ public class LocalizationSwapActivator : MonoBehaviour
 
     void UpdateCurrentType(int typeNumber)
     {
-        GameManager.LocalizationManager.UpdateLocalizationVersion(_dropDownBtn.options[typeNumber].text);
+        _localizationManager.UpdateLocalizationVersion(_dropDownBtn.options[typeNumber].text);
     }
 
     private void OnDestroy()
