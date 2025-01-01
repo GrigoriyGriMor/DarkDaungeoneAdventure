@@ -11,7 +11,7 @@ public class PostProcessingManager : MonoBehaviour
     private Vignette vignetteEffect;
     private Coroutine vignetteEffectCorutine;
 
-    private void Start()
+    private void Awake()
     {
         ppVolime.profile.TryGetSettings(out vignetteEffect);
 
