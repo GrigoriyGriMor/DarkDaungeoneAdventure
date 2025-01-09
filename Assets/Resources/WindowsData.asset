@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82f879082192e0d49ba06dca17578e14, type: 3}
   m_Name: WindowsData
   m_EditorClassIdentifier: 
+  disabled: 0
   windowData:
-  - windowsType: 1
-    WinPrefab: {fileID: 0}
+  - windowsType: 2
+    WinPrefab: {fileID: 7639489294048724474, guid: 4a5186cadeb21714d8176d81fa5b2a4d, type: 3}
+  - windowsType: 6
+    WinPrefab: {fileID: 4452186315726951341, guid: 98d06e53de1a6934e8d4fd5f933fad78, type: 3}

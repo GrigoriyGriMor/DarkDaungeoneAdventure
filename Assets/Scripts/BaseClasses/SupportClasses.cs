@@ -11,6 +11,7 @@ public static class SupportClasses
         MMExitPanel,
         GMPanel,
         GMSetting,
+        InGameHUD,
     }
 
     public enum WindowType
