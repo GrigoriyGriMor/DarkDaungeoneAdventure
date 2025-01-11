@@ -6,12 +6,12 @@ public static class SupportClasses
     public enum WindowName
     {
         None,
-        MMPanel,
-        MMSettingPanel,
-        MMExitPanel,
-        GMPanel,
-        GMSetting,
+        MainMenuBasePanel,
+        MainSettingMenu,
+        MainExitMenu,
         InGameHUD,
+        InGamePauseMenu,
+        InGameSettingMenu,
     }
 
     public enum WindowType

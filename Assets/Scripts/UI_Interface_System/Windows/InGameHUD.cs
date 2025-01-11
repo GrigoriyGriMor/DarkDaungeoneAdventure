@@ -4,16 +4,15 @@ using UnityEngine.UI;
 
 public class InGameHUD : AbstractWindow
 {
-    [SerializeField] private Button _settingBtn;
+    [SerializeField] private Button _pauseBtn;
 
-    public override void Start()
+    public override void Init(SupportClasses.WindowName parentWin = SupportClasses.WindowName.None)
     {
-        base.Start();
+        base.Init(parentWin);
 
-        _settingBtn.onClick.AddListener(() =>
+        _pauseBtn.onClick.AddListener(() =>
         {
-            GameManager.Instance.GetManager<WindowsManager>().OpenWindow(SupportClasses.WindowName.MMSettingPanel, SupportClasses.WindowName.InGameHUD);
-            CloseWindow();
+            GameManager.Instance.GetManager<WindowsManager>().OpenWindow(SupportClasses.WindowName.InGamePauseMenu, SupportClasses.WindowName.InGameHUD);
         });
     }
 }

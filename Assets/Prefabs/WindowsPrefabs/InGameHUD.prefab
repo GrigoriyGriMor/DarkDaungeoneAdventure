@@ -155,7 +155,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4452186315726951341
 RectTransform:
   m_ObjectHideFlags: 0
@@ -251,7 +251,8 @@ MonoBehaviour:
   _winAnim: {fileID: 0}
   _waitAnimTime: 1000
   _isNotification: 0
-  _settingBtn: {fileID: 5701674643513087377}
+  _blockedClose: 0
+  _pauseBtn: {fileID: 0}
 --- !u!1 &6618695493069685685
 GameObject:
   m_ObjectHideFlags: 0

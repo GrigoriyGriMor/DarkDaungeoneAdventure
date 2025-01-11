@@ -1,7 +1,6 @@
 using Config;
 using Game.Core;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class WindowsManager : AbstractManager
@@ -10,7 +9,6 @@ public class WindowsManager : AbstractManager
     [SerializeField] private RectTransform _canvas;
 
     private AbstractWindow _currentWindow;
-    private AbstractWindow _mainHUD;
 
     private IEnumerator Start()
     {
@@ -19,12 +17,15 @@ public class WindowsManager : AbstractManager
 
         _winConfig = GameManager.Instance.GetManager<ConfigManager>().GetConfiguration<WindowsConfig>();
 
-        OpenWindow(SupportClasses.WindowName.InGameHUD);
+        OpenWindow(SupportClasses.WindowName.MainMenuBasePanel);
     }
 
-    public void OpenWindow(SupportClasses.WindowName winName, SupportClasses.WindowName parentWin = SupportClasses.WindowName.None)
+    public async void OpenWindow(SupportClasses.WindowName winName, SupportClasses.WindowName parentWin = SupportClasses.WindowName.None, bool parentOpening = false)
     {
+        if (_currentWindow != null && !parentOpening)
+            await _currentWindow.CloseWindow();
+
         _currentWindow = Instantiate(_winConfig.GetWindowsData(winName).WinPrefab, _canvas).GetComponent<AbstractWindow>();
-        _currentWindow.ParentWindow = parentWin;
+        _currentWindow.Init(parentWin);
     }
 }

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Game.Core;
-using UnityEngine.Serialization;
+﻿using Game.Core;
+using System;
 
 namespace Engine.GameManagers
 {

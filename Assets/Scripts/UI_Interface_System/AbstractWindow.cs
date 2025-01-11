@@ -10,16 +10,27 @@ public class AbstractWindow : MonoBehaviour
     [SerializeField] private Animator _winAnim;
     [SerializeField] private int _waitAnimTime = 1000;
 
-    [HideInInspector] public SupportClasses.WindowName ParentWindow { get => _parentWindow; set => _parentWindow = value; }
     private SupportClasses.WindowName _parentWindow;
 
     [Header("Notification")]
     [SerializeField] private bool _isNotification = false;
 
-    public virtual void Start()
+    [HideInInspector] public bool BlockedClosing { get => _blockedClose; }
+    [SerializeField] private bool _blockedClose = false;
+
+    public virtual void Init(SupportClasses.WindowName parentWin)
     {
-        if (!_winAnim)
+        if (_winAnim == null)
             _winAnim = GetComponent<Animator>();
+
+        _parentWindow = parentWin;
+        gameObject.SetActive(true);
+
+        if (_winAnim)
+            _winAnim.SetTrigger("Activate");
+
+        if (_isNotification)
+            StartCoroutine(NotificationTimeout());
     }
 
     public virtual void OpenWindow(SupportClasses.WindowName parentWin = SupportClasses.WindowName.None)
@@ -35,19 +46,27 @@ public class AbstractWindow : MonoBehaviour
             StartCoroutine(NotificationTimeout());
     }
 
-    public virtual async void CloseWindow()
+    public virtual async Task CloseWindow()
     {
+        if (_blockedClose)
+            return;
+
         if (_winAnim)
         {
             _winAnim.SetTrigger("Deactive");
             await Task.Delay(_waitAnimTime);
-        } 
+        }
 
         gameObject.SetActive(false);
 
         if (_parentWindow != SupportClasses.WindowName.None)
-            GameManager.Instance.GetManager<WindowsManager>().OpenWindow(_parentWindow);
+            GameManager.Instance.GetManager<WindowsManager>().OpenWindow(_parentWindow, SupportClasses.WindowName.None, true);
 
+        Destroy(gameObject);
+    }
+
+    public virtual void HardClose()
+    {
         Destroy(gameObject);
     }
 

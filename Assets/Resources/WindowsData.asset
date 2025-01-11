@@ -14,7 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   disabled: 0
   windowData:
+  - windowsType: 1
+    WinPrefab: {fileID: 8288764624430376513, guid: dffa0f0bc8a7f5843a3cc358a7f65a9f, type: 3}
   - windowsType: 2
-    WinPrefab: {fileID: 7639489294048724474, guid: 4a5186cadeb21714d8176d81fa5b2a4d, type: 3}
+    WinPrefab: {fileID: 6597590136427710456, guid: 08b84aa871d19124d8a40e3274d5108c, type: 3}
+  - windowsType: 3
+    WinPrefab: {fileID: 718895083982742346, guid: a2e8814d023e0c34bb18a7ae81d295ba, type: 3}
+  - windowsType: 6
+    WinPrefab: {fileID: 4452186315726951341, guid: 98d06e53de1a6934e8d4fd5f933fad78, type: 3}
   - windowsType: 6
     WinPrefab: {fileID: 4452186315726951341, guid: 98d06e53de1a6934e8d4fd5f933fad78, type: 3}
