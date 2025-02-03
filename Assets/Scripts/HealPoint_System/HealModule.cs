@@ -1,5 +1,7 @@
 ﻿using BaseClasses;
+using Game.Core;
 using PlayerControllers;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -23,9 +25,21 @@ public class HealModule : AbstractModul
     [Header("")]
     public UnityEvent _die = new UnityEvent();
 
-    private void Start()
+    private IEnumerator Start()
     {
         currentHeal = maxHeal;
+        InGameHUD inGameWindow = null;
+
+        while (!_healBarController)
+        { 
+            inGameWindow = GameManager.Instance.GetManager<WindowsManager>().GetCurrentWindowIfType(SupportClasses.WindowName.InGameHUD) as InGameHUD;
+
+            if (inGameWindow != null)
+                _healBarController = inGameWindow.HealBarController;
+
+            yield return new WaitForFixedUpdate();
+        }
+
         UpdatePrecentValue();
         //загрузка из системы сохранения
     }

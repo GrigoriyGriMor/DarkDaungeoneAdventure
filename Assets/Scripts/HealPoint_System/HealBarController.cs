@@ -16,9 +16,14 @@ public class HealBarController : MonoBehaviour
 
     private float _maxBarRectWight;
 
+    bool _isReady = false;
+    public bool IsReady => _isReady;
+
     private void Start()
     {
         _maxBarRectWight = _bar.sizeDelta.x;
+
+        _isReady = true;
     }
 
     public void UpdateHealValue(float healPointsPrecent, bool healUp = false)

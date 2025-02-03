@@ -1,4 +1,5 @@
 ﻿using BaseClasses;
+using Game.Core;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,9 +21,16 @@ public class AIHealModule : AbstractAIModule
     [Header("")]
     public UnityEvent _die = new UnityEvent();
 
-    private void Start()
+    private IEnumerator Start()
     {
         currentHeal = maxHeal;
+
+        while (!_healBarController)
+        {
+            GameManager.Instance.GetManager<WindowsManager>().GetCurrentWindowIfType(SupportClasses.WindowName.InGameHUD);
+            yield return new WaitForFixedUpdate();
+        }
+
         UpdatePrecentValue();
         //загрузка из системы сохранения
     }

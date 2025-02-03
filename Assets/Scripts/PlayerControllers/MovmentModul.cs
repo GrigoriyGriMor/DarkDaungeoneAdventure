@@ -16,6 +16,13 @@ namespace PlayerControllers
         [SerializeField] private Button _jumpBtn;
         [SerializeField] private float _jumpForce = 250f;
 
+        [Header("")]
+        [SerializeField] private float _blendMovementSpeed = 0.25f;
+        [SerializeField] private float _blendRotateSpeed = 0.25f;
+
+        float _currentAngle = 0;
+        float _currentSpeed = 0;
+
         private void Start()
         {
             _jumpBtn.onClick.AddListener(Jump);
@@ -39,9 +46,15 @@ namespace PlayerControllers
                 if (_playerData.PlayerAnimator.GetBool("Run"))
                     _playerData.PlayerAnimator.SetBool("Run", false);
 
-                _playerData.PlayerRB.linearVelocity = new Vector3(0, _playerData.PlayerRB.linearVelocity.y, 0);
+                _playerData.PlayerAnimator.SetTrigger("Break");
+
+                _currentSpeed = Mathf.Lerp(_currentSpeed, 0, _blendMovementSpeed);
+                _playerData.PlayerAnimator.SetFloat("Move", _currentSpeed);
 
                 _playerData.PlayerMainCamera.StopMove();
+
+                if (_playerData.PlayerAnimator.GetFloat("Move") < 0.01f)
+                    _playerData.PlayerRB.linearVelocity = new Vector3(0, _playerData.PlayerRB.linearVelocity.y, 0);
 
                 return;
             }
@@ -52,15 +65,20 @@ namespace PlayerControllers
                 new Vector3(_playerData.CameraControlBlock.localEulerAngles.x, 0, _playerData.CameraControlBlock.localEulerAngles.z);
 
             float angle = Mathf.Atan2(horizMove, verticalMove) * Mathf.Rad2Deg;
-            _playerData.PlayerVisual.transform.localRotation = Quaternion.Euler(0, angle, 0);
 
-            Vector3 vec = new Vector3(horizMove * _mSpeed, _playerData.PlayerRB.linearVelocity.y, verticalMove * _mSpeed);
+            _currentAngle = Mathf.Lerp(_currentAngle, angle, _blendRotateSpeed);
+            _playerData.PlayerVisual.transform.localRotation = Quaternion.Euler(0, _currentAngle, 0);
+
+            _currentSpeed = Mathf.Lerp(_currentSpeed, _mSpeed, _blendMovementSpeed);
+            Vector3 vec = new Vector3(horizMove * _currentSpeed, _playerData.PlayerRB.linearVelocity.y, verticalMove * _currentSpeed);
             _playerData.PlayerRB.linearVelocity = transform.TransformVector(vec);
 
             _playerData.PlayerMainCamera.StartMove();
 
             if (!_playerData.PlayerAnimator.GetBool("Run"))
                 _playerData.PlayerAnimator.SetBool("Run", true);
+
+            _playerData.PlayerAnimator.SetFloat("Move", _currentSpeed);
         }
 
         void Jump()

@@ -1,5 +1,6 @@
 using Game.Core;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainMenuWindow : AbstractWindow
@@ -17,6 +18,7 @@ public class MainMenuWindow : AbstractWindow
 
         _startGameBtn.onClick.AddListener(() =>
         {
+            SceneManager.LoadScene(1);
             Debug.LogError("Game was started");
         });
 

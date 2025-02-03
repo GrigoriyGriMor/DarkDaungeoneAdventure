@@ -5,6 +5,8 @@ using UnityEngine.UI;
 public class InGameHUD : AbstractWindow
 {
     [SerializeField] private Button _pauseBtn;
+    [SerializeField] private HealBarController _healBarController;
+    public HealBarController HealBarController => _healBarController;
 
     public override void Init(SupportClasses.WindowName parentWin = SupportClasses.WindowName.None)
     {

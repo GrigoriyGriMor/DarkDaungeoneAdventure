@@ -12,7 +12,10 @@ namespace SupportSystems
         public virtual void Awake()
         {
             if (instance != null)
+            {
                 Debug.LogError("[Singleton] Объект этого типа уже существует.", gameObject);
+                Destroy(gameObject);
+            }
             else
                 instance = (S)this;
         }
