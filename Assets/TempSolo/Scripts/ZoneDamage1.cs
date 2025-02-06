@@ -12,14 +12,12 @@ public class ZoneDamage1 : MonoBehaviour {
 
 
    private float _timeAnimation;
-   private Transform _thisTransform;
    private Vector3 _startScale;
    private Vector3 _currentLocalScale;
 
 
    public void Initialize() {
-      _thisTransform = transform;
-      _startScale = _thisTransform.localScale;
+      _startScale = zoneBig.localScale;
       Hide();
    }
 
@@ -47,9 +45,8 @@ public class ZoneDamage1 : MonoBehaviour {
       while (true) {
          yield return null;
          if (_timeAnimation < _animationTime) {
-            _thisTransform.localScale = Vector3.Lerp(_currentLocalScale, _maxLocalScale, _timeAnimation);
-            _timeAnimation += Time.deltaTime;
-            _timeAnimation *= _stepInterpolate;
+            zoneBig.localScale = Vector3.Lerp(_currentLocalScale, _maxLocalScale, _timeAnimation);
+            _timeAnimation += Time.deltaTime * _stepInterpolate;
          }
       }
       

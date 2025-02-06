@@ -1217,6 +1217,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _postProcessManager: {fileID: 167036398}
+  _mainWindowAtScene: 4
 --- !u!4 &204093279
 Transform:
   m_ObjectHideFlags: 0
@@ -8139,7 +8140,7 @@ MonoBehaviour:
   minDetectionRange: 10
   angleDetection: 90
   delayAttack: 2
-  prediction: 2
+  prediction: 0
   stateWarrior: 0
   detectionRange: 0
 --- !u!4 &659221246

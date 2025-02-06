@@ -42,10 +42,12 @@ public class Warrior1 : MonoBehaviour {
         _zoneDamage1.SetPosition(positionPlayer);
         _zoneDamage1.Show();
         int delayAttack = this.delayAttack;
+        
         while (delayAttack > 0) {
             yield return new WaitForSeconds(1.0f);
             delayAttack--;
         }
+        
         _zoneDamage1.Damage();
         yield return new WaitForSeconds(1.0f);
         _zoneDamage1.Hide();
