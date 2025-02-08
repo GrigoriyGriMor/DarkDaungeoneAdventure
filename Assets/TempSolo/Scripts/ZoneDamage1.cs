@@ -17,6 +17,7 @@ public class ZoneDamage1 : MonoBehaviour {
 
 
    public void Initialize() {
+      transform.parent = null;
       _startScale = zoneBig.localScale;
       Hide();
    }
@@ -49,8 +50,6 @@ public class ZoneDamage1 : MonoBehaviour {
             _timeAnimation += Time.deltaTime * _stepInterpolate;
          }
       }
-      
-      yield break;
    }
 
 }
