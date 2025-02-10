@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace PlayerControllers
 {
-    public class JoystickStickk : MonoBehaviour, IDragHandler,
+    public class JoystickStickk : AbstractInputController, IDragHandler,
         IPointerDownHandler, IPointerUpHandler
     {
         [SerializeField] private bool useVerticalAxies = true;
@@ -17,7 +17,6 @@ namespace PlayerControllers
         [SerializeField] private Image tr_plane;
         [SerializeField] private Image tr_Joystick;
         [SerializeField] private Image tr_Stick;
-        private Vector2 inputVector;
 
         public Vector2 _stickPos;
 
@@ -51,16 +50,5 @@ namespace PlayerControllers
             _stickPos = Vector2.zero;
             tr_Stick.rectTransform.anchoredPosition = Vector2.zero;
         }
-
-        public float HorizontalAxis()
-        {
-            return Mathf.Clamp(inputVector.x, -1f, 1f);
-        }
-
-        public float VerticalAxis()
-        {
-            return Mathf.Clamp(inputVector.y, -1f, 1f);
-        }
-
     }
 }

@@ -210,6 +210,9 @@ MonoBehaviour:
   - Manager: {fileID: 7626699604260977122}
     InitOrder: 4
     DisableDefaultInit: 0
+  - Manager: {fileID: 5266102392750472022}
+    InitOrder: 5
+    DisableDefaultInit: 0
 --- !u!1 &868062557252013147
 GameObject:
   m_ObjectHideFlags: 0
@@ -244,6 +247,7 @@ Transform:
   - {fileID: 4598126180130688740}
   - {fileID: 4534159564273194270}
   - {fileID: 2276915263702643858}
+  - {fileID: 4081108632262689145}
   m_Father: {fileID: 868062556535908704}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2975662086820662751
@@ -291,6 +295,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _localizationFileName: LocalizationData.json
+--- !u!1 &6789183519652183421
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4081108632262689145}
+  - component: {fileID: 5266102392750472022}
+  m_Layer: 0
+  m_Name: InputSystemManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4081108632262689145
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6789183519652183421}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 868062557252013146}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5266102392750472022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6789183519652183421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9cf0138f9cdf344ea93c9a5a1f6477d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7006908155218005711
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,6 +384,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _canvas: {fileID: 8753093755701232577}
+  _onFirstLoadWindow: 1
 --- !u!1001 &868062556289100358
 PrefabInstance:
   m_ObjectHideFlags: 0

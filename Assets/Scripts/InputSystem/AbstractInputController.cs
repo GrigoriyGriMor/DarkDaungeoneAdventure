@@ -1,10 +1,13 @@
 using Game.Core;
+using System;
 using System.Collections;
 using UnityEngine;
 
 public abstract class AbstractInputController : MonoBehaviour
 {
     [SerializeField] private InputControllerType _controlType = InputControllerType.Empty;
+    public Action _action;
+    
     internal Vector2 inputVector;
 
     public virtual IEnumerator Start()
@@ -24,16 +27,18 @@ public abstract class AbstractInputController : MonoBehaviour
     {
         return Mathf.Clamp(inputVector.y, -1f, 1f);
     }
+
+    public virtual void ActivateAction()
+    {
+        _action.Invoke();
+    }
 }
 
+[Serializable]
 public enum InputControllerType
 {
     Empty,
-    KeyboardMove,
-    KeyboardJump,
-    MouseCameraMove,
-    JoystickMove,
-    JoystickCameraMove,
-    TouchJump,
-    SliderCameraMove,
+    Move,
+    Jump,
+    CameraMove,
 }

@@ -1,3 +1,4 @@
+using Game.Core;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,9 +24,16 @@ namespace PlayerControllers
         float _currentAngle = 0;
         float _currentSpeed = 0;
 
-        private void Start()
+        InputSystemManager _inputSystemMN;
+
+        public IEnumerator Start()
         {
-            _jumpBtn.onClick.AddListener(Jump);
+            while (!GameManager.Instance)
+                yield return new WaitForFixedUpdate();
+
+            _inputSystemMN = GameManager.Instance.GetManager<InputSystemManager>();
+
+            _inputSystemMN._jumpAction += Jump;
             _mSpeed = _moveSpeed;
         }
 
@@ -38,8 +46,8 @@ namespace PlayerControllers
 
         private void Move()
         {
-            float horizMove = _movementJoystick.HorizontalAxis();
-            float verticalMove = _movementJoystick.VerticalAxis();
+            float horizMove = _inputSystemMN.Move().x;
+            float verticalMove = _inputSystemMN.Move().y;
 
             if (horizMove == 0.0f && verticalMove == 0.0f)
             {
@@ -109,6 +117,11 @@ namespace PlayerControllers
 
             if (!_modulIsActive)
                 ResetAllParam();
+        }
+
+        private void OnDisable()
+        {
+            _inputSystemMN._jumpAction -= Jump;
         }
     }
 }
