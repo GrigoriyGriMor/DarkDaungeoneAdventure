@@ -298,7 +298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e30d19bae0417bc43a97ec3dcca1dcff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPlayer: {fileID: 0}
+  healModule: {fileID: 0}
   zoneDamage1: {fileID: 5033136768198753703}
   radiusPatrol: 20
   minDetectionRange: 20
@@ -472,7 +472,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9088614030972929463, guid: bce9f10379f46ae4d8872be138affa3a, type: 3}
       propertyPath: _damage
-      value: 10
+      value: 1000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

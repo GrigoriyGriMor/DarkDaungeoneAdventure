@@ -966,11 +966,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 114159222}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!4 &148957898 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7871981245859543137, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
-  m_PrefabInstance: {fileID: 4232537245705120258}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &165722493 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: daf45c67fd6b19744a3ecfc04d14b62d, type: 3}
@@ -13532,6 +13527,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 887173106}
   m_CullTransparentMesh: 1
+--- !u!114 &893981668 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5732703761693933804, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
+  m_PrefabInstance: {fileID: 4232537245705120258}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a6fe53ddcfeb0845b1604d7de5ecf30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &908548913 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1328474602124210001, guid: 1645abcaea8db1e449a9d08f23f0fe0f, type: 3}
@@ -24182,7 +24188,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1001 &6223837754017871101
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24236,9 +24242,13 @@ PrefabInstance:
       value: Warrior1
       objectReference: {fileID: 0}
     - target: {fileID: 5738319524706324315, guid: c9af860ab42f4bc49809d163c9646c3d, type: 3}
-      propertyPath: targetPlayer
+      propertyPath: healModule
       value: 
-      objectReference: {fileID: 148957898}
+      objectReference: {fileID: 893981668}
+    - target: {fileID: 5817316826080577692, guid: c9af860ab42f4bc49809d163c9646c3d, type: 3}
+      propertyPath: _damage
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

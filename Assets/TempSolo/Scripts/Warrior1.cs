@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 public class Warrior1 : MonoBehaviour {
-    [SerializeField] private Transform targetPlayer;
+    [SerializeField] private HealModule healModule;
     [SerializeField] private ZoneDamage1 zoneDamage1;
     [SerializeField] private float radiusPatrol = 20.0f;    
     [SerializeField] private float minDetectionRange;
@@ -11,6 +11,7 @@ public class Warrior1 : MonoBehaviour {
     [SerializeField] private float delayCast = 1.0f;
     [SerializeField] private float prediction = 0.0f;
     
+    private Transform _targetPlayer;
     private StateWarrior _stateWarrior;
     private Transform _thisTransform;
     private Vector3 _startPosition;
@@ -20,15 +21,20 @@ public class Warrior1 : MonoBehaviour {
     private float _dot;
     private float _angleRadians;
     private float _angleDeg;
+    private bool _diedPlayer = false;
     
     void Start() {
+        _targetPlayer = healModule.transform;
+        healModule._die.AddListener(OnDiedPlayer);
         _detectionRange = minDetectionRange * minDetectionRange;
         zoneDamage1.Initialize();
         _thisTransform = transform;
         _startPosition = _thisTransform.position;
         StartCoroutine(Patrol());
     }
-    
+
+    private void OnDiedPlayer() => _diedPlayer = true;
+
     private IEnumerator Patrol() {
         Vector3 point = Vector3.zero;
         _stateWarrior = StateWarrior.Patrol;
@@ -36,6 +42,12 @@ public class Warrior1 : MonoBehaviour {
         float speed = 1;
         
         while (true) {
+            
+            if (CheckPlayer()) {
+                StartCoroutine(Attack());
+                yield break;
+            }
+            
             point = GetPointFollow();
             float distance = (_thisTransform.position - point).sqrMagnitude;;
             while (distance > minDistanceToPoint) {
@@ -45,18 +57,10 @@ public class Warrior1 : MonoBehaviour {
                     Vector3.MoveTowards(_thisTransform.position, point, speed * Time.deltaTime);
                 distance = (_thisTransform.position - point).sqrMagnitude;
                 
-                if (CheckPlayer())
-                {
-                    StartCoroutine(Attack());
-                    yield break;
-                }
+              
                 
                 yield return null;
             }
-
-          
-            
-            
             yield return new WaitForSeconds(0.1f);
             
         }
@@ -77,7 +81,7 @@ public class Warrior1 : MonoBehaviour {
     
     private IEnumerator Attack(){
         _stateWarrior = StateWarrior.Attack;
-        Vector3 positionPlayer = targetPlayer.position + targetPlayer.forward * prediction;
+        Vector3 positionPlayer = _targetPlayer.position + _targetPlayer.forward * prediction;
         zoneDamage1.SetPosition(positionPlayer);
         zoneDamage1.Show();
         
@@ -97,7 +101,8 @@ public class Warrior1 : MonoBehaviour {
     }
   
     private bool CheckPlayer() {
-        _direction = targetPlayer.position - _thisTransform.position;
+        if (_diedPlayer == true) return false;
+        _direction = _targetPlayer.position - _thisTransform.position;
         _distance = _direction.sqrMagnitude; 
         if (_distance > _detectionRange) return false;
         _dot = Vector3.Dot(_thisTransform.forward, _direction.normalized);
