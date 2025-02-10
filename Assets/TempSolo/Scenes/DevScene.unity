@@ -14177,6 +14177,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1096002073 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8763624576393213621, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
+  m_PrefabInstance: {fileID: 4232537245705120258}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1096002080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1096002073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbfd70396512be9408ce3e1904173986, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 1771072903}
 --- !u!1 &1117805568
 GameObject:
   m_ObjectHideFlags: 0
@@ -21817,6 +21835,11 @@ MonoBehaviour:
   _criticalHealPointPrecent: 30
   _critHealActivatorBoolParam: LittleHeal
   _healUpActivatorTriggerParam: HealUp
+--- !u!95 &1771072903 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4578476906614706757, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
+  m_PrefabInstance: {fileID: 4232537245705120258}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1811961666
 GameObject:
   m_ObjectHideFlags: 0
@@ -22775,6 +22798,45 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1645abcaea8db1e449a9d08f23f0fe0f, type: 3}
+--- !u!1 &1939760272 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1002060669591780255, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
+  m_PrefabInstance: {fileID: 4232537245705120258}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1939760275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939760272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39f6d7161155a754798aae576c5e86de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _damage: 10
+--- !u!135 &1939760276
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939760272}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.18
+  m_Center: {x: -0.41, y: -1.96, z: -1.41}
 --- !u!1 &1952125182
 GameObject:
   m_ObjectHideFlags: 0
@@ -24048,6 +24110,10 @@ PrefabInstance:
       propertyPath: _lookJoystick
       value: 
       objectReference: {fileID: 1280590222}
+    - target: {fileID: 1002060669591780255, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2817761950436862651, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -24083,7 +24149,16 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8763624576393213621, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1096002080}
+    - targetCorrespondingSourceObject: {fileID: 1002060669591780255, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1939760276}
+    - targetCorrespondingSourceObject: {fileID: 1002060669591780255, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1939760275}
   m_SourcePrefab: {fileID: 100100000, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
 --- !u!114 &5542627515792424032
 MonoBehaviour:
@@ -24245,10 +24320,6 @@ PrefabInstance:
       propertyPath: healModule
       value: 
       objectReference: {fileID: 893981668}
-    - target: {fileID: 5817316826080577692, guid: c9af860ab42f4bc49809d163c9646c3d, type: 3}
-      propertyPath: _damage
-      value: 10
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

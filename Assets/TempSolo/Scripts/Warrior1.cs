@@ -42,7 +42,6 @@ public class Warrior1 : MonoBehaviour {
         float speed = 1;
         
         while (true) {
-            
             if (CheckPlayer()) {
                 StartCoroutine(Attack());
                 yield break;
@@ -57,7 +56,10 @@ public class Warrior1 : MonoBehaviour {
                     Vector3.MoveTowards(_thisTransform.position, point, speed * Time.deltaTime);
                 distance = (_thisTransform.position - point).sqrMagnitude;
                 
-              
+                if (CheckPlayer()) {
+                    StartCoroutine(Attack());
+                    yield break;
+                }
                 
                 yield return null;
             }
@@ -84,16 +86,7 @@ public class Warrior1 : MonoBehaviour {
         Vector3 positionPlayer = _targetPlayer.position + _targetPlayer.forward * prediction;
         zoneDamage1.SetPosition(positionPlayer);
         zoneDamage1.Show();
-        
         yield return new WaitForSeconds(delayAttack);
-        
-        // int delayAttack = this.delayAttack;
-        // const int tick = 1; 
-        // while (delayAttack > 0) {
-        //     yield return new WaitForSeconds(tick);
-        //     delayAttack--;
-        // }
-        
         zoneDamage1.Damage();
         yield return new WaitForSeconds(delayCast);
         zoneDamage1.Hide();

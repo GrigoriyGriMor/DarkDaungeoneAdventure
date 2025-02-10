@@ -43,7 +43,6 @@ GameObject:
   - component: {fileID: 1828552621082433706}
   - component: {fileID: 3157455839923828674}
   - component: {fileID: 2290250523265068780}
-  - component: {fileID: 5936072366896209332}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -121,29 +120,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &5936072366896209332
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4650668484560167250}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5420377331021237192
 GameObject:
   m_ObjectHideFlags: 0
@@ -261,7 +237,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4933676141925250464}
+  - component: {fileID: 7628135206387202423}
   - component: {fileID: 5738319524706324315}
+  - component: {fileID: 388182991442794273}
+  - component: {fileID: 6627045072585403591}
   m_Layer: 0
   m_Name: Warrior1
   m_TagString: Untagged
@@ -286,6 +265,29 @@ Transform:
   - {fileID: 6086850364954113323}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &7628135206387202423
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5505368225230719705}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &5738319524706324315
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -306,6 +308,34 @@ MonoBehaviour:
   delayAttack: 2
   delayCast: 1
   prediction: 0
+--- !u!114 &388182991442794273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5505368225230719705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50c3a1981794f5241a6ff578fba1be8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meshWarrior: {fileID: 2290250523265068780}
+  healthMax: 100
+  health: 0
+--- !u!114 &6627045072585403591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5505368225230719705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca723a0e2fc18194c999e66ca08f6118, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: {fileID: 388182991442794273}
 --- !u!1 &8806359758585389770
 GameObject:
   m_ObjectHideFlags: 0
@@ -426,10 +456,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ZoneDamage1
       objectReference: {fileID: 0}
-    - target: {fileID: 5583268673278028684, guid: bce9f10379f46ae4d8872be138affa3a, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8854827500868581376, guid: bce9f10379f46ae4d8872be138affa3a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -469,10 +495,6 @@ PrefabInstance:
     - target: {fileID: 8854827500868581376, guid: bce9f10379f46ae4d8872be138affa3a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9088614030972929463, guid: bce9f10379f46ae4d8872be138affa3a, type: 3}
-      propertyPath: _damage
-      value: 1000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
