@@ -31,6 +31,9 @@ namespace PlayerControllers
 
         void Update()
         {
+            if (!moduleIsActive || _inputSystemMN == null)
+                return;
+
             yRotate = yRotateCamera;
 
             float xAxis = _inputSystemMN.CameraMove().x * horizontalSpeed * Time.deltaTime;

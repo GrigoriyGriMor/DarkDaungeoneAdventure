@@ -14,7 +14,9 @@ namespace Game.Core
         private const string errorTxt = "GameManager havn't link. You need Add this link to stability work system";
 
         readonly List<AbstractManager> _managerInitList = new();
-        
+
+        bool _initReady = false;
+        public bool InitReady { get => _initReady; }
 
         public T GetManager<T>() where T : AbstractManager
         {
@@ -57,17 +59,15 @@ namespace Game.Core
         }
         
         private IEnumerator Start()
-        {
-            bool initReady = false;
-            
+        {            
             DontDestroyOnLoad(gameObject);
 
-            while (!initReady)
+            while (!_initReady)
             {
                 foreach (AbstractManager mn in _managerInitList)
                 {
-                    initReady = mn.IsReady;
-                    if (!initReady)
+                    _initReady = mn.IsReady;
+                    if (!_initReady)
                         break;
                 }
 

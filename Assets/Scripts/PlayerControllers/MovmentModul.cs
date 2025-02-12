@@ -39,8 +39,8 @@ namespace PlayerControllers
 
         private void FixedUpdate()
         {
-            if (!moduleIsActive) return;
-
+            if (!moduleIsActive || _inputSystemMN == null) return;
+  
             Move();
         }
 

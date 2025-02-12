@@ -13,7 +13,7 @@ public abstract class AbstractInputController : MonoBehaviour
     public virtual IEnumerator Start()
     {
         while (!GameManager.Instance)
-            yield return new WaitForFixedUpdate();
+            yield return null;
 
         GameManager.Instance.GetManager<InputSystemManager>().RegisterController(this, _controlType);
     }
