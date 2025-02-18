@@ -1,16 +1,35 @@
 using System.Collections;
+//using UnityEditor;
 using UnityEngine;
+//using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public class Warrior1 : MonoBehaviour {
-    [SerializeField] private HealModule healModule;
     [SerializeField] private ZoneDamage1 zoneDamage1;
-    [SerializeField] private float radiusPatrol = 20.0f;    
-    [SerializeField] private float minDetectionRange;
+    [SerializeField] private Animator animator;
+    [SerializeField] private HealthWarrior healthWarrior;
+    [Space]
+    [SerializeField] private string stateRun = "Run";
+    [SerializeField] private string stateAttack = "Attack";
+    [SerializeField] private string stateDamage = "Damage";
+    [SerializeField] private string stateDead = "Die";
+    [Space]
+    [SerializeField] private float radiusSkill = 10.0f;    
+    [SerializeField] private float radiusPatrol = 20.0f; 
+    [SerializeField] private float radiusFollow = 25;
+    [SerializeField] private float radiusDetection = 22;
     [SerializeField] private int angleDetection = 45;
-    [SerializeField] private float delayAttack = 2.0f;
+    [Space]
     [SerializeField] private float delayCast = 1.0f;
+    [SerializeField] private float delayAttack = 2.0f;
+    [SerializeField] private float delayDead = 4.0f;
+    [Space]
     [SerializeField] private float prediction = 0.0f;
+    [SerializeField] private float speedRotation = 10.0f;
+    [SerializeField] private float speed = 10;
+    [SerializeField] private bool isPlay = false;
     
+    private HealModule _healModulePlayer;
     private Transform _targetPlayer;
     private StateWarrior _stateWarrior;
     private Transform _thisTransform;
@@ -23,13 +42,19 @@ public class Warrior1 : MonoBehaviour {
     private float _angleDeg;
     private bool _diedPlayer = false;
     
-    void Start() {
-        _targetPlayer = healModule.transform;
-        healModule._die.AddListener(OnDiedPlayer);
-        _detectionRange = minDetectionRange * minDetectionRange;
+    private IEnumerator Start() {
+        isPlay = true;
+        while (_healModulePlayer == null) {
+            _healModulePlayer = FindAnyObjectByType(typeof(HealModule)) as HealModule;
+            yield return new WaitForFixedUpdate();
+        }
+        _targetPlayer = _healModulePlayer.transform;
+        _healModulePlayer._die.AddListener(OnDiedPlayer);
+        _detectionRange = radiusDetection * radiusDetection;
         zoneDamage1.Initialize();
         _thisTransform = transform;
         _startPosition = _thisTransform.position;
+        Subscription();
         StartCoroutine(Patrol());
     }
 
@@ -39,7 +64,6 @@ public class Warrior1 : MonoBehaviour {
         Vector3 point = Vector3.zero;
         _stateWarrior = StateWarrior.Patrol;
         float minDistanceToPoint = 0.1f;
-        float speed = 1;
         
         while (true) {
             if (CheckPlayer()) {
@@ -48,7 +72,8 @@ public class Warrior1 : MonoBehaviour {
             }
             
             point = GetPointFollow();
-            float distance = (_thisTransform.position - point).sqrMagnitude;;
+            float distance = (_thisTransform.position - point).sqrMagnitude;
+            animator.SetBool(stateRun, true);
             while (distance > minDistanceToPoint) {
                 Debug.DrawLine(_thisTransform.position, point, Color.green);
                 _thisTransform.LookAt(point);
@@ -78,15 +103,29 @@ public class Warrior1 : MonoBehaviour {
         Vector3 pointFollow = center + (radius * direction);
         return pointFollow;
     }
-  
-    
     
     private IEnumerator Attack(){
         _stateWarrior = StateWarrior.Attack;
+        float difference;
+        float minDifference = 1.0f;
         Vector3 positionPlayer = _targetPlayer.position + _targetPlayer.forward * prediction;
+
+        do {
+            Vector3 direction = _targetPlayer.position - _thisTransform.position;
+            Quaternion rotation = Quaternion.LookRotation(direction);
+            _thisTransform.rotation = Quaternion.Lerp(_thisTransform.rotation, rotation, speedRotation * Time.deltaTime);
+            difference = Mathf.Abs(_thisTransform.rotation.eulerAngles.y - rotation.eulerAngles.y);
+            yield return null;
+        }  while (difference > minDifference);
+        
         zoneDamage1.SetPosition(positionPlayer);
         zoneDamage1.Show();
         yield return new WaitForSeconds(delayAttack);
+        
+        animator.SetBool(stateRun, false);
+        animator.SetTrigger(stateAttack);
+        
+        yield return new WaitForSeconds(1.0f);
         zoneDamage1.Damage();
         yield return new WaitForSeconds(delayCast);
         zoneDamage1.Hide();
@@ -103,14 +142,73 @@ public class Warrior1 : MonoBehaviour {
         _angleDeg = _angleRadians * Mathf.Rad2Deg;
         return _angleDeg < angleDetection;
     }
-    
-    private void OnDrawGizmos() {
-        Vector3 center = transform.position;
-        float radius = radiusPatrol;
-        DrawWireDisk(center, radius, Color.red);
+
+    private void TakeDamage() => animator.SetTrigger(stateDamage);
+    private void Dead() {
+        StopAllCoroutines();
+        StartCoroutine(DelayDead());
+    }
+
+    private IEnumerator DelayDead() {
+        _stateWarrior = StateWarrior.Dead;
+        animator.SetBool(stateRun, false);
+        animator.SetTrigger(stateDead);
+        zoneDamage1.Hide();
+        yield return new WaitForSeconds(delayDead);
+        gameObject.SetActive(false);
+    } 
+
+
+    private void Subscription() {
+        healthWarrior.DamageEvent += TakeDamage;
+        healthWarrior.DeathEvent += Dead;
     }
     
-    public void DrawWireDisk(Vector3 center, float radius, Color color) {
+    private void Unsubscription() {
+        healthWarrior.DamageEvent -= TakeDamage;
+        healthWarrior.DeathEvent -= Dead;
+    }
+
+    private void OnDestroy() => Unsubscription();
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        Vector3 center = transform.position;
+        Vector3 startPosition = center;
+        if (isPlay) startPosition = _startPosition; 
+        Vector3 offset = new Vector3(0, 0.1f, 0); 
+        
+        float radius = radiusPatrol;
+        
+        FollowZone(center, radiusFollow, Color.blue);
+        PatrolZone(startPosition + offset, radius, Color.green);
+        SkillZone(center, radiusSkill, Color.red);
+        DetectionZone(center, radiusDetection, Color.yellow);
+    }
+
+    private void FollowZone(Vector3 center, float radius, Color color)
+    {
+        DrawWireDisk(center, radius, color);
+    }
+
+    private void PatrolZone(Vector3 center, float radius, Color color)
+    {
+        DrawWireDisk(center, radius, color);
+    }
+
+    private void SkillZone(Vector3 center, float radius, Color color)
+    {
+        DrawWireDisk(center, radius, color);
+    }
+
+    private void DetectionZone(Vector3 center, float radius, Color color)
+    {
+        DrawSector(center, radius, angleDetection, color);
+    }
+
+    private void DrawWireDisk(Vector3 center, float radius, Color color)
+    {
         float gizmoDiskThickness = 0.01f;
         Color oldColor = Gizmos.color;
         Gizmos.color = color;
@@ -120,6 +218,13 @@ public class Warrior1 : MonoBehaviour {
         Gizmos.matrix = oldMatrix;
         Gizmos.color = oldColor;
     }
+    
+    private void DrawSector(Vector3 center, float radius, float angle, Color color) {
+        UnityEditor.Handles.color = color;
+        UnityEditor.Handles.DrawSolidArc(transform.position, transform.up, transform.forward, angle , radius);
+    }
+    
+#endif
 }
 
 enum StateWarrior {
@@ -127,5 +232,6 @@ enum StateWarrior {
     Attack,
     Run,
     Wait,
-    Patrol
+    Patrol,
+    Dead
 }

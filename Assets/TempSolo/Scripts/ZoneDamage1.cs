@@ -5,6 +5,7 @@ public class ZoneDamage1 : MonoBehaviour {
    [SerializeField] private Transform zoneSmall;
    [SerializeField] private Transform zoneBig;
    [SerializeField] private Transform cast;
+   [SerializeField] private ParticleSystem particleSys;
 
    [SerializeField] private float _animationTime;
    [SerializeField] private float _stepInterpolate;
@@ -30,6 +31,7 @@ public class ZoneDamage1 : MonoBehaviour {
    public void Hide() {
       gameObject.SetActive(false);
       cast.gameObject.SetActive(false);
+      //particleSys.gameObject.SetActive(false);
    }
 
    public void SetPosition(Vector3 positionPlayer) {
@@ -38,6 +40,8 @@ public class ZoneDamage1 : MonoBehaviour {
 
    public void Damage() {
       cast.gameObject.SetActive(true);
+      particleSys.Play();
+      //particleSys.gameObject.SetActive(true);
    }
 
    private IEnumerator ScaleZoneDamage() {

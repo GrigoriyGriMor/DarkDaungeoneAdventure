@@ -1,30 +1,23 @@
-using System.Collections;
+using System;
 using UnityEngine;
 
 public class HealthWarrior : MonoBehaviour {
-  [SerializeField] private MeshRenderer meshWarrior;
+  [SerializeField] private Collider colliderObject;
   [SerializeField] private float healthMax = 100;
   [SerializeField] private float health = 0;
-
-  private Material _material;
-  private Color _originalColor;
-
-  private void Awake() {
-    health = healthMax;
-    _material = meshWarrior.material;
-    _originalColor = _material.color;
-  }
-
+  public event Action DamageEvent, DeathEvent;
+  private void Awake() { health = healthMax; }
   public void TakeDamage(float damage) {
     health -= damage;
-    StartCoroutine(DelayColor());
-    gameObject.SetActive(health >= 0);
+    if (health > 0) {
+      DamageEvent?.Invoke();
+      return;
+    }
+    Dead();
   }
 
-  private IEnumerator DelayColor() {
-    _material.color = Color.red;
-    yield return new WaitForSeconds(0.2f);
-    _material.color = _originalColor;
+  private void Dead() {
+    colliderObject.enabled = false;
+    DeathEvent?.Invoke();
   } 
-  
 }
