@@ -1,7 +1,5 @@
 using System.Collections;
-//using UnityEditor;
 using UnityEngine;
-//using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class Warrior1 : MonoBehaviour {
@@ -37,6 +35,7 @@ public class Warrior1 : MonoBehaviour {
     private Vector3 _direction;
     private float _distance;
     private float _detectionRange;
+    private float _followRange;
     private float _dot;
     private float _angleRadians;
     private float _angleDeg;
@@ -51,6 +50,7 @@ public class Warrior1 : MonoBehaviour {
         _targetPlayer = _healModulePlayer.transform;
         _healModulePlayer._die.AddListener(OnDiedPlayer);
         _detectionRange = radiusDetection * radiusDetection;
+        _followRange = radiusFollow * radiusFollow;
         zoneDamage1.Initialize();
         _thisTransform = transform;
         _startPosition = _thisTransform.position;
@@ -67,7 +67,7 @@ public class Warrior1 : MonoBehaviour {
         
         while (true) {
             if (CheckPlayer()) {
-                StartCoroutine(Attack());
+                StartCoroutine(Follow());
                 yield break;
             }
             
@@ -82,7 +82,7 @@ public class Warrior1 : MonoBehaviour {
                 distance = (_thisTransform.position - point).sqrMagnitude;
                 
                 if (CheckPlayer()) {
-                    StartCoroutine(Attack());
+                    StartCoroutine(Follow());
                     yield break;
                 }
                 
@@ -103,12 +103,45 @@ public class Warrior1 : MonoBehaviour {
         Vector3 pointFollow = center + (radius * direction);
         return pointFollow;
     }
+
+
+    private IEnumerator Follow() {
+        _stateWarrior = StateWarrior.Follow;
+        float minDistanceToPoint = 0.5f;
+
+        float distanceToPlyer = (_thisTransform.position - _targetPlayer.position).sqrMagnitude;
+        
+        animator.SetBool(stateRun, true);
+        
+        while (distanceToPlyer > minDistanceToPoint) {
+            Debug.DrawLine(_thisTransform.position, _targetPlayer.position, Color.red);
+            _thisTransform.LookAt(_targetPlayer.position);
+            _thisTransform.position = Vector3.MoveTowards(_thisTransform.position, _targetPlayer.position,
+                speed * Time.deltaTime);
+            distanceToPlyer = (_thisTransform.position - _targetPlayer.position).sqrMagnitude;
+            
+            float distanceToStartPosition = (_thisTransform.position - _startPosition).sqrMagnitude;
+            
+            if (_followRange < distanceToStartPosition) {
+                StartCoroutine(Patrol());
+                yield break;
+            }
+                
+            yield return null;
+        }
+
+        StartCoroutine(Attack());
+    }
+    
+    
     
     private IEnumerator Attack(){
         _stateWarrior = StateWarrior.Attack;
         float difference;
         float minDifference = 1.0f;
         Vector3 positionPlayer = _targetPlayer.position + _targetPlayer.forward * prediction;
+       
+        animator.SetBool(stateRun, false);
 
         do {
             Vector3 direction = _targetPlayer.position - _thisTransform.position;
@@ -122,7 +155,6 @@ public class Warrior1 : MonoBehaviour {
         zoneDamage1.Show();
         yield return new WaitForSeconds(delayAttack);
         
-        animator.SetBool(stateRun, false);
         animator.SetTrigger(stateAttack);
         
         yield return new WaitForSeconds(1.0f);
@@ -181,7 +213,7 @@ public class Warrior1 : MonoBehaviour {
         
         float radius = radiusPatrol;
         
-        FollowZone(center, radiusFollow, Color.blue);
+        FollowZone(startPosition + offset, radiusFollow, Color.blue);
         PatrolZone(startPosition + offset, radius, Color.green);
         SkillZone(center, radiusSkill, Color.red);
         DetectionZone(center, radiusDetection, Color.yellow);
@@ -233,5 +265,6 @@ enum StateWarrior {
     Run,
     Wait,
     Patrol,
+    Follow,
     Dead
 }

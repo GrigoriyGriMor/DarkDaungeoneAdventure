@@ -311,7 +311,7 @@ MonoBehaviour:
   radiusSkill: 10
   radiusPatrol: 20
   radiusFollow: 25
-  radiusDetection: 22
+  radiusDetection: 15
   angleDetection: 45
   delayCast: 5
   delayAttack: 2

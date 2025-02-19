@@ -24267,7 +24267,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4933676141925250464, guid: c9af860ab42f4bc49809d163c9646c3d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 11
+      value: 8.1
       objectReference: {fileID: 0}
     - target: {fileID: 4933676141925250464, guid: c9af860ab42f4bc49809d163c9646c3d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -24275,7 +24275,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4933676141925250464, guid: c9af860ab42f4bc49809d163c9646c3d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 7.1
+      value: 19.3
       objectReference: {fileID: 0}
     - target: {fileID: 4933676141925250464, guid: c9af860ab42f4bc49809d163c9646c3d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -24308,14 +24308,6 @@ PrefabInstance:
     - target: {fileID: 5505368225230719705, guid: c9af860ab42f4bc49809d163c9646c3d, type: 3}
       propertyPath: m_Name
       value: Warrior1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5738319524706324315, guid: c9af860ab42f4bc49809d163c9646c3d, type: 3}
-      propertyPath: radiusSkill
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 5738319524706324315, guid: c9af860ab42f4bc49809d163c9646c3d, type: 3}
-      propertyPath: radiusPatrol
-      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
