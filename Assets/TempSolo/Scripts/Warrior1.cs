@@ -25,7 +25,6 @@ public class Warrior1 : MonoBehaviour {
     [SerializeField] private float prediction = 0.0f;
     [SerializeField] private float speedRotation = 10.0f;
     [SerializeField] private float speed = 10;
-    [SerializeField] private bool isPlay = false;
     
     private HealModule _healModulePlayer;
     private Transform _targetPlayer;
@@ -33,16 +32,18 @@ public class Warrior1 : MonoBehaviour {
     private Transform _thisTransform;
     private Vector3 _startPosition;
     private Vector3 _direction;
+    private bool _isPlay = false;
     private float _distance;
     private float _detectionRange;
     private float _followRange;
+    private float _attackRange;
     private float _dot;
     private float _angleRadians;
     private float _angleDeg;
     private bool _diedPlayer = false;
     
     private IEnumerator Start() {
-        isPlay = true;
+        _isPlay = true;
         while (_healModulePlayer == null) {
             _healModulePlayer = FindAnyObjectByType(typeof(HealModule)) as HealModule;
             yield return new WaitForFixedUpdate();
@@ -51,6 +52,7 @@ public class Warrior1 : MonoBehaviour {
         _healModulePlayer._die.AddListener(OnDiedPlayer);
         _detectionRange = radiusDetection * radiusDetection;
         _followRange = radiusFollow * radiusFollow;
+        _attackRange = radiusSkill * radiusSkill;
         zoneDamage1.Initialize();
         _thisTransform = transform;
         _startPosition = _thisTransform.position;
@@ -64,6 +66,7 @@ public class Warrior1 : MonoBehaviour {
         Vector3 point = Vector3.zero;
         _stateWarrior = StateWarrior.Patrol;
         float minDistanceToPoint = 0.1f;
+        float distance;
         
         while (true) {
             if (CheckPlayer()) {
@@ -72,7 +75,7 @@ public class Warrior1 : MonoBehaviour {
             }
             
             point = GetPointFollow();
-            float distance = (_thisTransform.position - point).sqrMagnitude;
+            distance = (_thisTransform.position - point).sqrMagnitude;
             animator.SetBool(stateRun, true);
             while (distance > minDistanceToPoint) {
                 Debug.DrawLine(_thisTransform.position, point, Color.green);
@@ -107,61 +110,56 @@ public class Warrior1 : MonoBehaviour {
 
     private IEnumerator Follow() {
         _stateWarrior = StateWarrior.Follow;
-        float minDistanceToPoint = 0.5f;
-
+        //float minDistanceToPoint = 0.5f;
         float distanceToPlyer = (_thisTransform.position - _targetPlayer.position).sqrMagnitude;
-        
         animator.SetBool(stateRun, true);
-        
-        while (distanceToPlyer > minDistanceToPoint) {
+        while (distanceToPlyer > _attackRange) {
             Debug.DrawLine(_thisTransform.position, _targetPlayer.position, Color.red);
             _thisTransform.LookAt(_targetPlayer.position);
             _thisTransform.position = Vector3.MoveTowards(_thisTransform.position, _targetPlayer.position,
                 speed * Time.deltaTime);
             distanceToPlyer = (_thisTransform.position - _targetPlayer.position).sqrMagnitude;
-            
             float distanceToStartPosition = (_thisTransform.position - _startPosition).sqrMagnitude;
-            
             if (_followRange < distanceToStartPosition) {
                 StartCoroutine(Patrol());
                 yield break;
             }
-                
             yield return null;
         }
-
         StartCoroutine(Attack());
     }
-    
-    
     
     private IEnumerator Attack(){
         _stateWarrior = StateWarrior.Attack;
         float difference;
         float minDifference = 1.0f;
+        Vector3 direction;
+        Quaternion rotation;
         Vector3 positionPlayer = _targetPlayer.position + _targetPlayer.forward * prediction;
        
         animator.SetBool(stateRun, false);
-
         do {
-            Vector3 direction = _targetPlayer.position - _thisTransform.position;
-            Quaternion rotation = Quaternion.LookRotation(direction);
-            _thisTransform.rotation = Quaternion.Lerp(_thisTransform.rotation, rotation, speedRotation * Time.deltaTime);
+            direction = _targetPlayer.position - _thisTransform.position;
+            rotation = Quaternion.LookRotation(direction);
+            _thisTransform.rotation =
+                Quaternion.Lerp(_thisTransform.rotation, rotation, speedRotation * Time.deltaTime);
             difference = Mathf.Abs(_thisTransform.rotation.eulerAngles.y - rotation.eulerAngles.y);
             yield return null;
-        }  while (difference > minDifference);
-        
+        } while (difference > minDifference);
+
         zoneDamage1.SetPosition(positionPlayer);
         zoneDamage1.Show();
         yield return new WaitForSeconds(delayAttack);
-        
+
         animator.SetTrigger(stateAttack);
-        
+
         yield return new WaitForSeconds(1.0f);
         zoneDamage1.Damage();
         yield return new WaitForSeconds(delayCast);
         zoneDamage1.Hide();
-        StartCoroutine(Patrol());
+
+        //StartCoroutine(Patrol());
+        StartCoroutine(Follow());
     }
   
     private bool CheckPlayer() {
@@ -204,11 +202,10 @@ public class Warrior1 : MonoBehaviour {
     private void OnDestroy() => Unsubscription();
 
 #if UNITY_EDITOR
-    private void OnDrawGizmos()
-    {
+    private void OnDrawGizmos() {
         Vector3 center = transform.position;
         Vector3 startPosition = center;
-        if (isPlay) startPosition = _startPosition; 
+        if (_isPlay) startPosition = _startPosition; 
         Vector3 offset = new Vector3(0, 0.1f, 0); 
         
         float radius = radiusPatrol;
@@ -219,28 +216,12 @@ public class Warrior1 : MonoBehaviour {
         DetectionZone(center, radiusDetection, Color.yellow);
     }
 
-    private void FollowZone(Vector3 center, float radius, Color color)
-    {
-        DrawWireDisk(center, radius, color);
-    }
+    private void FollowZone(Vector3 center, float radius, Color color) { DrawWireDisk(center, radius, color);}
+    private void PatrolZone(Vector3 center, float radius, Color color) { DrawWireDisk(center, radius, color);}
+    private void SkillZone(Vector3 center, float radius, Color color) { DrawWireDisk(center, radius, color);}
+    private void DetectionZone(Vector3 center, float radius, Color color) { DrawSector(center, radius, angleDetection, color);}
 
-    private void PatrolZone(Vector3 center, float radius, Color color)
-    {
-        DrawWireDisk(center, radius, color);
-    }
-
-    private void SkillZone(Vector3 center, float radius, Color color)
-    {
-        DrawWireDisk(center, radius, color);
-    }
-
-    private void DetectionZone(Vector3 center, float radius, Color color)
-    {
-        DrawSector(center, radius, angleDetection, color);
-    }
-
-    private void DrawWireDisk(Vector3 center, float radius, Color color)
-    {
+    private void DrawWireDisk(Vector3 center, float radius, Color color) {
         float gizmoDiskThickness = 0.01f;
         Color oldColor = Gizmos.color;
         Gizmos.color = color;
