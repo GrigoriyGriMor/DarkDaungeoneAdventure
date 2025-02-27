@@ -7,5 +7,7 @@ public class CameraMoveKeyboardController : AbstractInputController
     {
         if (Input.GetMouseButton(1))
             inputVector = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+        else
+            inputVector = Vector2.zero;
     }
 }

@@ -6,8 +6,11 @@ using UnityEngine;
 public abstract class AbstractInputController : MonoBehaviour
 {
     [SerializeField] private InputControllerType _controlType = InputControllerType.Empty;
+    public InputControllerType ControlType { get { return _controlType; } }
+
+    public GameObject _visual;
     public Action _action;
-    
+
     internal Vector2 inputVector;
 
     public virtual IEnumerator Start()
@@ -32,6 +35,17 @@ public abstract class AbstractInputController : MonoBehaviour
     {
         _action.Invoke();
     }
+
+    public GameObject GetVisual()
+    {
+        if (_visual == null)
+        {
+            Debug.LogError("Object with name " + name + " dont have visual");
+            return null;
+        }
+        else
+            return _visual;
+    }
 }
 
 [Serializable]
@@ -41,4 +55,7 @@ public enum InputControllerType
     Move,
     Jump,
     CameraMove,
+    HookBreak,
+    ItemGet,
+    ItemPut,
 }
