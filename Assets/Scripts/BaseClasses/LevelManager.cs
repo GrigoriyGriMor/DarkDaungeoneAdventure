@@ -1,6 +1,7 @@
 ﻿using Game.Core;
 using SupportSystems;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,8 +20,11 @@ namespace BaseClasses
         #region UI Managment
         private List<MonoBehaviour> _uiComponentStruct = new List<MonoBehaviour>();
 
-        private void Start()
+        private IEnumerator Start()
         {
+            while (!GameManager.Instance.InitReady)
+                yield return null;
+
             GameManager.Instance.GetManager<WindowsManager>().OpenWindow(_mainWindowAtScene);
         }
 

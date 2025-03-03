@@ -1,3 +1,5 @@
+using Game.Core;
+using System.Collections;
 using UnityEngine;
 
 namespace PlayerControllers
@@ -7,7 +9,7 @@ namespace PlayerControllers
         [SerializeField] private JoystickStickk _lookJoystick;
 
         [Header("min and max")]
-        [SerializeField] private float downAngle = 35f;
+        [SerializeField] private float downAngle = 35f; 
         [SerializeField] private float upAngle = -35f;
 
         [Header("Rotate Speed")]
@@ -17,12 +19,25 @@ namespace PlayerControllers
         private float yRotate = 0f;
         private float yRotateCamera = 0;
 
+        InputSystemManager _inputSystemMN;
+
+        public IEnumerator Start()
+        {
+            while (!GameManager.Instance)
+                yield return new WaitForFixedUpdate();
+
+            _inputSystemMN = GameManager.Instance.GetManager<InputSystemManager>();
+        }
+
         void Update()
         {
+            if (!moduleIsActive || _inputSystemMN == null)
+                return;
+
             yRotate = yRotateCamera;
 
-            float xAxis = _lookJoystick.HorizontalAxis() * horizontalSpeed * Time.deltaTime;
-            float yAxis = _lookJoystick.VerticalAxis() * verticalSpeed * Time.deltaTime;
+            float xAxis = _inputSystemMN.CameraMove().x * horizontalSpeed * Time.deltaTime;
+            float yAxis = _inputSystemMN.CameraMove().y * verticalSpeed * Time.deltaTime;
             yRotate -= yAxis;
             yRotate = Mathf.Clamp(yRotate, downAngle, upAngle);
 

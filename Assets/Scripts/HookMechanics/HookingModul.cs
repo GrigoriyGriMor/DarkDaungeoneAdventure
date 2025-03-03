@@ -1,4 +1,6 @@
+using Game.Core;
 using PlayerControllers;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,8 +12,7 @@ public class HookingModul : AbstractModul
     [SerializeField] private Transform _hookStartPoint;
     [SerializeField] private float springDamping = 80f;
 
-    [Header("")]
-    [SerializeField] private Button _breakHookBtn; 
+    private GameObject _breakHookBtnVisual; 
 
     private Rigidbody _hookConnectPoint;
     private HookObject _hookObj;
@@ -19,13 +20,27 @@ public class HookingModul : AbstractModul
 
     RaycastHit hit;
 
-    private void Start()
+    InputSystemManager _inputSystemMN;
+
+    private IEnumerator Start()
     {
+        while (!GameManager.Instance)
+            yield return new WaitForFixedUpdate();
+
+        _inputSystemMN = GameManager.Instance.GetManager<InputSystemManager>();
+
         _lineRenderer.positionCount = 0;
         connectLineDistance = 0;
 
-        _breakHookBtn.onClick.AddListener(BreakConnectWithPoint);
-        _breakHookBtn.gameObject.SetActive(false);
+        _inputSystemMN._hookAction += BreakConnectWithPoint;
+
+        while (_breakHookBtnVisual == null)
+        { 
+            _breakHookBtnVisual = _inputSystemMN.GetVisual(InputControllerType.HookBreak);
+            yield return null;
+        }
+        
+        _breakHookBtnVisual.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -84,7 +99,7 @@ public class HookingModul : AbstractModul
 
                 _playerController.IsHooking(true);
 
-                _breakHookBtn.gameObject.SetActive(true);
+                _breakHookBtnVisual.gameObject.SetActive(true);
             }
             else
             {
@@ -106,7 +121,7 @@ public class HookingModul : AbstractModul
         }
 
         _playerController.IsHooking(false);
-        _breakHookBtn.gameObject.SetActive(false);
+        _breakHookBtnVisual.gameObject.SetActive(false);
     }
 
     public override void SetModuleActivityType(bool _modulIsActive)

@@ -11,6 +11,8 @@ public class WindowsManager : AbstractManager
 
     private CurrentWindow _currentWindow = new CurrentWindow();
 
+    [SerializeField] private SupportClasses.WindowName _onFirstLoadWindow = SupportClasses.WindowName.MainMenuBasePanel;
+
     private IEnumerator Start()
     {
         while (!GameManager.Instance)
@@ -18,7 +20,7 @@ public class WindowsManager : AbstractManager
 
         _winConfig = GameManager.Instance.GetManager<ConfigManager>().GetConfiguration<WindowsConfig>();
 
-        OpenWindow(SupportClasses.WindowName.MainMenuBasePanel);
+        OpenWindow(_onFirstLoadWindow);
     }
 
     public async void OpenWindow(SupportClasses.WindowName winName, SupportClasses.WindowName parentWin = SupportClasses.WindowName.None, bool parentOpening = false)
