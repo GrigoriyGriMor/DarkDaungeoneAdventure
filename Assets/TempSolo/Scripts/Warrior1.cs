@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+
 public class Warrior1 : MonoBehaviour {
     [SerializeField] private ZoneDamage1 zoneDamage1;
     [SerializeField] private Animator animator;
@@ -25,6 +26,7 @@ public class Warrior1 : MonoBehaviour {
     [SerializeField] private float prediction = 0.0f;
     [SerializeField] private float speedRotation = 10.0f;
     [SerializeField] private float speed = 10;
+    [SerializeField] private SoundWarrior soundWarrior;
     
     private HealModule _healModulePlayer;
     private Transform _targetPlayer;
@@ -57,12 +59,14 @@ public class Warrior1 : MonoBehaviour {
         _thisTransform = transform;
         _startPosition = _thisTransform.position;
         Subscription();
+        soundWarrior.Initialize();
         StartCoroutine(Patrol());
     }
 
     private void OnDiedPlayer() => _diedPlayer = true;
 
     private IEnumerator Patrol() {
+        soundWarrior.PlayPatrol(_thisTransform.position);
         Vector3 point = Vector3.zero;
         _stateWarrior = StateWarrior.Patrol;
         float minDistanceToPoint = 0.1f;
@@ -109,8 +113,8 @@ public class Warrior1 : MonoBehaviour {
 
 
     private IEnumerator Follow() {
+        soundWarrior.PlayDetect(_thisTransform.position);
         _stateWarrior = StateWarrior.Follow;
-        //float minDistanceToPoint = 0.5f;
         float distanceToPlyer = (_thisTransform.position - _targetPlayer.position).sqrMagnitude;
         animator.SetBool(stateRun, true);
         while (distanceToPlyer > _attackRange) {
@@ -147,18 +151,18 @@ public class Warrior1 : MonoBehaviour {
             yield return null;
         } while (difference > minDifference);
 
+        soundWarrior.PlayStartAttack(_thisTransform.position);
         zoneDamage1.SetPosition(positionPlayer);
         zoneDamage1.Show();
         yield return new WaitForSeconds(delayAttack);
 
         animator.SetTrigger(stateAttack);
-
+        soundWarrior.PlayAttack(_thisTransform.position);
         yield return new WaitForSeconds(1.0f);
         zoneDamage1.Damage();
         yield return new WaitForSeconds(delayCast);
         zoneDamage1.Hide();
 
-        //StartCoroutine(Patrol());
         StartCoroutine(Follow());
     }
   
@@ -173,7 +177,11 @@ public class Warrior1 : MonoBehaviour {
         return _angleDeg < angleDetection;
     }
 
-    private void TakeDamage() => animator.SetTrigger(stateDamage);
+    private void TakeDamage() {
+        animator.SetTrigger(stateDamage);
+        soundWarrior.PlayDamage(_thisTransform.position);
+    }
+
     private void Dead() {
         StopAllCoroutines();
         StartCoroutine(DelayDead());
@@ -239,6 +247,7 @@ public class Warrior1 : MonoBehaviour {
     
 #endif
 }
+
 
 enum StateWarrior {
     Idle,
