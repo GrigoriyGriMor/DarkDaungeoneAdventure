@@ -6,7 +6,7 @@ public class InputSystemManager : AbstractManager
 {
     public Action _jumpAction;
     public Action _hookAction;
-    public Action _geItemAction;
+    public Action _getItemAction;
     public Action _putItemAction;
 
     private bool _flying;
@@ -38,7 +38,7 @@ public class InputSystemManager : AbstractManager
                 break;
             case InputControllerType.ItemGet:
                 _getItemController = controller;
-                _getItemController._action += _geItemAction;
+                _getItemController._action += _getItemAction;
                 break;
             case InputControllerType.ItemPut:
                 _putItemController = controller;
@@ -97,5 +97,8 @@ public class InputSystemManager : AbstractManager
     private void OnDisable()
     {
         _jumpController._action -= _jumpAction;
+        _hookBreakController._action -= _hookAction;
+        _getItemController._action -= _getItemAction;
+        _putItemController._action -= _putItemAction;
     }
 }

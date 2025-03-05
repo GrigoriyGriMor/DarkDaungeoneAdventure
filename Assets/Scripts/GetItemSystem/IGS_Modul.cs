@@ -1,29 +1,45 @@
+﻿using Game.Core;
 using PlayerControllers;
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class IGS_Modul : AbstractModul
 {
-    [SerializeField] private Button _getItemBtn;
-    [SerializeField] private Button _dropItemBtn;
-
     [SerializeField] private GameObject _cutch;
     [SerializeField] private Transform _itemInCutchPos;
 
     [Header("")]
     [SerializeField] private float dropItemForce = 50f;
 
+    private GameObject _getItemBtn;
+    private GameObject _dropItemBtn;
+
     private IGS_Item _itemCanBeGetting;
     private IGS_Item _itemInCutchGO;
 
-    private void Start()
+    InputSystemManager _inputSystemMN;
+
+    private IEnumerator Start()
     {
+        while (!GameManager.Instance)
+            yield return new WaitForFixedUpdate();
+
+        _inputSystemMN = GameManager.Instance.GetManager<InputSystemManager>();
+
+        while (_getItemBtn == null || _dropItemBtn == null)
+        {
+            _getItemBtn = _inputSystemMN.GetVisual(InputControllerType.ItemGet);
+            _dropItemBtn = _inputSystemMN.GetVisual(InputControllerType.ItemPut);
+            yield return null;
+        }
+
         _getItemBtn.gameObject.SetActive(false);
         _dropItemBtn.gameObject.SetActive(false);
 
-        _getItemBtn.onClick.AddListener(GetItem);
-        _dropItemBtn.onClick.AddListener(DropItem);
+        _inputSystemMN._getItemAction += GetItem;
+        _inputSystemMN._putItemAction += DropItem;
 
         _cutch.SetActive(false);
     }
