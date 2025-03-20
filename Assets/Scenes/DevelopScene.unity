@@ -254,7 +254,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4933676141925250464, guid: c9af860ab42f4bc49809d163c9646c3d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12.74547
+      value: 22.45
       objectReference: {fileID: 0}
     - target: {fileID: 4933676141925250464, guid: c9af860ab42f4bc49809d163c9646c3d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -262,7 +262,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4933676141925250464, guid: c9af860ab42f4bc49809d163c9646c3d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 27.700188
+      value: 12.46
       objectReference: {fileID: 0}
     - target: {fileID: 4933676141925250464, guid: c9af860ab42f4bc49809d163c9646c3d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -18081,7 +18081,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _triggerActiveParticle: {fileID: 745312472}
   _itemInCutchParticle: {fileID: 1832449117}
-  _moveSpeed: 3.5
+  _moveSpeed: 4.5
   _parableHight: 1.5
 --- !u!65 &1811961670
 BoxCollider:
@@ -19070,7 +19070,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _triggerActiveParticle: {fileID: 1888328772}
   _itemInCutchParticle: {fileID: 1836680453}
-  _moveSpeed: 3.5
+  _moveSpeed: 4.5
   _parableHight: 1.5
 --- !u!65 &2138978515
 BoxCollider:
@@ -19164,22 +19164,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 463850675819212568, guid: d0f0312cf96a3544295e7b2ab298e5fe, type: 3}
-      propertyPath: _breakHookBtn
-      value: 
-      objectReference: {fileID: 1538685272894939974}
     - target: {fileID: 1041916123382050806, guid: d0f0312cf96a3544295e7b2ab298e5fe, type: 3}
       propertyPath: _jumpBtn
       value: 
       objectReference: {fileID: 6767810386463203221}
-    - target: {fileID: 2792584502081192078, guid: d0f0312cf96a3544295e7b2ab298e5fe, type: 3}
-      propertyPath: _getItemBtn
-      value: 
-      objectReference: {fileID: 8487138233219450850}
-    - target: {fileID: 2792584502081192078, guid: d0f0312cf96a3544295e7b2ab298e5fe, type: 3}
-      propertyPath: _dropItemBtn
-      value: 
-      objectReference: {fileID: 7685261999893914031}
     - target: {fileID: 4927801770409157700, guid: d0f0312cf96a3544295e7b2ab298e5fe, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

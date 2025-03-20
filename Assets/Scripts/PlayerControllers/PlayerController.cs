@@ -20,6 +20,7 @@ namespace PlayerControllers
         [SerializeField] private HookingModul _hookingModul;
         [SerializeField] private IGS_Modul _igsModul;
         [SerializeField] private HealModule _healModule;
+        [SerializeField] private FlyModule _flyModule;
 
         [Header("Ground")]
         [SerializeField] private float _groundRayDistance = 0.25f;
@@ -57,6 +58,9 @@ namespace PlayerControllers
                             _healModule = _m;
                             _healModule._die.AddListener(PlayerDie);
                             break;
+                        case FlyModule _m:
+                            _flyModule = _m;
+                            break;
                         default:
                             Debug.LogError($"{modul.gameObject.name} - module is empty");
                             break;
@@ -64,7 +68,7 @@ namespace PlayerControllers
                 }
             }
 
-            _playerData = _characterData.GetPlayerData(); 
+            _playerData = _characterData.GetPlayerData();
 
             _lookModule?.Init(_playerData, this);
             _movementModul?.Init(_playerData, this);
@@ -72,6 +76,7 @@ namespace PlayerControllers
             _hookingModul?.Init(_playerData, this);
             _igsModul?.Init(_playerData, this);
             _healModule?.Init(_playerData, this);
+            _flyModule?.Init(_playerData, this);
 
             isGround = false;
         }
@@ -89,9 +94,15 @@ namespace PlayerControllers
             _hookingModul?.SetModuleActivityType(false);
             _igsModul?.SetModuleActivityType(false);
             _healModule?.SetModuleActivityType(false);
+            _flyModule?.SetModuleActivityType(false);
 
             _playerData.PlayerAnimator.SetTrigger("Die");
             _destroyModule.SwapObj();
+        }
+
+        public bool IsFly()
+        {
+            return _flyModule.IsFly;
         }
 
         public void IsHooking(bool hooking)

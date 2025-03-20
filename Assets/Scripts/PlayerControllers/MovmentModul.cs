@@ -41,7 +41,8 @@ namespace PlayerControllers
         {
             if (!moduleIsActive || _inputSystemMN == null) return;
   
-            Move();
+            if (!_playerController.IsFly()) 
+                Move();
         }
 
         private void Move()

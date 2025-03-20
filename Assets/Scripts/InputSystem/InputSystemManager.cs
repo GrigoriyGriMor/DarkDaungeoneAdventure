@@ -30,19 +30,19 @@ public class InputSystemManager : AbstractManager
                 break;
             case InputControllerType.Jump:
                 _jumpController = controller;
-                _jumpController._action += _jumpAction;
+                _jumpController._action += () => _jumpAction.Invoke();
                 break;
             case InputControllerType.HookBreak:
                 _hookBreakController = controller;
-                _hookBreakController._action += _hookAction;
+                _hookBreakController._action += () => _hookAction.Invoke();
                 break;
             case InputControllerType.ItemGet:
                 _getItemController = controller;
-                _getItemController._action += _getItemAction;
+                _getItemController._action += () => _getItemAction.Invoke();// Unity magic (why that not work how three action before?)
                 break;
             case InputControllerType.ItemPut:
                 _putItemController = controller;
-                _putItemController._action += _putItemAction;
+                _putItemController._action += () => _putItemAction.Invoke();// Unity magic (why that not work how three action before?)
                 break;
             default:
                 break;

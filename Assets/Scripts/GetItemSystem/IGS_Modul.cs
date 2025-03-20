@@ -1,9 +1,7 @@
 ﻿using Game.Core;
 using PlayerControllers;
-using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class IGS_Modul : AbstractModul
 {

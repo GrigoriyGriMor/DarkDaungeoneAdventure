@@ -218,6 +218,10 @@ PrefabInstance:
       propertyPath: _lookJoystick
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 4702371601298622462, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
+      propertyPath: _enegyDropCount
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 5732703761693933804, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
       propertyPath: _healBarController
       value: 
