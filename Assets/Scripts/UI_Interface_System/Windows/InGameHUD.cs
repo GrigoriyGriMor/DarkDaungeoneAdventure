@@ -1,4 +1,4 @@
-using Game.Core;
+﻿using Game.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +11,12 @@ public class InGameHUD : AbstractWindow
     public override void Init(SupportClasses.WindowName parentWin = SupportClasses.WindowName.None)
     {
         base.Init(parentWin);
+
+        if (_pauseBtn == null)
+        {
+            Debug.LogError("Pause Button не назначен в инспекторе!");
+            return;
+        }
 
         _pauseBtn.onClick.AddListener(() =>
         {

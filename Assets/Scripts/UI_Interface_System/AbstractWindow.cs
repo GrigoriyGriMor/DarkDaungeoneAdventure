@@ -1,4 +1,4 @@
-using Game.Core;
+﻿using Game.Core;
 using System.Collections;
 using System.Threading.Tasks;
 using TMPro;
@@ -59,10 +59,11 @@ public class AbstractWindow : MonoBehaviour
 
         gameObject.SetActive(false);
 
+        // Открываем родительское окно только после завершения анимации и скрытия текущего окна
         if (_parentWindow != SupportClasses.WindowName.None)
-            GameManager.Instance.GetManager<WindowsManager>().OpenWindow(_parentWindow, SupportClasses.WindowName.None, true);
-
-        Destroy(gameObject);
+        {
+            await GameManager.Instance.GetManager<WindowsManager>().OpenWindow(_parentWindow, SupportClasses.WindowName.None, true);
+        }
     }
 
     public virtual void HardClose()

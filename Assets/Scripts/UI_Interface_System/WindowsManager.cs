@@ -1,44 +1,71 @@
-using Config;
+﻿using Config;
 using Game.Core;
 using System;
-using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class WindowsManager : AbstractManager
 {
     private WindowsConfig _winConfig;
+    private Dictionary<SupportClasses.WindowName, AbstractWindow> _cachedWindows = new();
     [SerializeField] private RectTransform _canvas;
 
     private CurrentWindow _currentWindow = new CurrentWindow();
-
     [SerializeField] private SupportClasses.WindowName _onFirstLoadWindow = SupportClasses.WindowName.MainMenuBasePanel;
 
-    private IEnumerator Start()
+    private async void Start()
     {
         while (!GameManager.Instance)
-            yield return null;
+            await Task.Yield();
 
         _winConfig = GameManager.Instance.GetManager<ConfigManager>().GetConfiguration<WindowsConfig>();
 
-        OpenWindow(_onFirstLoadWindow);
+        await OpenWindow(_onFirstLoadWindow);
     }
 
-    public async void OpenWindow(SupportClasses.WindowName winName, SupportClasses.WindowName parentWin = SupportClasses.WindowName.None, bool parentOpening = false)
+    public async Task OpenWindow(SupportClasses.WindowName winName, SupportClasses.WindowName parentWin = SupportClasses.WindowName.None, bool parentOpening = false)
     {
         if (_currentWindow._window != null && !parentOpening)
             await _currentWindow._window.CloseWindow();
 
-        _currentWindow._window = Instantiate(_winConfig.GetWindowsData(winName).WinPrefab, _canvas).GetComponent<AbstractWindow>();
+        if (!_cachedWindows.TryGetValue(winName, out var window))
+        {
+            var winPrefab = _winConfig.GetWindowsData(winName)?.WinPrefab;
+            if (winPrefab == null)
+            {
+                Debug.LogError($"[WindowsManager] Префаб для окна {winName} не найден.");
+                return;
+            }
+
+            window = Instantiate(winPrefab, _canvas).GetComponent<AbstractWindow>();
+            if (window == null)
+            {
+                Debug.LogError($"[WindowsManager] Префаб {winName} не содержит компонент AbstractWindow.");
+                return;
+            }
+
+            _cachedWindows[winName] = window;
+        }
+
+        _currentWindow._window = window;
         _currentWindow._name = winName;
-        _currentWindow._window.Init(parentWin);
+        window.gameObject.SetActive(true);
+        window.Init(parentWin);
     }
 
     public AbstractWindow GetCurrentWindowIfType(SupportClasses.WindowName window)
-    { 
-        if (window == _currentWindow._name)
-            return _currentWindow._window;
-        else
-            return null;
+    {
+        return window == _currentWindow._name ? _currentWindow._window : null;
+    }
+
+    public void CloseAllWindows()
+    {
+        foreach (var window in _cachedWindows.Values)
+        {
+            if (window.gameObject.activeInHierarchy)
+                window.gameObject.SetActive(false);
+        }
     }
 }
 
