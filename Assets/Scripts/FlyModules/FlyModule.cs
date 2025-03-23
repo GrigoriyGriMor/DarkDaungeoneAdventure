@@ -1,96 +1,54 @@
-using Game.Core;
-using PlayerControllers;
-using System.Collections;
+﻿using PlayerControllers;
 using UnityEngine;
 
 public class FlyModule : AbstractModul
 {
     [SerializeField] private ParticleSystem _flyEffect;
-    public bool IsFly = false;
+    public bool IsFly { get; private set; }
 
-    [Header("")]
     [SerializeField] private float _maxMagicPool = 100f;
-    [SerializeField] private float _currentMagicPool = 0f;
-    [SerializeField] private float _enegyDropCount = 15f;
+    private float _currentMagicPool;
 
-    [Header("")]
-    [SerializeField] private float _moveSpeed = 7;
-    private float _mSpeed = 0;
+    [SerializeField] private float _moveSpeed = 7f;
 
-    InputSystemManager _inputSystemMN;
-
-    public IEnumerator Start()
+    protected override void SubscribeToInput()
     {
-        while (!GameManager.Instance)
-            yield return new WaitForFixedUpdate();
+        //if (_inputSystemMN != null)
+        //    _inputSystemMN._jumpAction += ToggleFly;
+    }
 
-        _inputSystemMN = GameManager.Instance.GetManager<InputSystemManager>();
-
-        _mSpeed = _moveSpeed;
+    private void Start()
+    {
         _currentMagicPool = _maxMagicPool;
     }
 
     private void Update()
     {
-        if (!moduleIsActive || _inputSystemMN == null) return;
+        if (!moduleIsActive)
+            return;
 
-        if (IsFly)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
+            if (_currentMagicPool < _maxMagicPool / 2)
+                ToggleFly(false);
+            else
+                ToggleFly(!IsFly);
+        }
+
+        if (IsFly && _currentMagicPool > 0)
+        {
+            _currentMagicPool -= 15f * Time.deltaTime;
             Fly();
-            _currentMagicPool -= _enegyDropCount * Time.deltaTime;
 
             if (_currentMagicPool <= 0)
             {
                 _currentMagicPool = 0;
-                IsFly = false;
-                FlyEnable(IsFly);
-            }
+                ToggleFly(false);
+            }    
         }
-        else
-        {
-            if (_currentMagicPool < _maxMagicPool)
-                _currentMagicPool += _enegyDropCount * Time.deltaTime;
-            else
-                _currentMagicPool = _maxMagicPool;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (_currentMagicPool < 50)
-                IsFly = false;
-            else
-                IsFly = !IsFly;
-
-            FlyEnable(IsFly);
-        }
-    }
-
-    private void FlyEnable(bool fly)
-    {
-        _flyEffect.gameObject.SetActive(fly);
-        _playerData.PlayerVisual.gameObject.SetActive(!fly);
-
-        if (fly)
-        {
-            _playerData.PlayerBase.localEulerAngles = _playerData.CameraControlBlock.eulerAngles;
-            _playerData.CameraControlBlock.localEulerAngles = 
-                new Vector3(_playerData.CameraControlBlock.localEulerAngles.x, 0, _playerData.CameraControlBlock.localEulerAngles.z);
-        }
-        else
-            _playerData.PlayerBase.localEulerAngles = new Vector3(0, _playerData.PlayerBase.localEulerAngles.y, 0);
-    }
-
-    public override void SetModuleActivityType(bool _modulIsActive)
-    {
-        base.SetModuleActivityType(_modulIsActive);
-
-        if (!_modulIsActive)
-            ResetAllParam();
-    }
-
-    void ResetAllParam()
-    {
-        _mSpeed = 0;
+        else 
+            if (!IsFly && _currentMagicPool < _maxMagicPool)
+                _currentMagicPool += 5f * Time.deltaTime;
     }
 
     void Fly()
@@ -98,12 +56,32 @@ public class FlyModule : AbstractModul
         float horizMove = _inputSystemMN.Move().x;
         float verticalMove = _inputSystemMN.Move().y;
 
-        _playerData.PlayerBase.localEulerAngles =
-            new Vector3(_playerData.PlayerBase.localEulerAngles.x + (-verticalMove * 0.25f), _playerData.PlayerBase.localEulerAngles.y + horizMove * 0.25f, _playerData.PlayerBase.localEulerAngles.z);
+        _playerData.PlayerBase.eulerAngles =
+            new Vector3(_playerData.PlayerBase.eulerAngles.x + (-verticalMove * (_moveSpeed * 0.25f)), _playerData.PlayerBase.eulerAngles.y + horizMove * (_moveSpeed * 0.25f), _playerData.PlayerBase.eulerAngles.z);
 
-        Vector3 vec = new Vector3(0, 0, _mSpeed);
+        Vector3 vec = new Vector3(0, 0, _moveSpeed);
         _playerData.PlayerRB.linearVelocity = transform.TransformVector(vec);
 
         _playerData.PlayerMainCamera.StartMove();
+    }
+
+    private void ToggleFly(bool state = false)
+    {
+        IsFly = state;
+        _flyEffect.gameObject.SetActive(IsFly);
+        _playerData.PlayerVisual.gameObject.SetActive(!IsFly);
+
+        if (!state)
+        {
+            _playerData.PlayerBase.eulerAngles = new Vector3(0, _playerData.PlayerBase.eulerAngles.y, 0);
+        }
+        else
+            _playerData.PlayerBase.eulerAngles = _playerData.CameraControlBlock.eulerAngles;
+    }
+
+    private void OnDestroy()
+    {
+        //if (_inputSystemMN != null)
+        //    _inputSystemMN._jumpAction -= ToggleFly;
     }
 }

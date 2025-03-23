@@ -1249,7 +1249,7 @@ MonoBehaviour:
   _waitAnimTime: 1000
   _isNotification: 0
   _blockedClose: 0
-  _pauseBtn: {fileID: 7221981249609853235}
+  _pauseBtn: {fileID: 8751434358136824759}
   _healBarController: {fileID: 4266856490685087910}
 --- !u!114 &1159220455610020821
 MonoBehaviour:

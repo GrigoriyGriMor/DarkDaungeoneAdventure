@@ -1,5 +1,4 @@
-﻿using Game.Core;
-using PlayerControllers;
+﻿using PlayerControllers;
 using System.Collections;
 using UnityEngine;
 
@@ -17,14 +16,10 @@ public class IGS_Modul : AbstractModul
     private IGS_Item _itemCanBeGetting;
     private IGS_Item _itemInCutchGO;
 
-    InputSystemManager _inputSystemMN;
-
     private IEnumerator Start()
     {
-        while (!GameManager.Instance)
+        while (!_inputSystemMN)
             yield return new WaitForFixedUpdate();
-
-        _inputSystemMN = GameManager.Instance.GetManager<InputSystemManager>();
 
         while (_getItemBtn == null || _dropItemBtn == null)
         {

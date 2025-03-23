@@ -1,8 +1,6 @@
-using Game.Core;
 using PlayerControllers;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class HookingModul : AbstractModul
 {
@@ -20,14 +18,10 @@ public class HookingModul : AbstractModul
 
     RaycastHit hit;
 
-    InputSystemManager _inputSystemMN;
-
     private IEnumerator Start()
     {
-        while (!GameManager.Instance)
+        while (!_inputSystemMN)
             yield return new WaitForFixedUpdate();
-
-        _inputSystemMN = GameManager.Instance.GetManager<InputSystemManager>();
 
         _lineRenderer.positionCount = 0;
         connectLineDistance = 0;

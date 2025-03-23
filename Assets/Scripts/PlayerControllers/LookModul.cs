@@ -1,4 +1,3 @@
-using Game.Core;
 using System.Collections;
 using UnityEngine;
 
@@ -19,14 +18,10 @@ namespace PlayerControllers
         private float yRotate = 0f;
         private float yRotateCamera = 0;
 
-        InputSystemManager _inputSystemMN;
-
         public IEnumerator Start()
         {
-            while (!GameManager.Instance)
+            while (!_inputSystemMN)
                 yield return new WaitForFixedUpdate();
-
-            _inputSystemMN = GameManager.Instance.GetManager<InputSystemManager>();
         }
 
         void Update()

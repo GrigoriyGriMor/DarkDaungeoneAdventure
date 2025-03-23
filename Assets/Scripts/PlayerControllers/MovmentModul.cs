@@ -1,6 +1,4 @@
-using Game.Core;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,14 +22,10 @@ namespace PlayerControllers
         float _currentAngle = 0;
         float _currentSpeed = 0;
 
-        InputSystemManager _inputSystemMN;
-
         public IEnumerator Start()
         {
-            while (!GameManager.Instance)
+            while (!_inputSystemMN)
                 yield return new WaitForFixedUpdate();
-
-            _inputSystemMN = GameManager.Instance.GetManager<InputSystemManager>();
 
             _inputSystemMN._jumpAction += Jump;
             _mSpeed = _moveSpeed;

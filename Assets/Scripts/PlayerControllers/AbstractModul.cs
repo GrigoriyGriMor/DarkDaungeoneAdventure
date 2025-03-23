@@ -1,12 +1,14 @@
+using Game.Core;
 using UnityEngine;
 
 namespace PlayerControllers
 {
     public abstract class AbstractModul : MonoBehaviour
     {
-        internal PlayerData _playerData;
-        internal PlayerController _playerController;
-        internal bool _isGround;
+        protected PlayerData _playerData;
+        protected PlayerController _playerController;
+        protected InputSystemManager _inputSystemMN;
+        protected bool _isGround;
 
         private AbstractModul _abstractMethod;
         internal AbstractModul AbstractMethod { get => _abstractMethod; }
@@ -25,8 +27,14 @@ namespace PlayerControllers
 
             moduleIsActive = true;
 
+            _inputSystemMN = GameManager.Instance.GetManager<InputSystemManager>();
+
             _player.IsGround += OnGround;
+
+            SubscribeToInput();
         }
+
+        protected virtual void SubscribeToInput() { }
 
         void OnGround(bool isGroundSet)
         {
@@ -36,6 +44,9 @@ namespace PlayerControllers
         public virtual void SetModuleActivityType(bool _modulIsActive)
         {
             moduleIsActive = _modulIsActive;
+
+            if (!_modulIsActive)
+                StopAllCoroutines();
         }
     }
 }
