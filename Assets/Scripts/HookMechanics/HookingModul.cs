@@ -26,7 +26,7 @@ public class HookingModul : AbstractModul
         _lineRenderer.positionCount = 0;
         connectLineDistance = 0;
 
-        _inputSystemMN._hookAction += BreakConnectWithPoint;
+        _inputSystemMN._hookAction._clickAction += BreakConnectWithPoint;
 
         while (_breakHookBtnVisual == null)
         { 
@@ -123,5 +123,10 @@ public class HookingModul : AbstractModul
         base.SetModuleActivityType(_modulIsActive);
 
         BreakConnectWithPoint();
+    }
+
+    private void OnDisable()
+    {
+        _inputSystemMN._hookAction._clickAction -= BreakConnectWithPoint;
     }
 }

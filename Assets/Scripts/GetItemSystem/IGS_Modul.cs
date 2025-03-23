@@ -31,8 +31,8 @@ public class IGS_Modul : AbstractModul
         _getItemBtn.gameObject.SetActive(false);
         _dropItemBtn.gameObject.SetActive(false);
 
-        _inputSystemMN._getItemAction += GetItem;
-        _inputSystemMN._putItemAction += DropItem;
+        _inputSystemMN._getItemAction._clickAction += GetItem;
+        _inputSystemMN._putItemAction._clickAction += DropItem;
 
         _cutch.SetActive(false);
     }
@@ -101,5 +101,11 @@ public class IGS_Modul : AbstractModul
     public override void SetModuleActivityType(bool _modulIsActive)
     {
         base.SetModuleActivityType(_modulIsActive);
+    }
+
+    private void OnDisable()
+    {
+        _inputSystemMN._getItemAction._clickAction -= GetItem;
+        _inputSystemMN._putItemAction._clickAction -= DropItem;
     }
 }

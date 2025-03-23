@@ -4,12 +4,10 @@ using UnityEngine;
 
 public class InputSystemManager : AbstractManager
 {
-    public Action _jumpAction;
-    public Action _hookAction;
-    public Action _getItemAction;
-    public Action _putItemAction;
-
-    private bool _flying;
+    public ActionBlock _jumpAction;
+    public ActionBlock _hookAction;
+    public ActionBlock _getItemAction;
+    public ActionBlock _putItemAction;
 
     private AbstractInputController _moveController = null;
     private AbstractInputController _cameraMoveController = null;
@@ -30,19 +28,21 @@ public class InputSystemManager : AbstractManager
                 break;
             case InputControllerType.Jump:
                 _jumpController = controller;
-                _jumpController._action += () => _jumpAction.Invoke();
+                _jumpController._action += () => _jumpAction._clickAction.Invoke();
+                _jumpController._holdAction += () => _jumpAction._holdStartAction.Invoke();
+                _jumpController._releaseHoldAction += () => _jumpAction._holdEndAction.Invoke();
                 break;
             case InputControllerType.HookBreak:
                 _hookBreakController = controller;
-                _hookBreakController._action += () => _hookAction.Invoke();
+                _hookBreakController._action += () => _hookAction._clickAction.Invoke();
                 break;
             case InputControllerType.ItemGet:
                 _getItemController = controller;
-                _getItemController._action += () => _getItemAction.Invoke();// Unity magic (why that not work how three action before?)
+                _getItemController._action += () => _getItemAction._clickAction.Invoke();// Unity magic (why that not work how three action before?)
                 break;
             case InputControllerType.ItemPut:
                 _putItemController = controller;
-                _putItemController._action += () => _putItemAction.Invoke();// Unity magic (why that not work how three action before?)
+                _putItemController._action += () => _putItemAction._clickAction.Invoke();// Unity magic (why that not work how three action before?)
                 break;
             default:
                 break;
@@ -96,9 +96,18 @@ public class InputSystemManager : AbstractManager
 
     private void OnDisable()
     {
-        _jumpController._action -= _jumpAction;
-        _hookBreakController._action -= _hookAction;
-        _getItemController._action -= _getItemAction;
-        _putItemController._action -= _putItemAction;
+        _jumpController._action -= _jumpAction._clickAction;
+        _hookBreakController._action -= _hookAction._clickAction;
+        _getItemController._action -= _getItemAction._clickAction;
+        _putItemController._action -= _putItemAction._clickAction;
     }
+}
+
+[Serializable]
+public class ActionBlock
+{
+    public Action _clickAction;
+
+    public Action _holdStartAction;
+    public Action _holdEndAction;
 }

@@ -27,7 +27,7 @@ namespace PlayerControllers
             while (!_inputSystemMN)
                 yield return new WaitForFixedUpdate();
 
-            _inputSystemMN._jumpAction += Jump;
+            _inputSystemMN._jumpAction._clickAction += Jump;
             _mSpeed = _moveSpeed;
         }
 
@@ -116,7 +116,7 @@ namespace PlayerControllers
 
         private void OnDisable()
         {
-            _inputSystemMN._jumpAction -= Jump;
+            _inputSystemMN._jumpAction._clickAction -= Jump;
         }
     }
 }

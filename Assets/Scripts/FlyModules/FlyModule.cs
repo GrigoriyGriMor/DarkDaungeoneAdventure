@@ -10,11 +10,15 @@ public class FlyModule : AbstractModul
     private float _currentMagicPool;
 
     [SerializeField] private float _moveSpeed = 7f;
+    [SerializeField] private float _rotateMultiplay = 0.15f;
 
     protected override void SubscribeToInput()
     {
-        //if (_inputSystemMN != null)
-        //    _inputSystemMN._jumpAction += ToggleFly;
+        if (_inputSystemMN == null)
+            return;
+            
+        _inputSystemMN._jumpAction._holdStartAction += () => ToggleFly(true);
+        _inputSystemMN._jumpAction._holdEndAction += () => ToggleFly(false);
     }
 
     private void Start()
@@ -57,7 +61,7 @@ public class FlyModule : AbstractModul
         float verticalMove = _inputSystemMN.Move().y;
 
         _playerData.PlayerBase.eulerAngles =
-            new Vector3(_playerData.PlayerBase.eulerAngles.x + (-verticalMove * (_moveSpeed * 0.25f)), _playerData.PlayerBase.eulerAngles.y + horizMove * (_moveSpeed * 0.25f), _playerData.PlayerBase.eulerAngles.z);
+            new Vector3(_playerData.PlayerBase.eulerAngles.x + (-verticalMove * (_moveSpeed * _rotateMultiplay)), _playerData.PlayerBase.eulerAngles.y + horizMove * (_moveSpeed * _rotateMultiplay), _playerData.PlayerBase.eulerAngles.z);
 
         Vector3 vec = new Vector3(0, 0, _moveSpeed);
         _playerData.PlayerRB.linearVelocity = transform.TransformVector(vec);

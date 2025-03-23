@@ -1,4 +1,4 @@
-using Game.Core;
+﻿using Game.Core;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -10,6 +10,9 @@ public abstract class AbstractInputController : MonoBehaviour
 
     public GameObject _visual;
     public Action _action;
+
+    public Action _holdAction;
+    public Action _releaseHoldAction;
 
     internal Vector2 inputVector;
 
@@ -34,6 +37,14 @@ public abstract class AbstractInputController : MonoBehaviour
     public virtual void ActivateAction()
     {
         _action.Invoke();
+    }
+
+    public virtual void HoldingAction(bool holdStart)
+    { 
+        if (holdStart)
+            _holdAction.Invoke();
+        else
+            _releaseHoldAction.Invoke();
     }
 
     public GameObject GetVisual()
