@@ -35,7 +35,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - Player
   - PostProcessing_1
   m_SortingLayers:
   - name: Default
@@ -50,3 +50,4 @@ TagManager:
   - Light Layer 5
   - Light Layer 6
   - Light Layer 7
+  - Player Light

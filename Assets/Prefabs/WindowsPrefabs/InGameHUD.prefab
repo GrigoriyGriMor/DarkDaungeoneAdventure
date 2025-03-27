@@ -398,6 +398,7 @@ MonoBehaviour:
   _controlType: 5
   _visual: {fileID: 1819211322282616613}
   _button: {fileID: 7087193360252989785}
+  holdThreshold: 0.5
 --- !u!1 &1853457688923447041
 GameObject:
   m_ObjectHideFlags: 0
@@ -1263,7 +1264,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99c199ae935ccb840acf11bed244e1d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _controlType: 2
+  _controlType: 1
   _touchControllers:
   - {fileID: 1532843156548573282}
   - {fileID: 2093041368311718706}
@@ -1546,6 +1547,7 @@ MonoBehaviour:
   _controlType: 2
   _visual: {fileID: 0}
   _button: {fileID: 5022259961587284202}
+  holdThreshold: 0.5
 --- !u!1 &4176487462016193130
 GameObject:
   m_ObjectHideFlags: 0
@@ -2660,6 +2662,7 @@ MonoBehaviour:
   _controlType: 6
   _visual: {fileID: 6771153624990324796}
   _button: {fileID: 7221981249609853235}
+  holdThreshold: 0.5
 --- !u!1 &6989706373650911646
 GameObject:
   m_ObjectHideFlags: 0
@@ -3457,6 +3460,7 @@ MonoBehaviour:
   _controlType: 4
   _visual: {fileID: 8487757596776887418}
   _button: {fileID: 6457001728867784774}
+  holdThreshold: 0.5
 --- !u!1 &8971853466494267391
 GameObject:
   m_ObjectHideFlags: 0

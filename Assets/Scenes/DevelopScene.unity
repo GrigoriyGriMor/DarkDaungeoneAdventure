@@ -19168,10 +19168,6 @@ PrefabInstance:
       propertyPath: _jumpBtn
       value: 
       objectReference: {fileID: 6767810386463203221}
-    - target: {fileID: 3444710199297153482, guid: d0f0312cf96a3544295e7b2ab298e5fe, type: 3}
-      propertyPath: _rotateMultiplay
-      value: 0.05
-      objectReference: {fileID: 0}
     - target: {fileID: 4927801770409157700, guid: d0f0312cf96a3544295e7b2ab298e5fe, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
