@@ -3249,7 +3249,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _controlType: 3
   _visual: {fileID: 0}
-  _rotateSpeed: 5
+  _rotateSpeed: 7
 --- !u!114 &7448852563483582027
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3279,6 +3279,7 @@ MonoBehaviour:
   _controlType: 2
   _visual: {fileID: 0}
   _keyCode: 32
+  holdThreshold: 0.5
 --- !u!114 &3073871630712997094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3294,6 +3295,7 @@ MonoBehaviour:
   _controlType: 4
   _visual: {fileID: 6989706373650911646}
   _keyCode: 113
+  holdThreshold: 0.5
 --- !u!114 &1238946107627467313
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3309,6 +3311,7 @@ MonoBehaviour:
   _controlType: 5
   _visual: {fileID: 4597853758420222491}
   _keyCode: 101
+  holdThreshold: 0.5
 --- !u!114 &2043734006397087340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3324,6 +3327,7 @@ MonoBehaviour:
   _controlType: 6
   _visual: {fileID: 9074707219131958844}
   _keyCode: 103
+  holdThreshold: 0.5
 --- !u!1 &8487757596776887418
 GameObject:
   m_ObjectHideFlags: 0

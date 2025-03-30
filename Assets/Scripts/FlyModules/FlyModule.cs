@@ -12,6 +12,17 @@ public class FlyModule : AbstractModul
     [SerializeField] private float _moveSpeed = 7f;
     [SerializeField] private float _rotateMultiplay = 0.15f;
 
+    private Vector3 _startDirection = Vector3.zero;
+
+    [Header("Effect and Sound")]
+    [SerializeField] private AudioClip _flySound;
+    [SerializeField] private AudioClip _fallSound;
+
+    [SerializeField] private ParticleSystem _startFlyParticle;
+    [SerializeField] private ParticleSystem _endFlyParticle;
+
+    [SerializeField] private string _endFlyAnimTriggerName = "EndFly";
+
     protected override void SubscribeToInput()
     {
         if (_inputSystemMN == null)
@@ -24,20 +35,18 @@ public class FlyModule : AbstractModul
     private void Start()
     {
         _currentMagicPool = _maxMagicPool;
+        //_playerController.OnCollisionEnterAction += BreakFly;
     }
 
-    private void Update()
+    void BreakFly(Collision collider)
+    {
+        ToggleFly(false);        
+    }
+
+    private void FixedUpdate()
     {
         if (!moduleIsActive)
             return;
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (_currentMagicPool < _maxMagicPool / 2)
-                ToggleFly(false);
-            else
-                ToggleFly(!IsFly);
-        }
 
         if (IsFly && _currentMagicPool > 0)
         {
@@ -57,35 +66,39 @@ public class FlyModule : AbstractModul
 
     void Fly()
     {
-        float horizMove = _inputSystemMN.Move().x;
-        float verticalMove = _inputSystemMN.Move().y;
+        // Обновляем направление движения (изменяем _currentDirection на основе ввода)
+        _startDirection += _playerData.PlayerBase.TransformDirection(Vector3.zero);
+        _startDirection.Normalize();
 
-        _playerData.PlayerBase.eulerAngles =
-            new Vector3(_playerData.PlayerBase.eulerAngles.x + (-verticalMove * (_moveSpeed * _rotateMultiplay)), _playerData.PlayerBase.eulerAngles.y + horizMove * (_moveSpeed * _rotateMultiplay), _playerData.PlayerBase.eulerAngles.z);
+        // Рассчитываем финальный вектор движения
+        Vector3 globalMovement = _startDirection * _moveSpeed;
 
-        Vector3 vec = new Vector3(0, 0, _moveSpeed);
-        _playerData.PlayerRB.linearVelocity = transform.TransformVector(vec);
+        // Устанавливаем скорость Rigidbody
+        _playerData.PlayerRB.linearVelocity = globalMovement;
 
+        // Двигаем камеру
         _playerData.PlayerMainCamera.StartMove();
     }
 
     private void ToggleFly(bool state = false)
     {
+        if (IsFly == state)
+            return;
+
         IsFly = state;
         _flyEffect.gameObject.SetActive(IsFly);
         _playerData.PlayerVisual.gameObject.SetActive(!IsFly);
 
-        if (!state)
+        if (state)
         {
-            _playerData.PlayerBase.eulerAngles = new Vector3(0, _playerData.PlayerBase.eulerAngles.y, 0);
+            _startDirection = _playerData.CameraControlBlock.forward.normalized; // Берем начальное направление из камеры
+
+            if (_startFlyParticle) _startFlyParticle.Play();
         }
         else
-            _playerData.PlayerBase.eulerAngles = _playerData.CameraControlBlock.eulerAngles;
-    }
-
-    private void OnDestroy()
-    {
-        //if (_inputSystemMN != null)
-        //    _inputSystemMN._jumpAction -= ToggleFly;
+        {
+            if (_endFlyParticle) _endFlyParticle.Play();
+            _playerData.PlayerAnimator.SetTrigger(_endFlyAnimTriggerName);
+        }
     }
 }
