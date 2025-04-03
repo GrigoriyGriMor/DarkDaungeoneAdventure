@@ -26,7 +26,7 @@ namespace PlayerControllers
 
         void Update()
         {
-            if (!moduleIsActive || _inputSystemMN == null)
+            if (!moduleIsActive || _inputSystemMN == null || _playerDead)
                 return;
 
             yRotate = yRotateCamera;

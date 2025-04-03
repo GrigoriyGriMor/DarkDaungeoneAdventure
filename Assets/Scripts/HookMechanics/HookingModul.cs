@@ -39,7 +39,11 @@ public class HookingModul : AbstractModul
 
     private void Update()
     {
-        if (!moduleIsActive) return;
+        if (!moduleIsActive || _playerDead)
+        {
+            BreakConnectWithPoint();
+            return;
+        }
 
 #if UNITY_EDITOR
         if (Input.GetMouseButtonDown(0))

@@ -1,4 +1,5 @@
 ﻿using PlayerControllers;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class FlyModule : AbstractModul
@@ -7,6 +8,7 @@ public class FlyModule : AbstractModul
     public bool IsFly { get; private set; }
 
     [SerializeField] private float _maxMagicPool = 100f;
+    [SerializeField] private float _staminaGettingSpeed = 30f;
     private float _currentMagicPool;
 
     [SerializeField] private float _moveSpeed = 7f;
@@ -32,10 +34,15 @@ public class FlyModule : AbstractModul
         _inputSystemMN._jumpAction._holdEndAction += () => ToggleFly(false);
     }
 
-    private void Start()
+    public async override void Start()
     {
+        base.Start();
+
+        while (_playerController == null)
+            await Task.Delay(250);
+
         _currentMagicPool = _maxMagicPool;
-        //_playerController.OnCollisionEnterAction += BreakFly;
+        _playerController.OnCollisionEnterAction += BreakFly;
     }
 
     void BreakFly(Collision collider)
@@ -45,23 +52,16 @@ public class FlyModule : AbstractModul
 
     private void FixedUpdate()
     {
-        if (!moduleIsActive)
+        if (!moduleIsActive || _playerDead)
             return;
 
-        if (IsFly && _currentMagicPool > 0)
+        if (IsFly)
         {
-            _currentMagicPool -= 15f * Time.deltaTime;
-            Fly();
-
-            if (_currentMagicPool <= 0)
-            {
-                _currentMagicPool = 0;
+            if (_playerController.UseStamina(_staminaGettingSpeed * Time.deltaTime))
+                Fly();
+            else
                 ToggleFly(false);
-            }    
         }
-        else 
-            if (!IsFly && _currentMagicPool < _maxMagicPool)
-                _currentMagicPool += 5f * Time.deltaTime;
     }
 
     void Fly()
@@ -82,7 +82,7 @@ public class FlyModule : AbstractModul
 
     private void ToggleFly(bool state = false)
     {
-        if (IsFly == state)
+        if (IsFly == state || _playerDead || (state && !_playerController.StaminaCanBeUse()))
             return;
 
         IsFly = state;

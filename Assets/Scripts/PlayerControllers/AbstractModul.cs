@@ -15,7 +15,9 @@ namespace PlayerControllers
 
         internal bool moduleIsActive = false;
 
-        void Start()
+        internal bool _playerDead = false;
+
+        public virtual void Start()
         {
             _abstractMethod = this;
         }
@@ -47,6 +49,11 @@ namespace PlayerControllers
 
             if (!_modulIsActive)
                 StopAllCoroutines();
+        }
+
+        public virtual void OnPlayerDied()
+        {
+            _playerDead = true;
         }
     }
 }

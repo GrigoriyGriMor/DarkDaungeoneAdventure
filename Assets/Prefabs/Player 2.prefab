@@ -19422,6 +19422,54 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!1 &1986164138468390332
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 92263645019425531}
+  - component: {fileID: 5211878392438168334}
+  m_Layer: 0
+  m_Name: m_Stamina
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &92263645019425531
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1986164138468390332}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7626756844691339111}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5211878392438168334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1986164138468390332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e734d764be4ad98469685fc69da4e9d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maxStamina: 100
+  _staminaBarController: {fileID: 0}
+  _waitTimeForStaminaRegen: 1.5
+  _staminaRegenSpeed: 15
 --- !u!1 &2038468664124881220
 GameObject:
   m_ObjectHideFlags: 0
@@ -35631,10 +35679,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _flyEffect: {fileID: 5487790936496005247}
-  IsFly: 0
   _maxMagicPool: 100
-  _enegyDropCount: 5
+  _staminaGettingSpeed: 30
   _moveSpeed: 7
+  _rotateMultiplay: 0.15
+  _flySound: {fileID: 0}
+  _fallSound: {fileID: 0}
+  _startFlyParticle: {fileID: 0}
+  _endFlyParticle: {fileID: 0}
+  _endFlyAnimTriggerName: EndFly
 --- !u!1 &5274047975046913070
 GameObject:
   m_ObjectHideFlags: 0
@@ -55758,6 +55811,7 @@ Transform:
   - {fileID: 7781254767294632376}
   - {fileID: 1535845212842578200}
   - {fileID: 3421339070647494490}
+  - {fileID: 92263645019425531}
   - {fileID: 6818367024188528881}
   - {fileID: 5708605213547670244}
   m_Father: {fileID: 98171518580453738}
@@ -61302,6 +61356,7 @@ MonoBehaviour:
   _hookingModul: {fileID: 7558115605262954796}
   _igsModul: {fileID: 0}
   _healModule: {fileID: 0}
+  _staminaModule: {fileID: 0}
   _flyModule: {fileID: 0}
   _groundRayDistance: 0.1
   _destroyModule: {fileID: 4083518131493769922}
