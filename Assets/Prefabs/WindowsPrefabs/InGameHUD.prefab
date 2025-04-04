@@ -3836,6 +3836,7 @@ MonoBehaviour:
   _visual: {fileID: 0}
   _keyCode: 32
   holdThreshold: 0.5
+  _useActionAtDown: 1
 --- !u!114 &3073871630712997094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3852,6 +3853,7 @@ MonoBehaviour:
   _visual: {fileID: 6989706373650911646}
   _keyCode: 113
   holdThreshold: 0.5
+  _useActionAtDown: 0
 --- !u!114 &1238946107627467313
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3868,6 +3870,7 @@ MonoBehaviour:
   _visual: {fileID: 4597853758420222491}
   _keyCode: 101
   holdThreshold: 0.5
+  _useActionAtDown: 0
 --- !u!114 &2043734006397087340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3884,6 +3887,7 @@ MonoBehaviour:
   _visual: {fileID: 9074707219131958844}
   _keyCode: 103
   holdThreshold: 0.5
+  _useActionAtDown: 0
 --- !u!1 &8487757596776887418
 GameObject:
   m_ObjectHideFlags: 0
