@@ -86,7 +86,7 @@ public class IGS_Modul : AbstractModul
 
     void GetItem()
     {
-        if (_itemCanBeGetting == null) return;
+        if (_itemCanBeGetting == null || _playerDead) return;
 
         _itemInCutchGO = _itemCanBeGetting;
         _itemCanBeGetting = null;

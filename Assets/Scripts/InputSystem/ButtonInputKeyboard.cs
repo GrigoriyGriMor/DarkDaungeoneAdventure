@@ -4,43 +4,47 @@ public class ButtonInputKeyboard : AbstractInputController
 {
     [SerializeField] private KeyCode _keyCode = KeyCode.Space;
     [SerializeField] private float holdThreshold = 0.5f;
+
     protected bool isHolding = false;
     protected float holdTime = 0f;
     protected bool holdEventTriggered = false;
 
-    private void Update()
+    protected virtual void Update()
     {
-        if (Input.GetKeyDown(_keyCode))
+        if (isHolding)
+        {
+            holdTime += Time.deltaTime;
+            if (!holdEventTriggered && holdTime >= holdThreshold)
             {
-                isHolding = true;
-                holdTime = 0f;
-                holdEventTriggered = false;
-
+                holdEventTriggered = true;
+                HoldingAction(true); // Запуск события удержания
             }
-        else
-            if(Input.GetKeyUp(_keyCode))
-            {
-                if (isHolding && holdTime < holdThreshold)
-            ActivateAction();
-        else 
-        if (holdEventTriggered)
-            HoldingAction(false);
+        }
 
-        // Сброс состояния
+        if (Input.GetKeyDown(_keyCode))
+        {
+            isHolding = true;
+            holdTime = 0f;
+            holdEventTriggered = false;
+        }
+
+        if (Input.GetKeyUp(_keyCode))
+        {
+            if (isHolding && holdTime < holdThreshold)
+                ActivateAction(); // Короткий клик
+            else 
+                if (holdEventTriggered)
+                    HoldingAction(false); // Завершение удержания
+
+            ResetState();
+        }
+    }
+
+    private void ResetState()
+    {
         isHolding = false;
         holdTime = 0f;
         holdEventTriggered = false;
-            }
-            
-        if (isHolding && !holdEventTriggered)
-        {
-            holdTime += Time.deltaTime;
-            if (holdTime >= holdThreshold)
-            {
-                holdEventTriggered = true;
-                HoldingAction(true);
-            }
-        }
     }
 }
 
