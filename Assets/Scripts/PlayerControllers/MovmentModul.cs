@@ -33,9 +33,9 @@ namespace PlayerControllers
 
         private void FixedUpdate()
         {
-            if (!moduleIsActive || _inputSystemMN == null) return;
+            if (!moduleIsActive || _inputSystemMN == null || _playerDead) return;
   
-            if (!_playerController.IsFly()) 
+            if (!_playerController.IsFly() || _isGround) 
                 Move();
         }
 
@@ -86,7 +86,7 @@ namespace PlayerControllers
 
         void Jump()
         {
-            if (!_isGround || !moduleIsActive) return;
+            if (!_isGround || !moduleIsActive || _playerDead) return;
 
             _playerData.PlayerRB.AddForce(_playerData.PlayerRB.transform.up * _jumpForce, ForceMode.Impulse);
             _playerData.PlayerAnimator.SetTrigger("Jump");

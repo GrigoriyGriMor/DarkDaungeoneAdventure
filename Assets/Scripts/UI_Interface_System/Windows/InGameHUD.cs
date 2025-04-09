@@ -8,6 +8,9 @@ public class InGameHUD : AbstractWindow
     [SerializeField] private HealBarController _healBarController;
     public HealBarController HealBarController => _healBarController;
 
+    [SerializeField] private StaminaBarController _staminaBarController;
+    public StaminaBarController StaminaBarController => _staminaBarController;
+
     public override void Init(SupportClasses.WindowName parentWin = SupportClasses.WindowName.None)
     {
         base.Init(parentWin);

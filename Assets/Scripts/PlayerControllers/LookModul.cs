@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.Cinemachine;
 using UnityEngine;
 
 namespace PlayerControllers
@@ -7,7 +6,6 @@ namespace PlayerControllers
     public class LookModul : AbstractModul
     {
         [SerializeField] private JoystickStickk _lookJoystick;
-        [SerializeField] private CinemachineOrbitalFollow orbitalFollow;
 
         [Header("min and max")]
         [SerializeField] private float downAngle = 35f; 
@@ -28,24 +26,18 @@ namespace PlayerControllers
 
         void Update()
         {
-           //return;
-            if (!moduleIsActive || _inputSystemMN == null)
+            if (!moduleIsActive || _inputSystemMN == null || _playerDead)
                 return;
 
-             //yRotate = yRotateCamera;
-             yRotate = orbitalFollow.VerticalAxis.Value;
-            
+            yRotate = yRotateCamera;
+
             float xAxis = _inputSystemMN.CameraMove().x * horizontalSpeed * Time.deltaTime;
             float yAxis = _inputSystemMN.CameraMove().y * verticalSpeed * Time.deltaTime;
             yRotate -= yAxis;
             yRotate = Mathf.Clamp(yRotate, downAngle, upAngle);
-            //
-            //_playerData.CameraControlBlock.transform.localRotation = Quaternion.Euler(yRotate, _playerData.CameraControlBlock.transform.localEulerAngles.y + xAxis, _playerData.CameraControlBlock.transform.localEulerAngles.z);
-            //yRotateCamera = yRotate;
-            // Debug.Log("xAxis " + xAxis);
-            // Debug.Log("yAxis " + yAxis);
-            orbitalFollow.HorizontalAxis.Value = xAxis;
-            orbitalFollow.VerticalAxis.Value = yRotate;
+
+            _playerData.CameraControlBlock.transform.localRotation = Quaternion.Euler(yRotate, _playerData.CameraControlBlock.transform.localEulerAngles.y + xAxis, _playerData.CameraControlBlock.transform.localEulerAngles.z);
+            yRotateCamera = yRotate;
         }
 
         public override void SetModuleActivityType(bool _modulIsActive)

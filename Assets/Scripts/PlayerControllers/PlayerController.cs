@@ -1,5 +1,6 @@
 using Base;
 using System;
+using UnityEditor;
 using UnityEngine;
 
 namespace PlayerControllers
@@ -20,6 +21,7 @@ namespace PlayerControllers
         [SerializeField] private HookingModul _hookingModul;
         [SerializeField] private IGS_Modul _igsModul;
         [SerializeField] private HealModule _healModule;
+        [SerializeField] private StaminaModule _staminaModule;
         [SerializeField] private FlyModule _flyModule;
 
         [Header("Ground")]
@@ -58,6 +60,9 @@ namespace PlayerControllers
                             _healModule = _m;
                             _healModule._die.AddListener(PlayerDie);
                             break;
+                        case StaminaModule _m:
+                            _staminaModule = _m;
+                            break;
                         case FlyModule _m:
                             _flyModule = _m;
                             break;
@@ -76,6 +81,7 @@ namespace PlayerControllers
             _hookingModul?.Init(_playerData, this);
             _igsModul?.Init(_playerData, this);
             _healModule?.Init(_playerData, this);
+            _staminaModule?.Init(_playerData, this);
             _flyModule?.Init(_playerData, this);
 
             isGround = false;
@@ -88,13 +94,14 @@ namespace PlayerControllers
 
         private void PlayerDie()
         {
-            _lookModule?.SetModuleActivityType(false);
-            _movementModul?.SetModuleActivityType(false);
-            _playerSoundModul?.SetModuleActivityType(false);
-            _hookingModul?.SetModuleActivityType(false);
-            _igsModul?.SetModuleActivityType(false);
-            _healModule?.SetModuleActivityType(false);
-            _flyModule?.SetModuleActivityType(false);
+            _lookModule?.OnPlayerDied();
+            _movementModul?.OnPlayerDied();
+            _playerSoundModul?.OnPlayerDied();
+            _hookingModul?.OnPlayerDied();
+            _igsModul?.OnPlayerDied();
+            _healModule?.OnPlayerDied();
+            _staminaModule?.OnPlayerDied();
+            _flyModule?.OnPlayerDied();
 
             _playerData.PlayerAnimator.SetTrigger("Die");
             _destroyModule.SwapObj();
@@ -108,6 +115,22 @@ namespace PlayerControllers
         public void IsHooking(bool hooking)
         { 
             _movementModul?.IsHooking(hooking);
+        }
+
+        public bool StaminaCanBeUse()
+        {
+            if (_staminaModule != null)
+                return _staminaModule.MinStaminaLevelReady;
+            else
+                return true;
+        }
+
+        public bool UseStamina(float gettingStamina)
+        {
+            if (_staminaModule == null)
+                return true;
+
+            return _staminaModule.UseStamina(gettingStamina);
         }
 
         void GroundControll()
