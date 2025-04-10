@@ -4,6 +4,7 @@ public class ButtonInputKeyboard : AbstractInputController
 {
     [SerializeField] private KeyCode _keyCode = KeyCode.Space;
     [SerializeField] private float holdThreshold = 0.5f;
+    [SerializeField] private bool _useActionAtDown = false;
 
     protected bool isHolding = false;
     protected float holdTime = 0f;
@@ -23,6 +24,8 @@ public class ButtonInputKeyboard : AbstractInputController
 
         if (Input.GetKeyDown(_keyCode))
         {
+            if (_useActionAtDown) ActivateAction(); // Короткий клик
+
             isHolding = true;
             holdTime = 0f;
             holdEventTriggered = false;
@@ -31,12 +34,15 @@ public class ButtonInputKeyboard : AbstractInputController
         if (Input.GetKeyUp(_keyCode))
         {
             if (isHolding && holdTime < holdThreshold)
-                ActivateAction(); // Короткий клик
+	    {
+		if (!_useActionAtDown)
+		    ActivateAction();
+	    }
             else 
                 if (holdEventTriggered)
                     HoldingAction(false); // Завершение удержания
 
-            ResetState();
+	    ResetState();
         }
     }
 
