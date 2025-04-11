@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 
 public class Warrior1 : MonoBehaviour {
+    public static event Action<Transform> deadEvent;
+    
     [SerializeField] private ZoneDamage1 zoneDamage1;
     [SerializeField] private Animator animator;
     [SerializeField] private HealthWarrior healthWarrior;
@@ -188,6 +191,7 @@ public class Warrior1 : MonoBehaviour {
     }
 
     private IEnumerator DelayDead() {
+        deadEvent?.Invoke(transform);
         _stateWarrior = StateWarrior.Dead;
         animator.SetBool(stateRun, false);
         animator.SetTrigger(stateDead);
