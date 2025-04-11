@@ -54,29 +54,36 @@ namespace PlayerControllers
                 _currentSpeed = Mathf.Lerp(_currentSpeed, 0, _blendMovementSpeed);
                 _playerData.PlayerAnimator.SetFloat("Move", _currentSpeed);
 
-                _playerData.PlayerMainCamera.StopMove();
+                //solo
+                //_playerData.PlayerMainCamera.StopMove();
 
                 if (_playerData.PlayerAnimator.GetFloat("Move") < 0.01f)
                     _playerData.PlayerRB.linearVelocity = new Vector3(0, _playerData.PlayerRB.linearVelocity.y, 0);
 
                 return;
             }
-
-            _playerData.PlayerBase.localEulerAngles =
-                new Vector3(_playerData.PlayerBase.localEulerAngles.x, _playerData.CameraControlBlock.eulerAngles.y, _playerData.PlayerBase.localEulerAngles.z);
-            _playerData.CameraControlBlock.localEulerAngles =
-                new Vector3(_playerData.CameraControlBlock.localEulerAngles.x, 0, _playerData.CameraControlBlock.localEulerAngles.z);
-
-            float angle = Mathf.Atan2(horizMove, verticalMove) * Mathf.Rad2Deg;
-
-            _currentAngle = Mathf.Lerp(_currentAngle, angle, _blendRotateSpeed);
+            
+            Vector3 currentPosition = _playerData.PlayerBase.localPosition;
+            Vector3 cameraForward =  _playerData.CameraControlBlock.forward;
+            Vector3 cameraRight =  _playerData.CameraControlBlock.right;
+            
+            cameraForward.y = 0;
+            cameraRight.y = 0;
+            cameraForward.Normalize();
+            cameraRight.Normalize();
+            
+            Vector3 moveDirection = cameraForward * verticalMove + cameraRight * horizMove;
+            Debug.DrawRay(currentPosition, moveDirection, Color.green,0.2f);
+            
+            float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg;
+            _currentAngle = Mathf.Lerp(_currentAngle, targetAngle, _blendRotateSpeed);
             _playerData.PlayerVisual.transform.localRotation = Quaternion.Euler(0, _currentAngle, 0);
-
             _currentSpeed = Mathf.Lerp(_currentSpeed, _mSpeed, _blendMovementSpeed);
-            Vector3 vec = new Vector3(horizMove * _currentSpeed, _playerData.PlayerRB.linearVelocity.y, verticalMove * _currentSpeed);
+            Vector3 vec = new Vector3(moveDirection.x * _currentSpeed, _playerData.PlayerRB.linearVelocity.y, moveDirection.z * _currentSpeed);
             _playerData.PlayerRB.linearVelocity = transform.TransformVector(vec);
 
-            _playerData.PlayerMainCamera.StartMove();
+            //solo
+            // _playerData.PlayerMainCamera.StartMove();
 
             if (!_playerData.PlayerAnimator.GetBool("Run"))
                 _playerData.PlayerAnimator.SetBool("Run", true);

@@ -1444,7 +1444,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99c199ae935ccb840acf11bed244e1d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _controlType: 1
+  _controlType: 2
   _touchControllers:
   - {fileID: 1532843156548573282}
   - {fileID: 2093041368311718706}
