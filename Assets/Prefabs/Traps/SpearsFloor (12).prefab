@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 6836642189788205784}
   - component: {fileID: 1009901766507455941}
   - component: {fileID: 685365333583346521}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: SpearsFloor (12)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

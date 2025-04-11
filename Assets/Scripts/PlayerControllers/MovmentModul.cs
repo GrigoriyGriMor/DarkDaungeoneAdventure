@@ -35,7 +35,7 @@ namespace PlayerControllers
         {
             if (!moduleIsActive || _inputSystemMN == null || _playerDead) return;
   
-            if (!_playerController.IsFly() || _isGround) 
+            if (!_playerController.IsFly() && _isGround) 
                 Move();
         }
 
