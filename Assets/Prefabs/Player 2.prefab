@@ -66392,6 +66392,61 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3831572911031467778}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5810566538634490686
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8815190244971884392}
+  - component: {fileID: 8519667620137430657}
+  m_Layer: 0
+  m_Name: m_Attack
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8815190244971884392
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5810566538634490686}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7626756844691339111}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8519667620137430657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5810566538634490686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b6741aba53b5674a810585cd869b711, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _detectionRadius: 5
+  _detectionAngle: 90
+  _enemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  _attackRange: 2
+  _jumpAttackRange: 4
+  _jumpAttackSpeed: 10
+  _rotationSpeed: 10
+  _baseDamage: 20
+  _comboMultiplier: 1.5
 --- !u!1 &5833485763054445878
 GameObject:
   m_ObjectHideFlags: 0
@@ -91101,6 +91156,7 @@ Transform:
   - {fileID: 92263645019425531}
   - {fileID: 6818367024188528881}
   - {fileID: 5708605213547670244}
+  - {fileID: 8815190244971884392}
   m_Father: {fileID: 98171518580453738}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7054203405809267941
@@ -106627,6 +106683,7 @@ MonoBehaviour:
   _healModule: {fileID: 0}
   _staminaModule: {fileID: 0}
   _flyModule: {fileID: 0}
+  _attackModule: {fileID: 0}
   _groundRayDistance: 0.1
   _destroyModule: {fileID: 4083518131493769922}
 --- !u!114 &7959987302723018169

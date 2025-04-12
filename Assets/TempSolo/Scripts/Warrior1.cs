@@ -2,34 +2,40 @@ using System;
 using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using AttackSystem;
 
-
-public class Warrior1 : MonoBehaviour {
+public class Warrior1 : EnemyBase
+{
     public static event Action<Transform> deadEvent;
     
+    [Header("Components")]
     [SerializeField] private ZoneDamage1 zoneDamage1;
     [SerializeField] private Animator animator;
     [SerializeField] private HealthWarrior healthWarrior;
-    [Space]
+    [SerializeField] private SoundWarrior soundWarrior;
+    
+    [Header("Animation States")]
     [SerializeField] private string stateRun = "Run";
     [SerializeField] private string stateAttack = "Attack";
     [SerializeField] private string stateDamage = "Damage";
     [SerializeField] private string stateDead = "Die";
-    [Space]
+    
+    [Header("Detection Settings")]
     [SerializeField] private float radiusSkill = 10.0f;    
     [SerializeField] private float radiusPatrol = 20.0f; 
-    [SerializeField] private float radiusFollow = 25;
-    [SerializeField] private float radiusDetection = 22;
+    [SerializeField] private float radiusFollow = 25f;
+    [SerializeField] private float radiusDetection = 22f;
     [SerializeField] private int angleDetection = 45;
-    [Space]
+    
+    [Header("Timing Settings")]
     [SerializeField] private float delayCast = 1.0f;
     [SerializeField] private float delayAttack = 2.0f;
     [SerializeField] private float delayDead = 4.0f;
-    [Space]
+    
+    [Header("Movement Settings")]
     [SerializeField] private float prediction = 0.0f;
     [SerializeField] private float speedRotation = 10.0f;
-    [SerializeField] private float speed = 10;
-    [SerializeField] private SoundWarrior soundWarrior;
+    [SerializeField] private float speed = 10f;
     
     private HealModule _healModulePlayer;
     private Transform _targetPlayer;
@@ -47,7 +53,11 @@ public class Warrior1 : MonoBehaviour {
     private float _angleDeg;
     private bool _diedPlayer = false;
     
+    private float _currentHeal;
+    private float _maxHeal;
+
     private IEnumerator Start() {
+        _currentHeal = _maxHeal;
         _isPlay = true;
         while (_healModulePlayer == null) {
             _healModulePlayer = FindAnyObjectByType(typeof(HealModule)) as HealModule;
@@ -77,8 +87,8 @@ public class Warrior1 : MonoBehaviour {
         
         while (true) {
             if (CheckPlayer()) {
-                StartCoroutine(Follow());
-                yield break;
+                yield return StartCoroutine(Follow());
+                continue;
             }
             
             point = GetPointFollow();
@@ -92,14 +102,13 @@ public class Warrior1 : MonoBehaviour {
                 distance = (_thisTransform.position - point).sqrMagnitude;
                 
                 if (CheckPlayer()) {
-                    StartCoroutine(Follow());
-                    yield break;
+                    yield return StartCoroutine(Follow());
+                    continue;
                 }
                 
                 yield return null;
             }
             yield return new WaitForSeconds(0.1f);
-            
         }
     }
 
@@ -114,7 +123,6 @@ public class Warrior1 : MonoBehaviour {
         return pointFollow;
     }
 
-
     private IEnumerator Follow() {
         soundWarrior.PlayDetect(_thisTransform.position);
         _stateWarrior = StateWarrior.Follow;
@@ -128,12 +136,11 @@ public class Warrior1 : MonoBehaviour {
             distanceToPlyer = (_thisTransform.position - _targetPlayer.position).sqrMagnitude;
             float distanceToStartPosition = (_thisTransform.position - _startPosition).sqrMagnitude;
             if (_followRange < distanceToStartPosition) {
-                StartCoroutine(Patrol());
                 yield break;
             }
             yield return null;
         }
-        StartCoroutine(Attack());
+        yield return StartCoroutine(Attack());
     }
     
     private IEnumerator Attack(){
@@ -166,7 +173,7 @@ public class Warrior1 : MonoBehaviour {
         yield return new WaitForSeconds(delayCast);
         zoneDamage1.Hide();
 
-        StartCoroutine(Follow());
+        yield return StartCoroutine(Follow());
     }
   
     private bool CheckPlayer() {
@@ -180,12 +187,17 @@ public class Warrior1 : MonoBehaviour {
         return _angleDeg < angleDetection;
     }
 
-    private void TakeDamage() {
+    public override void TakeDamage(float damage)
+    {
+        if (!_isAlive) return;
+
+        base.TakeDamage(damage);
         animator.SetTrigger(stateDamage);
         soundWarrior.PlayDamage(_thisTransform.position);
     }
 
-    private void Dead() {
+    protected override void Die()
+    {
         StopAllCoroutines();
         StartCoroutine(DelayDead());
     }
@@ -200,15 +212,14 @@ public class Warrior1 : MonoBehaviour {
         gameObject.SetActive(false);
     } 
 
-
     private void Subscription() {
         healthWarrior.DamageEvent += TakeDamage;
-        healthWarrior.DeathEvent += Dead;
+        healthWarrior.DeathEvent += Die;
     }
     
     private void Unsubscription() {
         healthWarrior.DamageEvent -= TakeDamage;
-        healthWarrior.DeathEvent -= Dead;
+        healthWarrior.DeathEvent -= Die;
     }
 
     private void OnDestroy() => Unsubscription();
@@ -222,16 +233,11 @@ public class Warrior1 : MonoBehaviour {
         
         float radius = radiusPatrol;
         
-        FollowZone(startPosition + offset, radiusFollow, Color.blue);
-        PatrolZone(startPosition + offset, radius, Color.green);
-        SkillZone(center, radiusSkill, Color.red);
-        DetectionZone(center, radiusDetection, Color.yellow);
+        DrawWireDisk(startPosition + offset, radiusFollow, _followZoneColor);
+        DrawWireDisk(startPosition + offset, radius, _patrolZoneColor);
+        DrawWireDisk(center, radiusSkill, _attackZoneColor);
+        DrawSector(center, radiusDetection, angleDetection, _detectionZoneColor);
     }
-
-    private void FollowZone(Vector3 center, float radius, Color color) { DrawWireDisk(center, radius, color);}
-    private void PatrolZone(Vector3 center, float radius, Color color) { DrawWireDisk(center, radius, color);}
-    private void SkillZone(Vector3 center, float radius, Color color) { DrawWireDisk(center, radius, color);}
-    private void DetectionZone(Vector3 center, float radius, Color color) { DrawSector(center, radius, angleDetection, color);}
 
     private void DrawWireDisk(Vector3 center, float radius, Color color) {
         float gizmoDiskThickness = 0.01f;
@@ -248,10 +254,8 @@ public class Warrior1 : MonoBehaviour {
         UnityEditor.Handles.color = color;
         UnityEditor.Handles.DrawSolidArc(transform.position, transform.up, transform.forward, angle , radius);
     }
-    
 #endif
 }
-
 
 enum StateWarrior {
     Idle,

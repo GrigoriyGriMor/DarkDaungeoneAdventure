@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyBase : MonoBehaviour
+public class EnemyAIBase : MonoBehaviour
 {
     //public SupportClass.gameState UDPState = SupportClass.gameState.test;
     private uint warrior_ID;

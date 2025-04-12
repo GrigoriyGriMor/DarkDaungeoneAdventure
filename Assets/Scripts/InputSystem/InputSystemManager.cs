@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class InputSystemManager : AbstractManager
 {
-    public ActionBlock _jumpAction;
-    public ActionBlock _hookAction;
-    public ActionBlock _getItemAction;
-    public ActionBlock _putItemAction;
+    public ActionBlock _jumpAction = new ActionBlock();
+    public ActionBlock _hookAction = new ActionBlock();
+    public ActionBlock _getItemAction = new ActionBlock();
+    public ActionBlock _putItemAction = new ActionBlock();
+    public ActionBlock _attackAction = new ActionBlock();
 
     private AbstractInputController _moveController = null;
     private AbstractInputController _cameraMoveController = null;
@@ -15,9 +16,12 @@ public class InputSystemManager : AbstractManager
     private AbstractInputController _hookBreakController = null;
     private AbstractInputController _getItemController = null;
     private AbstractInputController _putItemController = null;
+    private AbstractInputController _attackController = null;
 
     public void RegisterController(AbstractInputController controller, InputControllerType controlType)
     {
+        if (controller == null) return;
+
         switch (controlType)
         {
             case InputControllerType.Move:
@@ -43,6 +47,11 @@ public class InputSystemManager : AbstractManager
             case InputControllerType.ItemPut:
                 _putItemController = controller;
                 _putItemController._action += () => _putItemAction._clickAction.Invoke();// Unity magic (why that not work how three action before?)
+                break;
+            case InputControllerType.Attack:
+                _attackController = controller;
+                if (_attackAction != null && _attackAction._clickAction != null)
+                    _attackController._action += _attackAction._clickAction;
                 break;
             default:
                 break;

@@ -16,7 +16,7 @@ public enum StateEnemy
     followAfterRetreat
 }
 
-public class EnemyController_Distance : EnemyBase
+public class EnemyController_Distance : EnemyAIBase
 {
     [Header(" Name bota")]
     [SerializeField]
@@ -943,12 +943,12 @@ public class EnemyController_Distance : EnemyBase
 
         foreach (var hitCollider in hitColliders)
         {
-            if (hitCollider.GetComponent<EnemyBase>())
+            if (hitCollider.GetComponent<EnemyAIBase>())
             {
-                if (!hitCollider.GetComponent<EnemyBase>().currentTargetPlayer)
+                if (!hitCollider.GetComponent<EnemyAIBase>().currentTargetPlayer)
                 {
                     // Debug.Log(" Help me!!!");
-                    hitCollider.GetComponent<EnemyBase>().currentTargetPlayer = currentTargetPlayer;
+                    hitCollider.GetComponent<EnemyAIBase>().currentTargetPlayer = currentTargetPlayer;
                 }
             }
         }

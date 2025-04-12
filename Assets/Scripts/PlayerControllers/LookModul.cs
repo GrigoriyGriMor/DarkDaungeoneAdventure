@@ -17,6 +17,7 @@ namespace PlayerControllers
 
         private float yRotate = 0f;
         private float yRotateCamera = 0;
+        private bool isCameraBlocked = false;
 
         public IEnumerator Start()
         {
@@ -26,7 +27,7 @@ namespace PlayerControllers
 
         void Update()
         {
-            if (!moduleIsActive || _inputSystemMN == null || _playerDead)
+            if (!moduleIsActive || _inputSystemMN == null || _playerDead || isCameraBlocked)
                 return;
 
             yRotate = yRotateCamera;
@@ -38,6 +39,11 @@ namespace PlayerControllers
 
             _playerData.CameraControlBlock.transform.localRotation = Quaternion.Euler(yRotate, _playerData.CameraControlBlock.transform.localEulerAngles.y + xAxis, _playerData.CameraControlBlock.transform.localEulerAngles.z);
             yRotateCamera = yRotate;
+        }
+
+        public void SetCameraBlocked(bool blocked)
+        {
+            isCameraBlocked = blocked;
         }
 
         public override void SetModuleActivityType(bool _modulIsActive)

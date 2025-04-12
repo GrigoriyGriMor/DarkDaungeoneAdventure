@@ -22,6 +22,9 @@ namespace PlayerControllers
         float _currentAngle = 0;
         float _currentSpeed = 0;
 
+        private bool _isMovementBlocked;
+        private Vector2 _alternativeInput;
+
         public IEnumerator Start()
         {
             while (!_inputSystemMN)
@@ -41,9 +44,20 @@ namespace PlayerControllers
 
         private void Move()
         {
-            float horizMove = _inputSystemMN.Move().x;
-            float verticalMove = _inputSystemMN.Move().y;
+            float horizMove = 0;
+            float verticalMove = 0;
 
+            if (!_isMovementBlocked)
+            {
+                horizMove = _inputSystemMN.Move().x;
+                verticalMove = _inputSystemMN.Move().y;
+            }
+            else
+            {
+                horizMove = _alternativeInput.x;
+                verticalMove = _alternativeInput.y;
+            }
+            
             if (horizMove == 0.0f && verticalMove == 0.0f)
             {
                 if (_playerData.PlayerAnimator.GetBool("Run"))
@@ -117,6 +131,17 @@ namespace PlayerControllers
         private void OnDisable()
         {
             _inputSystemMN._jumpAction._clickAction -= Jump;
+        }
+
+        public void SetMovementBlocked(bool blocked)
+        {
+            _isMovementBlocked = blocked;
+        }
+
+        public void SetMovementInput(Vector2 input)
+        {
+            if (!moduleIsActive || _inputSystemMN == null || _playerDead) return;
+            _alternativeInput = input;
         }
     }
 }

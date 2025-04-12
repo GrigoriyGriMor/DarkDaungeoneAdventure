@@ -7,13 +7,14 @@ public class HealthWarrior : MonoBehaviour {
     [SerializeField] private Collider colliderObject;
     [SerializeField] private float healthMax = 100;
     [SerializeField] private float health = 0;
-    public event Action DamageEvent, DeathEvent;
+    public event Action<float> DamageEvent;
+    public event Action DeathEvent;
 
     private void Awake() { health = healthMax; }
     public void TakeDamage(float damage) {
         health -= damage;
         if (health > 0) {
-            DamageEvent?.Invoke();
+            DamageEvent?.Invoke(damage);
             return;
         }
         Dead();
