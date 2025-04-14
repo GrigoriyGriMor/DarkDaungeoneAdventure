@@ -6,6 +6,7 @@ using UnityEngine;
 public class IGS_ItemEndPos : MonoBehaviour
 {
     [SerializeField] private Transform _endTransform;
+    [SerializeField] private bool _useEndPointScale = false;
     [SerializeField] private float _moveSpeed = 25f;
 
     [SerializeField] private ParticleSystem _setItemParticle;
@@ -34,6 +35,9 @@ public class IGS_ItemEndPos : MonoBehaviour
             _obj.position = Vector3.Lerp(_obj.position, _endTransform.position, _moveSpeed * Time.deltaTime);
             _obj.rotation = Quaternion.Lerp(_obj.localRotation, _endTransform.rotation, _moveSpeed * Time.deltaTime);
 
+            if (_useEndPointScale)
+                _obj.transform.localScale = Vector3.Lerp(_endTransform.localScale, _endTransform.localScale, (_moveSpeed / 2) * Time.deltaTime); ;
+
             yield return new WaitForEndOfFrame();
         }
 
@@ -44,5 +48,7 @@ public class IGS_ItemEndPos : MonoBehaviour
 
         if (_setItemParticle != null)
             _setItemParticle.Play();
+
+        _obj.parent = _endTransform;
     }
 }
