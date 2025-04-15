@@ -53,10 +53,7 @@ namespace PlayerControllers
                 verticalMove = _inputSystemMN.Move().y;
             }
             else
-            {
-                horizMove = _alternativeInput.x;
-                verticalMove = _alternativeInput.y;
-            }
+                return;
             
             if (horizMove == 0.0f && verticalMove == 0.0f)
             {

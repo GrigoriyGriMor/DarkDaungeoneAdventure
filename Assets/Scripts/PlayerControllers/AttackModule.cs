@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+﻿using AttackSystem;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Base;
-using AttackSystem;
-using System.Collections;
+using UnityEngine;
 
 namespace PlayerControllers
 {
@@ -21,9 +20,19 @@ namespace PlayerControllers
         [SerializeField] private float _rotationSpeed = 10f;
         [SerializeField] private float _attackDamageDelay = 0.3f;
 
+        [Header("Move To Target")]
+        [SerializeField] private float _moveSpeed = 7f;
+        [SerializeField] private float _targetAngleThreshold = 5f;
+        [SerializeField] private float _cameraRotateSpeed = 5f;
+
         [Header("Damage Settings")]
         [SerializeField] private float _baseDamage = 20f;
         [SerializeField] private float _comboMultiplier = 1.5f;
+
+        [Header("Return Control To Player")]
+        [SerializeField] private float _blockControlTime = 0.2f;
+        [SerializeField] private float _minInputThreshold = 0.1f;
+        private bool _controlIsBlocked = false;
 
         private List<IAttackable> _potentialTargets = new();
         private IAttackable _currentTarget;
@@ -41,8 +50,22 @@ namespace PlayerControllers
 
         private void FixedUpdate()
         {
-            if (_inputSystemMN.Move() != Vector2.zero)
+            if (!_controlIsBlocked && _inputSystemMN.Move().magnitude > _minInputThreshold)
                 CancelAttack();
+        }
+
+        private IEnumerator BlockControlTimer()
+        {
+            _controlIsBlocked = true;
+
+            float timer = 0;
+            while (timer < _blockControlTime)
+            {
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            _controlIsBlocked = false;
         }
 
         private void StartAttackSequence()
@@ -53,18 +76,20 @@ namespace PlayerControllers
             if (_potentialTargets.Count == 0) return;
 
             _currentTarget = GetPriorityTarget();
-            Debug.LogError(_currentTarget.GetTransform().name);
             if (_currentTarget == null) return;
 
-            float distanceToTarget = Vector3.Distance(_playerData.PlayerRB.transform.position, _currentTarget.GetTransform().position);
+            StartCoroutine(BlockControlTimer());
+
+            float distanceToTarget = Vector3.Distance(_playerData.PlayerBase.position, _currentTarget.GetTransform().position);
 
             if (distanceToTarget <= _attackRange)
             {
-                StartCloseRangeAttack();
+                StartMelleAttack();
             }
-            else if (distanceToTarget <= _jumpAttackRange)
+            else 
+            if (distanceToTarget <= _jumpAttackRange)
             {
-                StartJumpAttack();
+                StartDashAttack();
             }
             else
             {
@@ -72,18 +97,18 @@ namespace PlayerControllers
             }
         }
 
+        #region Check Targets
         private void DetectTargets()
         {
             _potentialTargets.Clear();
-            Collider[] colliders = Physics.OverlapSphere(_playerData.PlayerRB.transform.position, _detectionRadius, _enemyLayer);
+            Collider[] colliders = Physics.OverlapSphere(_playerData.PlayerBase.position, _detectionRadius, _enemyLayer);
 
             foreach (var collider in colliders)
             {
-                var enemyBase = collider.GetComponent<AttackSystem.EnemyBase>();
-                if (enemyBase != null && enemyBase.IsAlive)
-                {
-                    _potentialTargets.Add((IAttackable)enemyBase);
-                }
+                EnemyBase enemyBase = collider.GetComponent<EnemyBase>();
+
+                if (enemyBase != null && enemyBase.IsAlive())
+                    _potentialTargets.Add(enemyBase);
             }
         }
 
@@ -91,11 +116,11 @@ namespace PlayerControllers
         {
             if (_potentialTargets.Count == 0) return null;
 
-            Vector3 playerForward = _playerData.PlayerRB.transform.forward;
+            Vector3 playerForward = _playerData.CameraControlBlock.transform.forward;
             var priorityTargets = _potentialTargets
                 .Where(target => 
                 {
-                    Vector3 directionToTarget = (target.GetTransform().position - _playerData.PlayerRB.transform.position).normalized;
+                    Vector3 directionToTarget = (target.GetTransform().position - _playerData.PlayerBase.position).normalized;
                     float angle = Vector3.Angle(playerForward, directionToTarget);
                     return angle <= _detectionAngle * 0.5f;
                 })
@@ -105,49 +130,98 @@ namespace PlayerControllers
             return priorityTargets.Count > 0 ? priorityTargets[0] : _potentialTargets.OrderBy(t => 
                 Vector3.Distance(_playerData.PlayerRB.transform.position, t.GetTransform().position)).First();
         }
+        #endregion
 
+        #region Attack Types
         private void MoveTowardsTarget()
         {
             if (_currentTarget == null) return;
             
             _isAttacking = true;
+            _playerController.SetMovementBlocked(true);
             StartCoroutine(MoveToTargetCoroutine());
+            StartCoroutine(MoveCameraToTargetCoroutine());
         }
 
-        private System.Collections.IEnumerator MoveToTargetCoroutine()
+        private IEnumerator MoveCameraToTargetCoroutine()
         {
-            while (_currentTarget != null && _currentTarget.IsAlive)
+            _playerController.SetCameraBlocked(true);
+
+            while (_currentTarget != null && _currentTarget.IsAlive())
             {
-                Vector3 directionToTarget = (_currentTarget.GetTransform().position - _playerData.PlayerRB.transform.position).normalized;
-                float distanceToTarget = Vector3.Distance(_playerData.PlayerRB.transform.position, _currentTarget.GetTransform().position);
+                Vector3 directionToTarget = (_currentTarget.GetTransform().position - _playerData.PlayerBase.position).normalized;
+                Vector3 currentForward = _playerData.CameraControlBlock.forward;
 
-                // Rotate towards target
+                float currentAngle = Vector3.Angle(currentForward, directionToTarget);
+
+                if (currentAngle <= _targetAngleThreshold)
+                {
+                    _playerController.SetCameraBlocked(false);
+                    yield break;
+                }
+
                 Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
-                _playerData.PlayerRB.transform.rotation = Quaternion.Lerp(
-                    _playerData.PlayerRB.transform.rotation,
-                    targetRotation,
-                    _rotationSpeed * Time.deltaTime
-                );
 
-                if (distanceToTarget <= _attackRange)
-                {
-                    StartCloseRangeAttack();
-                    yield break;
-                }
-                else if (distanceToTarget <= _jumpAttackRange)
-                {
-                    StartJumpAttack();
-                    yield break;
-                }
+                _playerData.CameraControlBlock.rotation = Quaternion.Lerp(
+                    _playerData.CameraControlBlock.rotation,
+                    targetRotation,
+                    _cameraRotateSpeed * Time.deltaTime
+                );
 
                 yield return null;
             }
 
+            _playerController.SetCameraBlocked(false);
+        }
+
+        private IEnumerator MoveToTargetCoroutine()
+        {
+            Vector3 directionToTarget = (_currentTarget.GetTransform().position - _playerData.PlayerBase.position).normalized;
+            _playerData.CameraControlBlock.rotation = Quaternion.LookRotation(directionToTarget);
+
+            if (!_playerData.PlayerAnimator.GetBool("Run"))
+                _playerData.PlayerAnimator.SetBool("Run", true);
+            _playerData.PlayerAnimator.SetFloat("Move", _moveSpeed);
+
+            while (_currentTarget != null && _currentTarget.IsAlive())
+            {
+                directionToTarget = (_currentTarget.GetTransform().position - _playerData.PlayerBase.position).normalized;
+                float distanceToTarget = Vector3.Distance(_playerData.PlayerBase.position, _currentTarget.GetTransform().position);
+
+                float targetYRotation = Mathf.Atan2(directionToTarget.x, directionToTarget.z) * Mathf.Rad2Deg;
+                Quaternion targetRotation = Quaternion.Euler(0, targetYRotation, 0);
+                
+                _playerData.PlayerVisual.rotation = Quaternion.Lerp(
+                    _playerData.PlayerVisual.rotation,
+                    targetRotation,
+                    _rotationSpeed * Time.deltaTime
+                );
+
+                Vector3 movementVelocity = new Vector3(directionToTarget.x * _moveSpeed, _playerData.PlayerRB.linearVelocity.y, directionToTarget.z * _moveSpeed);
+                _playerData.PlayerRB.linearVelocity = movementVelocity;
+
+                if (distanceToTarget <= _attackRange)
+                {
+                    StartMelleAttack();
+                    yield break;
+                }
+                //else if (distanceToTarget <= _jumpAttackRange)
+                //{
+                //    StartDashAttack();
+                //    yield break;
+                //}
+
+                yield return null;
+            }
+
+            _playerController.SetMovementBlocked(false);
             _isAttacking = false;
         }
 
-        private void StartCloseRangeAttack()
+        private void StartMelleAttack()
         {
+            return;
+
             if (Time.time - _lastAttackTime > COMBO_RESET_TIME)
             {
                 _comboCount = 0;
@@ -170,7 +244,7 @@ namespace PlayerControllers
 
             _lastAttackTime = Time.time;
             
-            if (!_currentTarget.IsAlive)
+            if (!_currentTarget.IsAlive())
             {
                 FindNextTarget();
             }
@@ -179,19 +253,21 @@ namespace PlayerControllers
         private IEnumerator DealDamageWithDelay(float damage)
         {
             yield return new WaitForSeconds(_attackDamageDelay);
-            if (_currentTarget != null && _currentTarget.IsAlive)
+            if (_currentTarget != null && _currentTarget.IsAlive())
             {
                 _currentTarget.TakeDamage(damage);
             }
         }
 
-        private void StartJumpAttack()
+        private void StartDashAttack()
         {
+            return;
+
             _isAttacking = true;
             StartCoroutine(JumpAttackCoroutine());
         }
 
-        private System.Collections.IEnumerator JumpAttackCoroutine()
+        private IEnumerator JumpAttackCoroutine()
         {
             if (_currentTarget == null)
             {
@@ -230,13 +306,14 @@ namespace PlayerControllers
 
             _currentTarget.TakeDamage(_baseDamage);
             
-            if (!_currentTarget.IsAlive)
+            if (!_currentTarget.IsAlive())
             {
                 FindNextTarget();
             }
 
             _isAttacking = false;
         }
+        #endregion
 
         private void FindNextTarget()
         {
@@ -247,11 +324,11 @@ namespace PlayerControllers
                 float distance = Vector3.Distance(_playerData.PlayerRB.transform.position, _currentTarget.GetTransform().position);
                 if (distance <= _attackRange)
                 {
-                    StartCloseRangeAttack();
+                    StartMelleAttack();
                 }
                 else if (distance <= _jumpAttackRange)
                 {
-                    StartJumpAttack();
+                    StartDashAttack();
                 }
             }
         }
@@ -267,29 +344,49 @@ namespace PlayerControllers
             }
         }
 
-        private void OnDrawGizmosSelected()
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
         {
-            if (!Application.isPlaying) return;
-            
+            if (_playerData == null || _playerData.CameraControlBlock == null) return;
+
             // Draw detection radius
             Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position, _detectionRadius);
+            Gizmos.DrawWireSphere(_playerData.PlayerBase.position, _detectionRadius);
 
             // Draw detection angle
-            Vector3 forward = transform.forward;
-            Vector3 right = Quaternion.Euler(0, _detectionAngle * 0.5f, 0) * forward;
-            Vector3 left = Quaternion.Euler(0, -_detectionAngle * 0.5f, 0) * forward;
+            Vector3 forward = _playerData.CameraControlBlock.transform.forward;
+            Vector3 right = _playerData.CameraControlBlock.transform.right;
+            Vector3 up = _playerData.CameraControlBlock.transform.up;
 
-            Gizmos.color = Color.red;
-            Gizmos.DrawRay(transform.position, right * _detectionRadius);
-            Gizmos.DrawRay(transform.position, left * _detectionRadius);
+            float halfAngle = _detectionAngle * 0.5f;
+            int segments = 20;
+            float angleStep = halfAngle / segments;
 
-            // Draw attack ranges
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(transform.position, _attackRange);
-            
+            // Draw left side of the angle
             Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(transform.position, _jumpAttackRange);
+            for (int i = 0; i < segments; i++)
+            {
+                float angle = -halfAngle + (angleStep * i);
+                Vector3 direction = Quaternion.AngleAxis(angle, up) * forward;
+                Vector3 endPoint1 = _playerData.PlayerBase.position + direction * _detectionRadius;
+                Gizmos.DrawLine(_playerData.PlayerBase.position, endPoint1);
+            }
+
+            // Draw right side of the angle
+            for (int i = 0; i < segments; i++)
+            {
+                float angle = angleStep * i;
+                Vector3 direction = Quaternion.AngleAxis(angle, up) * forward;
+                Vector3 endPoint2 = _playerData.PlayerBase.position + direction * _detectionRadius;
+                Gizmos.DrawLine(_playerData.PlayerBase.position, endPoint2);
+            }
+
+            // Draw arc connecting the sides
+            Gizmos.color = Color.cyan;
+            Vector3 startPoint = _playerData.PlayerBase.position + Quaternion.AngleAxis(-halfAngle, up) * forward * _detectionRadius;
+            Vector3 endPoint3 = _playerData.PlayerBase.position + Quaternion.AngleAxis(halfAngle, up) * forward * _detectionRadius;
+            Gizmos.DrawLine(startPoint, endPoint3);
         }
+#endif
     }
 } 

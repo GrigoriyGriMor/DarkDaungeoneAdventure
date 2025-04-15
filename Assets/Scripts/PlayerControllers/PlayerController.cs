@@ -121,6 +121,11 @@ namespace PlayerControllers
             _movementModul?.SetMovementInput(input);
         }
 
+        public void SetCameraBlocked(bool blocked)
+        {
+            _lookModule?.SetCameraBlocked(blocked);
+        }
+
         private void GroundControl()
         {
             bool newGroundState = Physics.Raycast(transform.position, -transform.up, _groundRayDistance, 1 << LayerMask.NameToLayer("Ground"));
