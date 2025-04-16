@@ -22,3 +22,5 @@ MonoBehaviour:
     WinPrefab: {fileID: 718895083982742346, guid: a2e8814d023e0c34bb18a7ae81d295ba, type: 3}
   - windowsType: 4
     WinPrefab: {fileID: 7484602773319403147, guid: 4cf770a1bfa88b847b112ba5ac2caae3, type: 3}
+  - windowsType: 7
+    WinPrefab: {fileID: 8379240374180519879, guid: 38a74f56e416832438f1b041979256e1, type: 3}

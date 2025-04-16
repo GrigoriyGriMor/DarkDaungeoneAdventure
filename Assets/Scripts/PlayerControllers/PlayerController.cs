@@ -1,4 +1,5 @@
 using Base;
+using Game.Core;
 using System;
 using UnityEditor;
 using UnityEngine;
@@ -32,6 +33,8 @@ namespace PlayerControllers
 
         public Action<bool> IsGround { get; set; }
         bool isGround = false;
+
+        public RespawnPoint _respawnPoint;
 
         public void Start()
         {
@@ -75,6 +78,13 @@ namespace PlayerControllers
 
             _playerData = _characterData.GetPlayerData();
 
+            InitModules();
+
+            isGround = false;
+        }
+
+        private void InitModules()
+        {
             _lookModule?.Init(_playerData, this);
             _movementModul?.Init(_playerData, this);
             _playerSoundModul?.Init(_playerData, this);
@@ -83,8 +93,6 @@ namespace PlayerControllers
             _healModule?.Init(_playerData, this);
             _staminaModule?.Init(_playerData, this);
             _flyModule?.Init(_playerData, this);
-
-            isGround = false;
         }
 
         private void FixedUpdate()
@@ -105,6 +113,28 @@ namespace PlayerControllers
 
             _playerData.PlayerAnimator.SetTrigger("Die");
             _destroyModule.SwapObj();
+
+            GameManager.Instance.GetManager<WindowsManager>().OpenWindow(SupportClasses.WindowName.RespawnMenu, SupportClasses.WindowName.InGameHUD);
+        }
+
+        public void PlayerRespawn()
+        {
+            transform.position = _respawnPoint.respawnTransform.position;
+            _respawnPoint.effect.Play();
+
+            _lookModule?.OnPlayerRespawn();
+            _movementModul?.OnPlayerRespawn();
+            _playerSoundModul?.OnPlayerRespawn();
+            _hookingModul?.OnPlayerRespawn();
+            _igsModul?.OnPlayerRespawn();
+            _healModule?.OnPlayerRespawn();
+            _staminaModule?.OnPlayerRespawn();
+            _flyModule?.OnPlayerRespawn();
+
+            _healModule?.Respawn();
+            _destroyModule.ResetGO();
+
+            isGround = false;
         }
 
         public bool IsFly()
@@ -153,6 +183,10 @@ namespace PlayerControllers
             }
         }
 
+        public void SetRespawnPoint(RespawnPoint point)
+        {
+            _respawnPoint = point;
+        }
 
         #region Collision Methods
         public Action<Collider> OnTriggerEnterAction { get; set; }
