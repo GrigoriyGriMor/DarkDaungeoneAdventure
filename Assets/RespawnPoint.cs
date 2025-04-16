@@ -3,18 +3,31 @@ using UnityEngine;
 
 public class RespawnPoint : MonoBehaviour
 {
-    public Transform respawnTransform;
-    public ParticleSystem effect;
+    [SerializeField] private Transform _respawnTransform;
+    public Transform RespawnTransform { get => _respawnTransform; }
+
+    [SerializeField] private ParticleSystem _activateEffect;
+    [SerializeField] private ParticleSystem _respawnEffect;
+
     private void Start()
     {
-        respawnTransform = transform;    
+        if (_respawnTransform == null)
+            _respawnTransform = transform;    
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent<PlayerController>(out PlayerController controller))
+        if (other.TryGetComponent(out PlayerController controller))
         {
             controller.SetRespawnPoint(this);
+            if (_activateEffect != null)
+                _activateEffect.Play();
         }
+    }
+
+    public void Respawn()
+    { 
+        if (_respawnEffect != null)
+            _respawnEffect.Play();
     }
 }

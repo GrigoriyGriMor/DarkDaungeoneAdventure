@@ -1,7 +1,6 @@
 using Base;
 using Game.Core;
 using System;
-using UnityEditor;
 using UnityEngine;
 
 namespace PlayerControllers
@@ -34,10 +33,13 @@ namespace PlayerControllers
         public Action<bool> IsGround { get; set; }
         bool isGround = false;
 
-        public RespawnPoint _respawnPoint;
+        private RespawnPoint _respawnPoint;
+        private Vector3 _baseLevelRespawnPos = Vector3.zero;
 
         public void Start()
         {
+            _baseLevelRespawnPos = transform.position;
+
             for (int i = 0; i < _modulsRoot.childCount; i++)
             {
                 if (_modulsRoot.GetChild(i).TryGetComponent(out AbstractModul modul))
@@ -119,8 +121,13 @@ namespace PlayerControllers
 
         public void PlayerRespawn()
         {
-            transform.position = _respawnPoint.respawnTransform.position;
-            _respawnPoint.effect.Play();
+            if (_respawnPoint != null)
+            {
+                transform.position = _respawnPoint.RespawnTransform.position;
+                _respawnPoint.Respawn();
+            }
+            else
+                transform.position = _baseLevelRespawnPos;
 
             _lookModule?.OnPlayerRespawn();
             _movementModul?.OnPlayerRespawn();
