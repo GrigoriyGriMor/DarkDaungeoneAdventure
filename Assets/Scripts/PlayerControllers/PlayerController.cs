@@ -1,6 +1,6 @@
 using Base;
+using Game.Core;
 using System;
-using UnityEditor;
 using UnityEngine;
 
 namespace PlayerControllers
@@ -33,8 +33,13 @@ namespace PlayerControllers
         public Action<bool> IsGround { get; set; }
         bool isGround = false;
 
+        private RespawnPoint _respawnPoint;
+        private Vector3 _baseLevelRespawnPos = Vector3.zero;
+
         public void Start()
         {
+            _baseLevelRespawnPos = transform.position;
+
             for (int i = 0; i < _modulsRoot.childCount; i++)
             {
                 if (_modulsRoot.GetChild(i).TryGetComponent(out AbstractModul modul))
@@ -75,6 +80,13 @@ namespace PlayerControllers
 
             _playerData = _characterData.GetPlayerData();
 
+            InitModules();
+
+            isGround = false;
+        }
+
+        private void InitModules()
+        {
             _lookModule?.Init(_playerData, this);
             _movementModul?.Init(_playerData, this);
             _playerSoundModul?.Init(_playerData, this);
@@ -83,8 +95,6 @@ namespace PlayerControllers
             _healModule?.Init(_playerData, this);
             _staminaModule?.Init(_playerData, this);
             _flyModule?.Init(_playerData, this);
-
-            isGround = false;
         }
 
         private void FixedUpdate()
@@ -105,6 +115,33 @@ namespace PlayerControllers
 
             _playerData.PlayerAnimator.SetTrigger("Die");
             _destroyModule.SwapObj();
+
+            GameManager.Instance.GetManager<WindowsManager>().OpenWindow(SupportClasses.WindowName.RespawnMenu, SupportClasses.WindowName.InGameHUD);
+        }
+
+        public void PlayerRespawn()
+        {
+            if (_respawnPoint != null)
+            {
+                transform.position = _respawnPoint.RespawnTransform.position;
+                _respawnPoint.Respawn();
+            }
+            else
+                transform.position = _baseLevelRespawnPos;
+
+            _lookModule?.OnPlayerRespawn();
+            _movementModul?.OnPlayerRespawn();
+            _playerSoundModul?.OnPlayerRespawn();
+            _hookingModul?.OnPlayerRespawn();
+            _igsModul?.OnPlayerRespawn();
+            _healModule?.OnPlayerRespawn();
+            _staminaModule?.OnPlayerRespawn();
+            _flyModule?.OnPlayerRespawn();
+
+            _healModule?.Respawn();
+            _destroyModule.ResetGO();
+
+            isGround = false;
         }
 
         public bool IsFly()
@@ -153,6 +190,10 @@ namespace PlayerControllers
             }
         }
 
+        public void SetRespawnPoint(RespawnPoint point)
+        {
+            _respawnPoint = point;
+        }
 
         #region Collision Methods
         public Action<Collider> OnTriggerEnterAction { get; set; }

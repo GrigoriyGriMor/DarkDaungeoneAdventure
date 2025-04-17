@@ -116,4 +116,10 @@ public class HealModule : AbstractModul
     {
         base.SetModuleActivityType(_modulIsActive);
     }
+
+    public void Respawn()
+    {
+        currentHeal = maxHeal;
+        UpdatePrecentValue();
+    }
 }

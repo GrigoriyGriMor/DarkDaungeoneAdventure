@@ -12,6 +12,7 @@ public static class SupportClasses
         InGameHUD,
         InGamePauseMenu,
         InGameSettingMenu,
+        RespawnMenu
     }
 
     public enum WindowType

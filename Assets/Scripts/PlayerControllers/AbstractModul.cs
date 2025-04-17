@@ -55,5 +55,10 @@ namespace PlayerControllers
         {
             _playerDead = true;
         }
+
+        public virtual void OnPlayerRespawn()
+        {
+            _playerDead = false;
+        }
     }
 }

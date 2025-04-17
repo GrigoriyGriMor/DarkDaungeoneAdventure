@@ -19,7 +19,6 @@ public class MainMenuWindow : AbstractWindow
         _startGameBtn.onClick.AddListener(() =>
         {
             SceneManager.LoadScene(1);
-            Debug.LogError("Game was started");
         });
 
         _settingBtn.onClick.AddListener(() =>
