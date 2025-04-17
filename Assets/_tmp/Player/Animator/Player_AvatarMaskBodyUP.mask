@@ -1,0 +1,167 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Player_AvatarMaskBodyUP
+  m_Mask: 00000000010000000100000000000000000000000100000001000000010000000100000000000000000000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: Axe00
+    m_Weight: 1
+  - m_Path: BoneJaw
+    m_Weight: 1
+  - m_Path: Boots
+    m_Weight: 1
+  - m_Path: MetalJaw
+    m_Weight: 1
+  - m_Path: SheathAndBelt
+    m_Weight: 1
+  - m_Path: Shoulder00
+    m_Weight: 1
+  - m_Path: Shoulder01
+    m_Weight: 1
+  - m_Path: SkeletonBody
+    m_Weight: 1
+  - m_Path: SkeletonFeet
+    m_Weight: 1
+  - m_Path: SkeletonHair
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-sheath
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-neck
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-neck/ORG-head
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-neck/ORG-head/ORG-jaw
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_01_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_01_L/ORG-f_index_01_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_01_L/ORG-f_index_01_L/ORG-f_index_02_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_01_L/ORG-f_index_01_L/ORG-f_index_02_L/ORG-f_index_03_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_01_L/ORG-thumb_01_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_01_L/ORG-thumb_01_L/ORG-thumb_02_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_01_L/ORG-thumb_01_L/ORG-thumb_02_L/ORG-thumb_03_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_02_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_02_L/ORG-f_middle_01_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_02_L/ORG-f_middle_01_L/ORG-f_middle_02_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_02_L/ORG-f_middle_01_L/ORG-f_middle_02_L/ORG-f_middle_03_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_03_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_03_L/ORG-f_ring_01_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_03_L/ORG-f_ring_01_L/ORG-f_ring_02_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_03_L/ORG-f_ring_01_L/ORG-f_ring_02_L/ORG-f_ring_03_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_04_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_04_L/ORG-f_pinky_01_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_04_L/ORG-f_pinky_01_L/ORG-f_pinky_02_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/ORG-palm_04_L/ORG-f_pinky_01_L/ORG-f_pinky_02_L/ORG-f_pinky_03_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_L/ORG-upper_arm_L/ORG-forearm_L/ORG-hand_L/prop_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_01_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_01_R/ORG-f_index_01_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_01_R/ORG-f_index_01_R/ORG-f_index_02_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_01_R/ORG-f_index_01_R/ORG-f_index_02_R/ORG-f_index_03_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_01_R/ORG-thumb_01_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_01_R/ORG-thumb_01_R/ORG-thumb_02_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_01_R/ORG-thumb_01_R/ORG-thumb_02_R/ORG-thumb_03_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_02_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_02_R/ORG-f_middle_01_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_02_R/ORG-f_middle_01_R/ORG-f_middle_02_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_02_R/ORG-f_middle_01_R/ORG-f_middle_02_R/ORG-f_middle_03_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_03_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_03_R/ORG-f_ring_01_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_03_R/ORG-f_ring_01_R/ORG-f_ring_02_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_03_R/ORG-f_ring_01_R/ORG-f_ring_02_R/ORG-f_ring_03_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_04_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_04_R/ORG-f_pinky_01_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_04_R/ORG-f_pinky_01_R/ORG-f_pinky_02_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/ORG-palm_04_R/ORG-f_pinky_01_R/ORG-f_pinky_02_R/ORG-f_pinky_03_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-spine/ORG-chest/ORG-shoulder_R/ORG-upper_arm_R/ORG-forearm_R/ORG-hand_R/prop_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-thigh_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-thigh_L/ORG-shin_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-thigh_L/ORG-shin_L/ORG-foot_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-thigh_L/ORG-shin_L/ORG-foot_L/ORG-toe_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-thigh_L/ORG-shin_L/ORG-heel_L
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-thigh_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-thigh_R/ORG-shin_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-thigh_R/ORG-shin_R/ORG-foot_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-thigh_R/ORG-shin_R/ORG-foot_R/ORG-toe_R
+    m_Weight: 1
+  - m_Path: SkeletonOutlaw-Rig/root/ORG-hips/ORG-thigh_R/ORG-shin_R/ORG-heel_R
+    m_Weight: 1
