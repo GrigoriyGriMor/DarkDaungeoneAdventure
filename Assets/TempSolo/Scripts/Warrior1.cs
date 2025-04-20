@@ -184,7 +184,7 @@ public class Warrior1 : MonoBehaviour {
         animator.SetTrigger(stateDamage);
         soundWarrior.PlayDamage(_thisTransform.position);
     }
-
+    
     private void Dead() {
         StopAllCoroutines();
         StartCoroutine(DelayDead());

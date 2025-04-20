@@ -1099,6 +1099,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _damage: -25
+  _damageParticle: {fileID: 0}
 --- !u!65 &281805412
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -12980,6 +12981,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _endTransform: {fileID: 200646474}
+  _useEndPointScale: 0
   _moveSpeed: 5
   _setItemParticle: {fileID: 0}
 --- !u!114 &1396197623
@@ -19310,6 +19312,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _endTransform: {fileID: 114159223}
+  _useEndPointScale: 0
   _moveSpeed: 5
   _setItemParticle: {fileID: 0}
 --- !u!1 &1963462236
