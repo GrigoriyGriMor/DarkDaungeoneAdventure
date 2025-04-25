@@ -91,7 +91,18 @@ public class Warrior1 : MonoBehaviour {
             animator.SetBool(stateRun, true);
             while (distance > minDistanceToPoint) {
                 Debug.DrawLine(_thisTransform.position, point, Color.green);
-                _agent.SetDestination(point);
+                if (_agent.pathStatus == NavMeshPathStatus.PathPartial)
+                {
+                    StartCoroutine(Patrol());
+                }
+                else if (_agent.pathStatus == NavMeshPathStatus.PathInvalid)
+                {
+                    StartCoroutine(Patrol());
+                }
+                else
+                {
+                    _agent.SetDestination(point);
+                }
                 distance = (_thisTransform.position - point).sqrMagnitude;
                 
                 if (CheckPlayer()) {
@@ -100,6 +111,7 @@ public class Warrior1 : MonoBehaviour {
                 }
                 
                 yield return null;
+
             }
             yield return new WaitForSeconds(0.1f);
             
