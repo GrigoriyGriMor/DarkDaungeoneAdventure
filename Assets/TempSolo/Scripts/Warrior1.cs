@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
+using System.Drawing;
 using UnityEngine;
+using UnityEngine.AI;
+using Color = UnityEngine.Color;
 using Random = UnityEngine.Random;
 
 
@@ -46,8 +49,10 @@ public class Warrior1 : MonoBehaviour {
     private float _angleRadians;
     private float _angleDeg;
     private bool _diedPlayer = false;
-    
+    private NavMeshAgent _agent;
+
     private IEnumerator Start() {
+        _agent = GetComponent<NavMeshAgent>();
         _isPlay = true;
         while (_healModulePlayer == null) {
             _healModulePlayer = FindAnyObjectByType(typeof(HealModule)) as HealModule;
@@ -86,9 +91,18 @@ public class Warrior1 : MonoBehaviour {
             animator.SetBool(stateRun, true);
             while (distance > minDistanceToPoint) {
                 Debug.DrawLine(_thisTransform.position, point, Color.green);
-                _thisTransform.LookAt(point);
-                _thisTransform.position =
-                    Vector3.MoveTowards(_thisTransform.position, point, speed * Time.deltaTime);
+                if (_agent.pathStatus == NavMeshPathStatus.PathPartial)
+                {
+                    StartCoroutine(Patrol());
+                }
+                else if (_agent.pathStatus == NavMeshPathStatus.PathInvalid)
+                {
+                    StartCoroutine(Patrol());
+                }
+                else
+                {
+                    _agent.SetDestination(point);
+                }
                 distance = (_thisTransform.position - point).sqrMagnitude;
                 
                 if (CheckPlayer()) {
@@ -97,6 +111,7 @@ public class Warrior1 : MonoBehaviour {
                 }
                 
                 yield return null;
+
             }
             yield return new WaitForSeconds(0.1f);
             
@@ -122,9 +137,7 @@ public class Warrior1 : MonoBehaviour {
         animator.SetBool(stateRun, true);
         while (distanceToPlyer > _attackRange) {
             Debug.DrawLine(_thisTransform.position, _targetPlayer.position, Color.red);
-            _thisTransform.LookAt(_targetPlayer.position);
-            _thisTransform.position = Vector3.MoveTowards(_thisTransform.position, _targetPlayer.position,
-                speed * Time.deltaTime);
+            _agent.SetDestination(_targetPlayer.position);
             distanceToPlyer = (_thisTransform.position - _targetPlayer.position).sqrMagnitude;
             float distanceToStartPosition = (_thisTransform.position - _startPosition).sqrMagnitude;
             if (_followRange < distanceToStartPosition) {
@@ -133,6 +146,7 @@ public class Warrior1 : MonoBehaviour {
             }
             yield return null;
         }
+        _agent.SetDestination(_thisTransform.position);
         StartCoroutine(Attack());
     }
     
@@ -184,7 +198,7 @@ public class Warrior1 : MonoBehaviour {
         animator.SetTrigger(stateDamage);
         soundWarrior.PlayDamage(_thisTransform.position);
     }
-
+    
     private void Dead() {
         StopAllCoroutines();
         StartCoroutine(DelayDead());

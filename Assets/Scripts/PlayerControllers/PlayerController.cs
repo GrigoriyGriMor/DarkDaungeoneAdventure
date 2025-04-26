@@ -119,6 +119,18 @@ namespace PlayerControllers
             GameManager.Instance.GetManager<WindowsManager>().OpenWindow(SupportClasses.WindowName.RespawnMenu, SupportClasses.WindowName.InGameHUD);
         }
 
+        public void DeactivateModules()
+        {
+            _lookModule?.OnPlayerDied();
+            _movementModul?.OnPlayerDied();
+            _playerSoundModul?.OnPlayerDied();
+            _hookingModul?.OnPlayerDied();
+            _igsModul?.OnPlayerDied();
+            _healModule?.OnPlayerDied();
+            _staminaModule?.OnPlayerDied();
+            _flyModule?.OnPlayerDied();
+        }
+
         public void PlayerRespawn()
         {
             if (_respawnPoint != null)
