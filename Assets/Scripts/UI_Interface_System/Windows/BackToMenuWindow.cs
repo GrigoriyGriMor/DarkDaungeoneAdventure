@@ -1,4 +1,3 @@
-using PlayerControllers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -13,7 +12,6 @@ public class BackToMenuWindow : AbstractWindow
 
         _exitToMainMenuBtn.onClick.AddListener(() =>
         {
-            Time.timeScale = 1;
             SceneManager.LoadScene(0);
         });
     }
