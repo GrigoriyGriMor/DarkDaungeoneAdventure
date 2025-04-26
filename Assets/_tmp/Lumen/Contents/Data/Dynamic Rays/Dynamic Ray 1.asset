@@ -30,14 +30,14 @@ MonoBehaviour:
   useVariation: 1
   useLightColor: 0
   rayLayers:
-  - rayShape: 0
+  - rayShape: 7
     rayMesh: {fileID: 0}
     brightness: 0.186
-    colorMultiplier: {r: 1, g: 1, b: 1, a: 1}
+    colorMultiplier: {r: 0.47932023, g: 0.98225087, b: 0.8796226, a: 1}
     position: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    raylength: 15
-    open: 0
+    raylength: 10
+    open: 1
   globalScale: 1
   rayMaterial: {fileID: 2100000, guid: e349799befeba9948a28f3e1a260fa29, type: 2}
   globalBrightness: 1
@@ -45,6 +45,7 @@ MonoBehaviour:
   variationScale: 10
   variationColor: {r: 1, g: 1, b: 1, a: 0.5529412}
   autoAssignSun: 1
+  useLumenSun: 0
   sunDirection: {x: 1, y: 0, z: 0}
   bidirectional: 1
   showLayerSettings: 0
@@ -52,4 +53,4 @@ MonoBehaviour:
   showVariationSettings: 0
   showFadingSettings: 0
   showDynamicSettings: 0
-  needsToBeUpdated: 0
+  needsToBeUpdated: 1
