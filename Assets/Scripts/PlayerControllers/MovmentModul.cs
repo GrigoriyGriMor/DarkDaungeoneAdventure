@@ -1,4 +1,5 @@
-using System.Collections;
+﻿using System.Collections;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -41,22 +42,24 @@ namespace PlayerControllers
 
         private void Move()
         {
+            Debug.LogError(Mathf.Clamp(_playerData.PlayerRB.linearVelocity.y, -1, 1));
+            _playerData.PlayerAnimator.SetFloat("MoveY", Mathf.Clamp(_playerData.PlayerRB.linearVelocity.y, -1, 1));
+
             float horizMove = _inputSystemMN.Move().x;
             float verticalMove = _inputSystemMN.Move().y;
 
-            if (horizMove == 0.0f && verticalMove == 0.0f)
+            //проверка на то, что игрок прекратил управление передвижением персонажа
+            if (Mathf.Abs(horizMove) < Mathf.Epsilon && Mathf.Abs(verticalMove) < Mathf.Epsilon)
             {
                 if (_playerData.PlayerAnimator.GetBool("Run"))
                     _playerData.PlayerAnimator.SetBool("Run", false);
 
-                _playerData.PlayerAnimator.SetTrigger("Break");
-
                 _currentSpeed = Mathf.Lerp(_currentSpeed, 0, _blendMovementSpeed);
-                _playerData.PlayerAnimator.SetFloat("Move", _currentSpeed);
+                _playerData.PlayerAnimator.SetFloat("Move", Mathf.Clamp(_currentSpeed, 0, 1));
 
                 _playerData.PlayerMainCamera.StopMove();
 
-                if (_playerData.PlayerAnimator.GetFloat("Move") < 0.01f)
+                if (_currentSpeed < 0.01f)
                     _playerData.PlayerRB.linearVelocity = new Vector3(0, _playerData.PlayerRB.linearVelocity.y, 0);
 
                 return;
@@ -72,7 +75,7 @@ namespace PlayerControllers
             _currentAngle = Mathf.Lerp(_currentAngle, angle, _blendRotateSpeed);
             _playerData.PlayerVisual.transform.localRotation = Quaternion.Euler(0, _currentAngle, 0);
 
-            _currentSpeed = Mathf.Lerp(_currentSpeed, _mSpeed, _blendMovementSpeed);
+            _currentSpeed = _mSpeed;
             Vector3 vec = new Vector3(horizMove * _currentSpeed, _playerData.PlayerRB.linearVelocity.y, verticalMove * _currentSpeed);
             _playerData.PlayerRB.linearVelocity = transform.TransformVector(vec);
 
@@ -81,7 +84,7 @@ namespace PlayerControllers
             if (!_playerData.PlayerAnimator.GetBool("Run"))
                 _playerData.PlayerAnimator.SetBool("Run", true);
 
-            _playerData.PlayerAnimator.SetFloat("Move", _currentSpeed);
+            _playerData.PlayerAnimator.SetFloat("Move", Mathf.Clamp(_currentSpeed, 0, 1));
         }
 
         void Jump()
@@ -95,7 +98,7 @@ namespace PlayerControllers
         void ResetAllParam()
         {
             _playerData?.PlayerAnimator.SetBool("Run", false);
-            _mSpeed = 0;
+            _currentSpeed = 0;
         }
 
         public void IsHooking(bool hooking)
