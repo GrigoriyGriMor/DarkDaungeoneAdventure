@@ -1035,7 +1035,7 @@ MonoBehaviour:
   m_WindowGUID: cc27987af1a868c49b0894db9c0f5429
   m_Gizmos: 1
   m_OverrideSceneCullingMask: 6917529027641081856
-  m_SceneIsLit: 1
+  m_SceneIsLit: 0
   m_SceneLighting: 1
   m_2DMode: 0
   m_isRotationLocked: 0
@@ -1043,7 +1043,7 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 0.032430172, y: 0.17219889, z: -9.550554}
+    m_Target: {x: -0.32399416, y: 0.7424192, z: -0.0081774}
     speed: 2
     m_Value: {x: 0.3306244, y: 1.5253202, z: -1.139765}
   m_RenderMode: 0
@@ -1061,7 +1061,7 @@ MonoBehaviour:
     showImageEffects: 1
     showParticleSystems: 1
     showVisualEffectGraphs: 1
-    m_FxEnabled: 1
+    m_FxEnabled: 0
   m_Grid:
     xGrid:
       m_Fade:
@@ -1091,11 +1091,11 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.16757385, y: 0.3583996, z: -0.06549886, w: -0.9161116}
+    m_Target: {x: 0.08010492, y: 0.80679387, z: -0.112243935, w: 0.57452106}
     speed: 2
     m_Value: {x: -0.23673779, y: 0.056262594, z: -0.013756769, w: -0.9698873}
   m_Size:
-    m_Target: 1.318423
+    m_Target: 0.8660254
     speed: 2
     m_Value: 0.99026513
   m_Ortho:
@@ -1608,7 +1608,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 993}
     m_SelectedIDs: 32f00000
     m_LastClickedID: 61490
-    m_ExpandedIDs: 00000000f2e70000f4e70000f6e70000f8e70000fae70000fce70000fee7000000e8000002e8000004e8000006e8000008e800000ae800000ce800000ee8000010e8000012e8000014e8000016e8000018e800001ae800001ce800001ee8000020e8000022e8000024e8000026e8000028e80000
+    m_ExpandedIDs: 00000000accc0000aecc000010740100127401001474010016740100187401001a7401001c7401001e74010020740100227401002474010026740100287401002a7401002c7401002e7401003074010032740100347401003674010038740100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1637,7 +1637,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000f2e70000f4e70000f6e70000f8e70000fae70000fce70000fee7000000e8000002e8000004e8000006e8000008e800000ae800000ce800000ee8000010e8000012e8000014e8000016e8000018e800001ae800001ce800001ee8000020e8000022e8000024e8000026e8000028e80000
+    m_ExpandedIDs: 00000000accc0000aecc000010740100127401001474010016740100187401001a7401001c7401001e74010020740100227401002474010026740100287401002a7401002c7401002e7401003074010032740100347401003674010038740100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
