@@ -24,6 +24,7 @@ namespace PlayerControllers
         [SerializeField] private HealModule _healModule;
         [SerializeField] private StaminaModule _staminaModule;
         [SerializeField] private FlyModule _flyModule;
+        [SerializeField] private AttackModule _attackModule;
 
         [Header("Ground")]
         [SerializeField] private float _groundRayDistance = 0.25f;
@@ -76,6 +77,9 @@ namespace PlayerControllers
                         case FlyModule _m:
                             _flyModule = _m;
                             break;
+                        case AttackModule m:
+                            _attackModule = m; 
+                            break;
                         default:
                             Debug.LogError($"{modul.gameObject.name} - module is empty");
                             break;
@@ -100,6 +104,7 @@ namespace PlayerControllers
             _healModule?.Init(_playerData, this);
             _staminaModule?.Init(_playerData, this);
             _flyModule?.Init(_playerData, this);
+            _attackModule?.Init(_playerData, this);
         }
 
         private void FixedUpdate()
@@ -117,6 +122,7 @@ namespace PlayerControllers
             _healModule?.OnPlayerDied();
             _staminaModule?.OnPlayerDied();
             _flyModule?.OnPlayerDied();
+            _attackModule?.OnPlayerDied();
 
             _playerData.PlayerAnimator.SetTrigger("Die");
             _destroyModule.SwapObj();
@@ -220,6 +226,17 @@ namespace PlayerControllers
                 _respawnPoint.EnableEffect();
             
             _respawnPoint = point;
+        }
+
+
+        public void SetMovementBlocked(bool blocked)
+        {
+            _movementModul?.SetMovementBlocked(blocked);
+        }
+
+        public void SetCameraBlocked(bool blocked)
+        {
+            _lookModule?.SetCameraBlocked(blocked);
         }
 
         #region Collision Methods

@@ -1,8 +1,9 @@
+using AttackSystem;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyBase : MonoBehaviour
+public class EnemyBase : MonoBehaviour, IAttackable
 {
     //public SupportClass.gameState UDPState = SupportClass.gameState.test;
     private uint warrior_ID;
@@ -295,5 +296,20 @@ public class EnemyBase : MonoBehaviour
             lootArray[i].isSelect = false;
         }
 
+    }
+
+    public void TakeDamage(float damage)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public Transform GetTransform()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public bool IsAlive()
+    {
+        throw new System.NotImplementedException();
     }
 }

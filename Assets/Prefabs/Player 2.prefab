@@ -86457,74 +86457,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &5662274987234509098
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3922109866586717609}
-  - component: {fileID: 6522636091523447964}
-  - component: {fileID: 4998382019556025601}
-  m_Layer: 6
-  m_Name: AttackTargetController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &3922109866586717609
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5662274987234509098}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 98171518580453738}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &6522636091523447964
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5662274987234509098}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 4
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4998382019556025601
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5662274987234509098}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5fb6d7ab706ed94798ef58e0abe4df5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targets: []
-  player: {fileID: 0}
 --- !u!1 &5690809478101971294
 GameObject:
   m_ObjectHideFlags: 0
@@ -116559,6 +116491,7 @@ Transform:
   - {fileID: 92263645019425531}
   - {fileID: 6818367024188528881}
   - {fileID: 5708605213547670244}
+  - {fileID: 3284512225982011166}
   m_Father: {fileID: 98171518580453738}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7054203405809267941
@@ -121539,6 +121472,67 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!1 &7486521759909694570
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3284512225982011166}
+  - component: {fileID: 7350982675225782909}
+  m_Layer: 0
+  m_Name: m_Attack
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3284512225982011166
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7486521759909694570}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7626756844691339111}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7350982675225782909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7486521759909694570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec95b7bbd0e7e604085aabf6b54c802d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _detectionRadius: 5
+  _detectionAngle: 90
+  _enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  _attackRange: 2
+  _jumpAttackRange: 4
+  _jumpAttackSpeed: 10
+  _rotationSpeed: 10
+  _attackDamageDelay: 0.3
+  _moveSpeed: 7
+  _targetAngleThreshold: 5
+  _cameraRotateSpeed: 5
+  _baseDamage: 20
+  _comboMultiplier: 1.5
+  _blockControlTime: 0.2
+  _minInputThreshold: 0.1
 --- !u!1 &7487970242369803387
 GameObject:
   m_ObjectHideFlags: 0
@@ -151799,7 +151793,6 @@ Transform:
   - {fileID: 9148031412712276625}
   - {fileID: 1526895924102253612}
   - {fileID: 7626756844691339111}
-  - {fileID: 3922109866586717609}
   - {fileID: 2414210981675222788}
   - {fileID: 3329971676403151125}
   - {fileID: 7871981245859543137}
@@ -151896,6 +151889,7 @@ MonoBehaviour:
   _healModule: {fileID: 0}
   _staminaModule: {fileID: 0}
   _flyModule: {fileID: 0}
+  _attackModule: {fileID: 0}
   _groundRayDistance: 0.1
   _groundCheckRadius: 0.2
   _groundCheckOffset: {x: 0, y: -0.1, z: 0}

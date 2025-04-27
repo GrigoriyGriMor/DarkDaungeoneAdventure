@@ -23,6 +23,8 @@ namespace PlayerControllers
         float _currentAngle = 0;
         float _currentSpeed = 0;
 
+        private bool _isMovementBlocked;
+
         public IEnumerator Start()
         {
             while (!_inputSystemMN)
@@ -42,11 +44,18 @@ namespace PlayerControllers
 
         private void Move()
         {
-            Debug.LogError(Mathf.Clamp(_playerData.PlayerRB.linearVelocity.y, -1, 1));
-            _playerData.PlayerAnimator.SetFloat("MoveY", Mathf.Clamp(_playerData.PlayerRB.linearVelocity.y, -1, 1));
+            float horizMove = 0;
+            float verticalMove = 0;
 
-            float horizMove = _inputSystemMN.Move().x;
-            float verticalMove = _inputSystemMN.Move().y;
+            if (!_isMovementBlocked)
+            {
+                horizMove = _inputSystemMN.Move().x;
+                verticalMove = _inputSystemMN.Move().y;
+            }
+            else
+                return;
+            
+            _playerData.PlayerAnimator.SetFloat("MoveY", Mathf.Clamp(_playerData.PlayerRB.linearVelocity.y, -1, 1));
 
             //проверка на то, что игрок прекратил управление передвижением персонажа
             if (Mathf.Abs(horizMove) < Mathf.Epsilon && Mathf.Abs(verticalMove) < Mathf.Epsilon)
@@ -115,6 +124,11 @@ namespace PlayerControllers
 
             if (!_modulIsActive)
                 ResetAllParam();
+        }
+
+        public void SetMovementBlocked(bool blocked)
+        {
+            _isMovementBlocked = blocked;
         }
 
         private void OnDisable()

@@ -69,4 +69,5 @@ public enum InputControllerType
     HookBreak,
     ItemGet,
     ItemPut,
+    Attack,
 }
