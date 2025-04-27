@@ -45,7 +45,8 @@ public class DestroyObjModule : MonoBehaviour
         if (_hideTimerCoroutine != null)
             StopCoroutine(_hideTimerCoroutine);
 
-        Destroy(destroyGO.gameObject);
+        if (destroyGO != null) 
+            Destroy(destroyGO.gameObject);
         hideVisual.SetActive(true);
     }
 }

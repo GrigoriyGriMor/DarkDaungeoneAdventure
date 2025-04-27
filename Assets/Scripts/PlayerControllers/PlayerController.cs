@@ -1,6 +1,7 @@
 using Base;
 using Game.Core;
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace PlayerControllers
@@ -26,6 +27,10 @@ namespace PlayerControllers
 
         [Header("Ground")]
         [SerializeField] private float _groundRayDistance = 0.25f;
+        [SerializeField] private float _groundCheckRadius = 0.2f;
+        [SerializeField] private Vector3 _groundCheckOffset = new Vector3(0, -0.1f, 0);
+        [SerializeField] private LayerMask _groundLayer;
+        private Collider[] _overlapResults = new Collider[4];
 
         [Header("When Obj Destroyed")]
         [SerializeField] private DestroyObjModule _destroyModule;
@@ -131,15 +136,22 @@ namespace PlayerControllers
             _flyModule?.OnPlayerDied();
         }
 
-        public void PlayerRespawn()
+        public async void PlayerRespawn()
         {
-            if (_respawnPoint != null)
+            _playerData.PlayerRB.isKinematic = true;
+
+            Vector3 targetPoint = _respawnPoint != null
+                ? _respawnPoint.RespawnTransform.position
+                : _baseLevelRespawnPos;
+
+            while (Vector3.SqrMagnitude(transform.position - targetPoint) > 0.001f)
             {
-                transform.position = _respawnPoint.RespawnTransform.position;
-                _respawnPoint.Respawn();
+                transform.position = targetPoint;
+                _respawnPoint?.Respawn();
+                await Task.Delay(100);
             }
-            else
-                transform.position = _baseLevelRespawnPos;
+
+            _playerData.PlayerRB.isKinematic = false;
 
             _lookModule?.OnPlayerRespawn();
             _movementModul?.OnPlayerRespawn();
@@ -154,6 +166,11 @@ namespace PlayerControllers
             _destroyModule.ResetGO();
 
             isGround = false;
+        }
+
+        public RespawnPoint GetRespawnPoint()
+        { 
+            return _respawnPoint;
         }
 
         public bool IsFly()
@@ -184,26 +201,22 @@ namespace PlayerControllers
 
         void GroundControll()
         {
-            if (Physics.Raycast(transform.position, transform.up * -1, _groundRayDistance, (1 << LayerMask.NameToLayer("Ground"))))
+            Vector3 checkPos = transform.position + _groundCheckOffset;
+            int hits = Physics.OverlapSphereNonAlloc(checkPos, _groundCheckRadius, _overlapResults, _groundLayer);
+
+            bool onGround = hits > 0;
+            if (onGround != isGround)
             {
-                if (!isGround)
-                {
-                    isGround = true;
-                    IsGround?.Invoke(isGround);
-                }
-            }
-            else
-            {
-                if (isGround)
-                {
-                    isGround = false;
-                    IsGround?.Invoke(isGround);
-                }
+                isGround = onGround;
+                IsGround?.Invoke(isGround);
             }
         }
 
         public void SetRespawnPoint(RespawnPoint point)
         {
+            if (_respawnPoint) 
+                _respawnPoint.EnableEffect();
+            
             _respawnPoint = point;
         }
 

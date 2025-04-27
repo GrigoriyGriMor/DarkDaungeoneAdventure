@@ -48,7 +48,8 @@ public class HealBarController : MonoBehaviour
         if (_barEffectCoroutine != null)
             StopCoroutine(_barEffectCoroutine);
 
-        _barEffectCoroutine = StartCoroutine(BarEffectCoroutine());
+        if (gameObject.activeInHierarchy) 
+            _barEffectCoroutine = StartCoroutine(BarEffectCoroutine());
     }
 
     private IEnumerator BarEffectCoroutine()
