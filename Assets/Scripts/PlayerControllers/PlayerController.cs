@@ -215,7 +215,6 @@ namespace PlayerControllers
             {
                 isGround = onGround;
                 IsGround?.Invoke(isGround);
-                Debug.LogError(isGround + " ground");
                 _playerData.PlayerAnimator.SetBool("IsGround", isGround);
             }
         }

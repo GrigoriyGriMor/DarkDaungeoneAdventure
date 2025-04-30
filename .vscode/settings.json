@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "DarkDaungeoneAdventure.sln"
+    "dotnet.defaultSolution": "DarkDaungeoneAdventure.sln",
+    "dotnet.preferCSharpExtension": true
 }

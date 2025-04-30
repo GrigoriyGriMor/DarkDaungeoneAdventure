@@ -4071,7 +4071,7 @@ MonoBehaviour:
   _visual: {fileID: 0}
   _keyCode: 323
   holdThreshold: 0.5
-  _useActionAtDown: 0
+  _useActionAtDown: 1
 --- !u!1 &8487757596776887418
 GameObject:
   m_ObjectHideFlags: 0

@@ -64,6 +64,9 @@ namespace PlayerControllers
                     _playerData.PlayerAnimator.SetBool("Run", false);
 
                 _currentSpeed = Mathf.Lerp(_currentSpeed, 0, _blendMovementSpeed);
+                if (_currentSpeed < 0.01f)
+                    _currentSpeed = 0;
+
                 _playerData.PlayerAnimator.SetFloat("Move", Mathf.Clamp(_currentSpeed, 0, 1));
 
                 _playerData.PlayerMainCamera.StopMove();

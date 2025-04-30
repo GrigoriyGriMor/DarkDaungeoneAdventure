@@ -50,7 +50,7 @@ namespace PlayerControllers
 
         private void FixedUpdate()
         {
-            if (!_controlIsBlocked && _inputSystemMN.Move().magnitude > _minInputThreshold)
+            if (!_controlIsBlocked && _inputSystemMN.Move().magnitude > _minInputThreshold) 
                 CancelAttack();
         }
 
@@ -160,11 +160,7 @@ namespace PlayerControllers
                     yield break;
                 }
 
-                Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
-
-                _playerData.CameraControlBlock.rotation = Quaternion.Lerp(
-                    _playerData.CameraControlBlock.rotation,
-                    targetRotation,
+                _playerData.CameraControlBlock.rotation = Quaternion.Lerp(_playerData.CameraControlBlock.rotation, Quaternion.LookRotation(directionToTarget),
                     _cameraRotateSpeed * Time.deltaTime
                 );
 
@@ -177,13 +173,12 @@ namespace PlayerControllers
         private IEnumerator MoveToTargetCoroutine()
         {
             Vector3 directionToTarget = (_currentTarget.GetTransform().position - _playerData.PlayerBase.position).normalized;
-            _playerData.CameraControlBlock.rotation = Quaternion.LookRotation(directionToTarget);
 
             if (!_playerData.PlayerAnimator.GetBool("Run"))
                 _playerData.PlayerAnimator.SetBool("Run", true);
             _playerData.PlayerAnimator.SetFloat("Move", _moveSpeed);
 
-            while (_currentTarget != null && _currentTarget.IsAlive())
+            while ((_currentTarget != null && _currentTarget.IsAlive()) && _isAttacking)
             {
                 directionToTarget = (_currentTarget.GetTransform().position - _playerData.PlayerBase.position).normalized;
                 float distanceToTarget = Vector3.Distance(_playerData.PlayerBase.position, _currentTarget.GetTransform().position);
@@ -203,6 +198,7 @@ namespace PlayerControllers
                 if (distanceToTarget <= _attackRange)
                 {
                     StartMelleAttack();
+                    _playerController.SetMovementBlocked(false);
                     yield break;
                 }
                 //else if (distanceToTarget <= _jumpAttackRange)
@@ -337,7 +333,6 @@ namespace PlayerControllers
         {
             if (_isAttacking)
             {
-                StopAllCoroutines();
                 _isAttacking = false;
                 _currentTarget = null;
                 _comboCount = 0;

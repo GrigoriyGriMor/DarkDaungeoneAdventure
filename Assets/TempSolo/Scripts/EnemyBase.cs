@@ -300,16 +300,16 @@ public class EnemyBase : MonoBehaviour, IAttackable
 
     public void TakeDamage(float damage)
     {
-        throw new System.NotImplementedException();
+        Debug.LogError("Damage = " + damage);
     }
 
     public Transform GetTransform()
     {
-        throw new System.NotImplementedException();
+        return transform;
     }
 
     public bool IsAlive()
     {
-        throw new System.NotImplementedException();
+        return true;
     }
 }

@@ -49,7 +49,7 @@ public class InputSystemManager : AbstractManager
             case InputControllerType.Attack:
                 _attackController = controller;
                 if (_attackAction != null && _attackAction._clickAction != null)
-                    _attackController._action += _attackAction._clickAction;
+                    _attackController._action += () => _attackAction._clickAction.Invoke();
                 break;
             default:
                 break;
