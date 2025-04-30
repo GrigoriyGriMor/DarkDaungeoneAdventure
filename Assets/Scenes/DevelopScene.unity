@@ -22453,49 +22453,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 103962879219211198, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
-      propertyPath: verticalSpeed
-      value: 315
-      objectReference: {fileID: 0}
-    - target: {fileID: 103962879219211198, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
-      propertyPath: horizontalSpeed
-      value: 415
-      objectReference: {fileID: 0}
-    - target: {fileID: 103962879219211198, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
-      propertyPath: rotationLerpSpeed
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1644225568933221961, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
-      propertyPath: returnSpeed
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1644225568933221961, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
-      propertyPath: collisionLayers.m_Bits
-      value: 63
-      objectReference: {fileID: 0}
-    - target: {fileID: 7350982675225782909, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
-      propertyPath: _attackRange
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 7350982675225782909, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
-      propertyPath: _detectionRadius
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 7350982675225782909, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
-      propertyPath: _cameraRotateSpeed
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 7350982675225782909, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
-      propertyPath: _targetAngleThreshold
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 8763624576393213621, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 8763624576393213621, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
-      propertyPath: m_Layer
-      value: 30
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
