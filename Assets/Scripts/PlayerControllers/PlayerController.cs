@@ -43,9 +43,13 @@ namespace PlayerControllers
         private RespawnPoint _respawnPoint;
         private Vector3 _baseLevelRespawnPos = Vector3.zero;
 
+        private bool _is2DMode = false;
+        [HideInInspector] public bool Is2DMode { get => _is2DMode; }
+
         public void Start()
         {
             _baseLevelRespawnPos = transform.position;
+            _is2DMode = false;
 
             for (int i = 0; i < _modulsRoot.childCount; i++)
             {
@@ -244,6 +248,21 @@ namespace PlayerControllers
         public PlayerData GetPlayerData()
         {
             return _playerData;
+        }
+
+        public void SwitchMode(bool mode2D)
+        {
+            _is2DMode = mode2D;
+            SetCameraBlocked(mode2D);
+            _flyModule.BlockFLy(mode2D);
+
+            if (!mode2D)
+            {
+                _playerData.CameraControlBlock.transform.eulerAngles = new Vector3(_playerData.CameraControlBlock.transform.eulerAngles.x, _playerData.PlayerBase.eulerAngles.y, _playerData.CameraControlBlock.transform.eulerAngles.z);
+                _movementModul.BoostJumpForce(mode2D);
+            }
+            else
+                _movementModul.BoostJumpForce(mode2D);
         }
 
         #region Collision Methods
