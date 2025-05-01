@@ -1,63 +1,86 @@
+using BaseClasses;
 using System.Collections;
-using System.Collections.Generic;
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class APCameraController : MonoBehaviour
 {
-    [SerializeField] private Transform cameraIdlePos;
-    [SerializeField] private Transform cameraMovePos;
+    private Transform _player;
+
+    [SerializeField] private CinemachineCamera _usingVCamera;
+
+    [SerializeField] private CinemachineCamera cameraIdleVCamera;
+    [SerializeField] private CinemachineCamera cameraMoveVCamera;
 
     [SerializeField] private Transform target;
 
-    [SerializeField] private float moveSpeed = 5;
-    private float moveS = 0;
-    [SerializeField] private float rotateSpeed = 5;
-
-    private void Start()
+    private IEnumerator Start()
     {
-        transform.SetParent(cameraIdlePos);
-        moveS = moveSpeed / 5;
+        cameraIdleVCamera.LookAt = target;
+        cameraMoveVCamera.LookAt = target;
+
+        SetPriorityVCamera(cameraIdleVCamera);
+
+        while (_player == null || !LevelManager.Instance)
+        {
+            _player = LevelManager.Instance.PlayerController.transform;
+            yield return null;
+        }
     }
 
     private void Update()
     {
-        transform.localPosition = Vector3.Lerp(transform.localPosition, Vector3.zero, moveS * Time.deltaTime);
-        transform.LookAt(target);
+        transform.position = _player.position;
     }
-
-    private Coroutine coroutine;
 
     public void StartMove()
     {
-        if (transform.parent == cameraMovePos) return;
+        if (_usingVCamera != cameraIdleVCamera || _usingVCamera != cameraMoveVCamera)
+            return;
 
-        transform.SetParent(cameraMovePos);
-
-        if (coroutine == null)
-            coroutine = StartCoroutine(SpeedUp());
+        SetPriorityVCamera(cameraMoveVCamera);
     }
-
-    private IEnumerator SpeedUp()
-    {
-        while (moveS < moveSpeed)
-        {
-            moveS += 1 * Time.deltaTime;
-            yield return new WaitForFixedUpdate();
-        }
-    }
-
 
     public void StopMove()
     {
-        if (transform.parent == cameraIdlePos) return;
+        if (_usingVCamera != cameraIdleVCamera && _usingVCamera != cameraMoveVCamera)
+            return;
 
-        if (coroutine != null)
+        SetPriorityVCamera(cameraIdleVCamera);
+    }
+
+    public void SetNewCameraTarget(Transform newTarget)
+    { 
+    
+    }
+
+    public void SetPriorityVCamera(CinemachineCamera priorityCamera)
+    {
+        if (_usingVCamera != null)
         {
-            StopCoroutine(coroutine);
-            coroutine = null;
+            _usingVCamera.Priority = 0;
+
+            if (_usingVCamera != cameraIdleVCamera && _usingVCamera != cameraMoveVCamera)
+                _usingVCamera.transform.parent = null;
         }
-        
-        transform.SetParent(cameraIdlePos);
-        moveS = moveSpeed / 5;
+
+        _usingVCamera = priorityCamera;
+        _usingVCamera.transform.parent = transform;
+        _usingVCamera.Priority = 1;
+        _usingVCamera.LookAt = target;
+    }
+
+    public void ReturnBaseVCamera()
+    {
+        SetPriorityVCamera(cameraMoveVCamera);
+    }
+
+    public float GetCameraDir()
+    {
+        if (_usingVCamera != null)
+            return _usingVCamera.transform.eulerAngles.y;
+
+        Debug.LogError("Virtual Camera Missing", gameObject);
+        return 0f;
     }
 }

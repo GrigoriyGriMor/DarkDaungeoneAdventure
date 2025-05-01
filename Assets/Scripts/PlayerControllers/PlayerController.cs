@@ -1,4 +1,5 @@
 using Base;
+using BaseClasses;
 using Game.Core;
 using System;
 using System.Threading.Tasks;
@@ -105,6 +106,8 @@ namespace PlayerControllers
             _staminaModule?.Init(_playerData, this);
             _flyModule?.Init(_playerData, this);
             _attackModule?.Init(_playerData, this);
+
+            LevelManager.Instance.RegisterPlayerController(this);
         }
 
         private void FixedUpdate()
@@ -236,6 +239,11 @@ namespace PlayerControllers
         public void SetCameraBlocked(bool blocked)
         {
             _lookModule?.SetCameraBlocked(blocked);
+        }
+
+        public PlayerData GetPlayerData()
+        {
+            return _playerData;
         }
 
         #region Collision Methods

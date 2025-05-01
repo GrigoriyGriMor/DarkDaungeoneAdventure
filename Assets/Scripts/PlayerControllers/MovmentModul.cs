@@ -34,7 +34,7 @@ namespace PlayerControllers
             _mSpeed = _moveSpeed;
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
             if (!moduleIsActive || _inputSystemMN == null || _playerDead) return;
   
@@ -69,7 +69,7 @@ namespace PlayerControllers
 
                 _playerData.PlayerAnimator.SetFloat("Move", Mathf.Clamp(_currentSpeed, 0, 1));
 
-                _playerData.PlayerMainCamera.StopMove();
+                _playerData.CameraControlBlock.StopMove();
 
                 if (_currentSpeed < 0.01f)
                     _playerData.PlayerRB.linearVelocity = new Vector3(0, _playerData.PlayerRB.linearVelocity.y, 0);
@@ -78,9 +78,9 @@ namespace PlayerControllers
             }
 
             _playerData.PlayerBase.localEulerAngles =
-                new Vector3(_playerData.PlayerBase.localEulerAngles.x, _playerData.CameraControlBlock.eulerAngles.y, _playerData.PlayerBase.localEulerAngles.z);
-            _playerData.CameraControlBlock.localEulerAngles =
-                new Vector3(_playerData.CameraControlBlock.localEulerAngles.x, 0, _playerData.CameraControlBlock.localEulerAngles.z);
+                new Vector3(_playerData.PlayerBase.localEulerAngles.x, _playerData.CameraControlBlock.GetCameraDir(), _playerData.PlayerBase.localEulerAngles.z);
+            //_playerData.CameraControlBlock.transform.localEulerAngles =
+            //    new Vector3(_playerData.CameraControlBlock.transform.localEulerAngles.x, 0, _playerData.CameraControlBlock.transform.localEulerAngles.z);
 
             float angle = Mathf.Atan2(horizMove, verticalMove) * Mathf.Rad2Deg;
 
@@ -91,7 +91,7 @@ namespace PlayerControllers
             Vector3 vec = new Vector3(horizMove * _currentSpeed, _playerData.PlayerRB.linearVelocity.y, verticalMove * _currentSpeed);
             _playerData.PlayerRB.linearVelocity = transform.TransformVector(vec);
 
-            _playerData.PlayerMainCamera.StartMove();
+            _playerData.CameraControlBlock.StartMove();
 
             if (!_playerData.PlayerAnimator.GetBool("Run"))
                 _playerData.PlayerAnimator.SetBool("Run", true);

@@ -150,7 +150,7 @@ namespace PlayerControllers
             while (_currentTarget != null && _currentTarget.IsAlive())
             {
                 Vector3 directionToTarget = (_currentTarget.GetTransform().position - _playerData.PlayerBase.position).normalized;
-                Vector3 currentForward = _playerData.CameraControlBlock.forward;
+                Vector3 currentForward = _playerData.CameraControlBlock.transform.forward;
 
                 float currentAngle = Vector3.Angle(currentForward, directionToTarget);
 
@@ -160,7 +160,7 @@ namespace PlayerControllers
                     yield break;
                 }
 
-                _playerData.CameraControlBlock.rotation = Quaternion.Lerp(_playerData.CameraControlBlock.rotation, Quaternion.LookRotation(directionToTarget),
+                _playerData.CameraControlBlock.transform.rotation = Quaternion.Lerp(_playerData.CameraControlBlock.transform.rotation, Quaternion.LookRotation(directionToTarget),
                     _cameraRotateSpeed * Time.deltaTime
                 );
 

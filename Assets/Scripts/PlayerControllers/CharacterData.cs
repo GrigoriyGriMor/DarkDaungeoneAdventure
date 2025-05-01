@@ -13,8 +13,8 @@ namespace Base
         [SerializeField] private Transform PlayerVisual;
         [SerializeField] private Rigidbody PlayerRB;
         [SerializeField] private Animator PlayerAnimator;
-        [SerializeField] private APCameraController PlayerMainCamera;
-        [SerializeField] private Transform CameraControlBlock;
+        [SerializeField] private Camera PlayerMainCamera;
+        [SerializeField] private APCameraController CameraControlBlock;
 
         private PlayerData _playerData;
 
