@@ -77,7 +77,7 @@ public class FlyModule : AbstractModul
         _playerData.PlayerRB.linearVelocity = globalMovement;
 
         // Двигаем камеру
-        _playerData.PlayerMainCamera.StartMove();
+        _playerData.CameraControlBlock.StartMove();
     }
 
     private void ToggleFly(bool state = false)
@@ -91,7 +91,7 @@ public class FlyModule : AbstractModul
 
         if (state)
         {
-            _startDirection = _playerData.CameraControlBlock.forward.normalized; // Берем начальное направление из камеры
+            _startDirection = _playerData.CameraControlBlock.transform.forward.normalized; // Берем начальное направление из камеры
 
             if (_startFlyParticle) _startFlyParticle.Play();
         }

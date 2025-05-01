@@ -1,4 +1,5 @@
 ﻿using Game.Core;
+using PlayerControllers;
 using SupportSystems;
 using System;
 using System.Collections;
@@ -20,6 +21,9 @@ namespace BaseClasses
         #region UI Managment
         private List<MonoBehaviour> _uiComponentStruct = new List<MonoBehaviour>();
 
+        [SerializeField] private PlayerController _playerController;
+        public PlayerController PlayerController { get => _playerController; }
+
         private IEnumerator Start()
         {
             while (!GameManager.Instance.InitReady)
@@ -34,6 +38,11 @@ namespace BaseClasses
                 return;
 
             _uiComponentStruct.Add(component);
+        }
+
+        public void RegisterPlayerController(PlayerController playerController)
+        {
+            _playerController = playerController;
         }
 
         public T GetUIComponent<T>() where T : MonoBehaviour

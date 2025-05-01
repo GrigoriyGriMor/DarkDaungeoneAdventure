@@ -1,4 +1,5 @@
-using System.Collections;
+﻿using System.Collections;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,6 +23,8 @@ namespace PlayerControllers
         float _currentAngle = 0;
         float _currentSpeed = 0;
 
+        private bool _isMovementBlocked;
+
         public IEnumerator Start()
         {
             while (!_inputSystemMN)
@@ -31,7 +34,7 @@ namespace PlayerControllers
             _mSpeed = _moveSpeed;
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
             if (!moduleIsActive || _inputSystemMN == null || _playerDead) return;
   
@@ -41,47 +44,59 @@ namespace PlayerControllers
 
         private void Move()
         {
-            float horizMove = _inputSystemMN.Move().x;
-            float verticalMove = _inputSystemMN.Move().y;
+            float horizMove = 0;
+            float verticalMove = 0;
 
-            if (horizMove == 0.0f && verticalMove == 0.0f)
+            if (!_isMovementBlocked)
+            {
+                horizMove = _inputSystemMN.Move().x;
+                verticalMove = _inputSystemMN.Move().y;
+            }
+            else
+                return;
+            
+            _playerData.PlayerAnimator.SetFloat("MoveY", Mathf.Clamp(_playerData.PlayerRB.linearVelocity.y, -1, 1));
+
+            //проверка на то, что игрок прекратил управление передвижением персонажа
+            if (Mathf.Abs(horizMove) < Mathf.Epsilon && Mathf.Abs(verticalMove) < Mathf.Epsilon)
             {
                 if (_playerData.PlayerAnimator.GetBool("Run"))
                     _playerData.PlayerAnimator.SetBool("Run", false);
 
-                _playerData.PlayerAnimator.SetTrigger("Break");
-
                 _currentSpeed = Mathf.Lerp(_currentSpeed, 0, _blendMovementSpeed);
-                _playerData.PlayerAnimator.SetFloat("Move", _currentSpeed);
+                if (_currentSpeed < 0.01f)
+                    _currentSpeed = 0;
 
-                _playerData.PlayerMainCamera.StopMove();
+                _playerData.PlayerAnimator.SetFloat("Move", Mathf.Clamp(_currentSpeed, 0, 1));
 
-                if (_playerData.PlayerAnimator.GetFloat("Move") < 0.01f)
+                _playerData.CameraControlBlock.StopMove();
+
+                if (_currentSpeed < 0.01f)
                     _playerData.PlayerRB.linearVelocity = new Vector3(0, _playerData.PlayerRB.linearVelocity.y, 0);
 
                 return;
             }
 
             _playerData.PlayerBase.localEulerAngles =
-                new Vector3(_playerData.PlayerBase.localEulerAngles.x, _playerData.CameraControlBlock.eulerAngles.y, _playerData.PlayerBase.localEulerAngles.z);
-            _playerData.CameraControlBlock.localEulerAngles =
-                new Vector3(_playerData.CameraControlBlock.localEulerAngles.x, 0, _playerData.CameraControlBlock.localEulerAngles.z);
+                new Vector3(_playerData.PlayerBase.localEulerAngles.x, _playerData.CameraControlBlock.GetCameraDir(), _playerData.PlayerBase.localEulerAngles.z);
+            //_playerData.CameraControlBlock.transform.localEulerAngles =
+            //    new Vector3(_playerData.CameraControlBlock.transform.localEulerAngles.x, 0, _playerData.CameraControlBlock.transform.localEulerAngles.z);
 
             float angle = Mathf.Atan2(horizMove, verticalMove) * Mathf.Rad2Deg;
 
             _currentAngle = Mathf.Lerp(_currentAngle, angle, _blendRotateSpeed);
             _playerData.PlayerVisual.transform.localRotation = Quaternion.Euler(0, _currentAngle, 0);
 
-            _currentSpeed = Mathf.Lerp(_currentSpeed, _mSpeed, _blendMovementSpeed);
+            _currentSpeed = _mSpeed;
             Vector3 vec = new Vector3(horizMove * _currentSpeed, _playerData.PlayerRB.linearVelocity.y, verticalMove * _currentSpeed);
             _playerData.PlayerRB.linearVelocity = transform.TransformVector(vec);
 
-            _playerData.PlayerMainCamera.StartMove();
+            _playerData.CameraControlBlock.StartMove();
 
             if (!_playerData.PlayerAnimator.GetBool("Run"))
                 _playerData.PlayerAnimator.SetBool("Run", true);
 
-            _playerData.PlayerAnimator.SetFloat("Move", _currentSpeed);
+            _playerData.PlayerAnimator.SetFloat("Move", Mathf.Clamp(_currentSpeed, 0, 1));
         }
 
         void Jump()
@@ -95,7 +110,7 @@ namespace PlayerControllers
         void ResetAllParam()
         {
             _playerData?.PlayerAnimator.SetBool("Run", false);
-            _mSpeed = 0;
+            _currentSpeed = 0;
         }
 
         public void IsHooking(bool hooking)
@@ -112,6 +127,11 @@ namespace PlayerControllers
 
             if (!_modulIsActive)
                 ResetAllParam();
+        }
+
+        public void SetMovementBlocked(bool blocked)
+        {
+            _isMovementBlocked = blocked;
         }
 
         private void OnDisable()
