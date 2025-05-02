@@ -145,6 +145,9 @@ namespace PlayerControllers
 
         private IEnumerator MoveCameraToTargetCoroutine()
         {
+            if (_playerController.Is2DMode)
+                yield break;
+
             _playerController.SetCameraBlocked(true);
 
             while (_currentTarget != null && _currentTarget.IsAlive())

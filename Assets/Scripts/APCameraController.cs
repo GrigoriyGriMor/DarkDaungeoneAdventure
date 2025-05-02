@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class APCameraController : MonoBehaviour
 {
-    private Transform _player;
+    [SerializeField] private Transform _player;
 
     [SerializeField] private CinemachineCamera _usingVCamera;
 
@@ -16,6 +16,8 @@ public class APCameraController : MonoBehaviour
 
     private IEnumerator Start()
     {
+        _usingVCamera = cameraIdleVCamera;
+
         cameraIdleVCamera.LookAt = target;
         cameraMoveVCamera.LookAt = target;
 
@@ -23,14 +25,17 @@ public class APCameraController : MonoBehaviour
 
         while (_player == null || !LevelManager.Instance)
         {
-            _player = LevelManager.Instance.PlayerController.transform;
+            if (LevelManager.Instance.PlayerController != null)
+                _player = LevelManager.Instance.PlayerController.transform;
+            
             yield return null;
         }
     }
 
     private void Update()
     {
-        transform.position = _player.position;
+        if (_player != null)
+            transform.position = _player.position;
     }
 
     public void StartMove()
@@ -54,7 +59,7 @@ public class APCameraController : MonoBehaviour
     
     }
 
-    public void SetPriorityVCamera(CinemachineCamera priorityCamera)
+    public void SetPriorityVCamera(CinemachineCamera priorityCamera, bool blockCamera = false)
     {
         if (_usingVCamera != null)
         {
@@ -65,7 +70,9 @@ public class APCameraController : MonoBehaviour
         }
 
         _usingVCamera = priorityCamera;
-        _usingVCamera.transform.parent = transform;
+
+        if (blockCamera) 
+            _usingVCamera.transform.parent = transform;
         _usingVCamera.Priority = 1;
         _usingVCamera.LookAt = target;
     }

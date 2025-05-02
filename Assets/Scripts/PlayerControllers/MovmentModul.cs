@@ -15,6 +15,7 @@ namespace PlayerControllers
         [Header("")]
         [SerializeField] private Button _jumpBtn;
         [SerializeField] private float _jumpForce = 250f;
+        [SerializeField] private float _2DModeJumpForceBoost = 100f;
 
         [Header("")]
         [SerializeField] private float _blendMovementSpeed = 0.25f;
@@ -105,6 +106,11 @@ namespace PlayerControllers
 
             _playerData.PlayerRB.AddForce(_playerData.PlayerRB.transform.up * _jumpForce, ForceMode.Impulse);
             _playerData.PlayerAnimator.SetTrigger("Jump");
+        }
+
+        public void BoostJumpForce(bool boost)
+        {
+            _jumpForce = boost ? _jumpForce + _2DModeJumpForceBoost : _jumpForce - _2DModeJumpForceBoost; 
         }
 
         void ResetAllParam()

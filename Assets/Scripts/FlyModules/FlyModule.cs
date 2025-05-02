@@ -80,8 +80,17 @@ public class FlyModule : AbstractModul
         _playerData.CameraControlBlock.StartMove();
     }
 
+    public void BlockFLy(bool block)
+    {
+        ToggleFly(!block);
+        moduleIsActive = !block;
+    }
+
     private void ToggleFly(bool state = false)
     {
+        if (!moduleIsActive)
+            return;
+
         if (IsFly == state || _playerDead || (state && !_playerController.StaminaCanBeUse()))
             return;
 
