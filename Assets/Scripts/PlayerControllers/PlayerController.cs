@@ -257,10 +257,7 @@ namespace PlayerControllers
             _flyModule.BlockFLy(mode2D);
 
             if (!mode2D)
-            {
-                _playerData.CameraControlBlock.transform.eulerAngles = new Vector3(_playerData.CameraControlBlock.transform.eulerAngles.x, _playerData.PlayerBase.eulerAngles.y, _playerData.CameraControlBlock.transform.eulerAngles.z);
                 _movementModul.BoostJumpForce(mode2D);
-            }
             else
                 _movementModul.BoostJumpForce(mode2D);
         }

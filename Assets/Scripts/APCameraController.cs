@@ -1,32 +1,42 @@
-using BaseClasses;
+﻿using BaseClasses;
+using PlayerControllers;
 using System.Collections;
+using System.Threading.Tasks;
 using Unity.Cinemachine;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class APCameraController : MonoBehaviour
 {
-    [SerializeField] private Transform _player;
-
     [SerializeField] private CinemachineCamera _usingVCamera;
 
     [SerializeField] private CinemachineCamera cameraIdleVCamera;
     [SerializeField] private CinemachineCamera cameraMoveVCamera;
 
     [SerializeField] private Transform target;
+    private Transform _currentTarget = null;
+
+    private PlayerController _playerController;
+    private Transform _player;
 
     private IEnumerator Start()
     {
         _usingVCamera = cameraIdleVCamera;
 
-        cameraIdleVCamera.LookAt = target;
-        cameraMoveVCamera.LookAt = target;
+        _currentTarget = target;
 
-        SetPriorityVCamera(cameraIdleVCamera);
+        cameraIdleVCamera.LookAt = _currentTarget;
+        cameraMoveVCamera.LookAt = _currentTarget;
+
+        RequestToSetPriorityVCamera(cameraIdleVCamera);
 
         while (_player == null || !LevelManager.Instance)
         {
             if (LevelManager.Instance.PlayerController != null)
-                _player = LevelManager.Instance.PlayerController.transform;
+            {
+                _playerController = LevelManager.Instance.PlayerController;
+                _player = _playerController.transform;
+            }
             
             yield return null;
         }
@@ -43,7 +53,7 @@ public class APCameraController : MonoBehaviour
         if (_usingVCamera != cameraIdleVCamera || _usingVCamera != cameraMoveVCamera)
             return;
 
-        SetPriorityVCamera(cameraMoveVCamera);
+        RequestToSetPriorityVCamera(cameraMoveVCamera);
     }
 
     public void StopMove()
@@ -51,7 +61,7 @@ public class APCameraController : MonoBehaviour
         if (_usingVCamera != cameraIdleVCamera && _usingVCamera != cameraMoveVCamera)
             return;
 
-        SetPriorityVCamera(cameraIdleVCamera);
+        RequestToSetPriorityVCamera(cameraIdleVCamera);
     }
 
     public void SetNewCameraTarget(Transform newTarget)
@@ -59,27 +69,65 @@ public class APCameraController : MonoBehaviour
     
     }
 
-    public void SetPriorityVCamera(CinemachineCamera priorityCamera, bool blockCamera = false)
+    public CinemachineCamera RequestToSetPriorityVCamera(CinemachineCamera priorityCamera, AltVCameraType altVCType = AltVCameraType.SliderMove)
     {
         if (_usingVCamera != null)
         {
             _usingVCamera.Priority = 0;
 
             if (_usingVCamera != cameraIdleVCamera && _usingVCamera != cameraMoveVCamera)
+            {
                 _usingVCamera.transform.parent = null;
+                SetPriorityVCamera(priorityCamera, altVCType);
+                return _usingVCamera;
+            }
+            SetPriorityVCamera(priorityCamera, altVCType);
         }
+        else
+            SetPriorityVCamera(priorityCamera, altVCType);
 
-        _usingVCamera = priorityCamera;
-
-        if (blockCamera) 
-            _usingVCamera.transform.parent = transform;
-        _usingVCamera.Priority = 1;
-        _usingVCamera.LookAt = target;
+        return null;
     }
 
-    public void ReturnBaseVCamera()
+    private void SetPriorityVCamera(CinemachineCamera priorityCamera, AltVCameraType altVCType)
     {
-        SetPriorityVCamera(cameraMoveVCamera);
+        _usingVCamera = priorityCamera;
+
+
+        switch (altVCType)
+        {
+            case AltVCameraType.SliderMove:
+                //логика движения камеры отрабатывается в классе AlternativeVCameraActivator
+                break;
+            case AltVCameraType.PlayerPosMove:
+                _usingVCamera.transform.parent = transform;
+                break;
+            case AltVCameraType.BlocedPos:
+                //камера остается дочерней к своему родителю и не двигается
+                break;
+            default:
+                break;
+        }
+
+        _usingVCamera.Priority = 1;
+
+        if (_usingVCamera != cameraIdleVCamera && _usingVCamera != cameraMoveVCamera)
+            _currentTarget = _player.transform;
+        else
+            _currentTarget = target;
+
+        _usingVCamera.LookAt = _currentTarget;
+    }
+
+    public bool ReturnBaseVCamera(CinemachineCamera camera, CinemachineCamera previousCamera)
+    {
+        if (camera == _usingVCamera)
+        {
+            RequestToSetPriorityVCamera(previousCamera != null ? previousCamera : cameraMoveVCamera);
+            return true;
+        }
+        else
+            return false;
     }
 
     public float GetCameraDir()
