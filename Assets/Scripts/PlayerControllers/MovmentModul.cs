@@ -15,7 +15,7 @@ namespace PlayerControllers
         [Header("")]
         [SerializeField] private Button _jumpBtn;
         [SerializeField] private float _jumpForce = 250f;
-        [SerializeField] private float _2DModeJumpForceBoost = 100f;
+        [SerializeField] private float _2DModeJumpForce = 100f;
 
         [Header("")]
         [SerializeField] private float _blendMovementSpeed = 0.25f;
@@ -110,7 +110,7 @@ namespace PlayerControllers
 
         public void BoostJumpForce(bool boost)
         {
-            _jumpForce = boost ? _jumpForce + _2DModeJumpForceBoost : _jumpForce - _2DModeJumpForceBoost; 
+            _jumpForce = boost ? _2DModeJumpForce : _2DModeJumpForce; 
         }
 
         void ResetAllParam()
