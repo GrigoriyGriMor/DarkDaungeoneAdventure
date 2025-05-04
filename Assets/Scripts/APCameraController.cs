@@ -2,42 +2,51 @@
 using PlayerControllers;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using TMPro.Examples;
 using Unity.Cinemachine;
-using Unity.Mathematics;
 using UnityEngine;
 
 public class APCameraController : MonoBehaviour
 {
     [SerializeField] private VCameraConteiner _usingVCamera;
-
     [SerializeField] private CinemachineCamera cameraIdleVCamera;
     [SerializeField] private CinemachineCamera cameraMoveVCamera;
-
     [SerializeField] private Transform target;
-    private Transform _currentTarget = null;
 
+    private Transform _currentTarget;
     private PlayerController _playerController;
     private Transform _player;
+    private readonly Dictionary<CinemachineCamera, VCameraConteiner> _cameraCache = new Dictionary<CinemachineCamera, VCameraConteiner>();
+
+    private void Awake()
+    {
+        InitializeCameraCache();
+    }
+
+    private void InitializeCameraCache()
+    {
+        _cameraCache[cameraIdleVCamera] = VCameraConteiner.CreateDefault(cameraIdleVCamera);
+        _cameraCache[cameraMoveVCamera] = VCameraConteiner.CreateDefault(cameraMoveVCamera);
+    }
 
     private IEnumerator Start()
     {
-        _usingVCamera._aVCamera = cameraIdleVCamera;
-        _usingVCamera._activator = null;
-
+        _usingVCamera = _cameraCache[cameraIdleVCamera];
         _currentTarget = target;
+
+        cameraIdleVCamera.LookAt = _currentTarget;
+        cameraMoveVCamera.LookAt = _currentTarget;
 
         RequestToSetPriorityVCamera(_usingVCamera);
 
         while (_player == null || !LevelManager.Instance)
         {
-            if (LevelManager.Instance.PlayerController != null)
+            if (LevelManager.Instance?.PlayerController != null)
             {
                 _playerController = LevelManager.Instance.PlayerController;
                 _player = _playerController.transform;
             }
-            
             yield return null;
         }
     }
@@ -50,35 +59,31 @@ public class APCameraController : MonoBehaviour
 
     public void StartMove()
     {
-        if (IsNotDefaultCameras(_usingVCamera._aVCamera) || _usingVCamera._aVCamera == cameraMoveVCamera)
+        if (IsNotDefaultCameras(_usingVCamera.Camera) || _usingVCamera.Camera == cameraMoveVCamera)
             return;
 
-        VCameraConteiner vCam = new VCameraConteiner { _aVCamera = cameraMoveVCamera, _activator = null };
-        RequestToSetPriorityVCamera(vCam);
+        RequestToSetPriorityVCamera(_cameraCache[cameraMoveVCamera]);
     }
 
     public void StopMove()
     {
-        if (IsNotDefaultCameras(_usingVCamera._aVCamera) || _usingVCamera._aVCamera == cameraIdleVCamera)
+        if (IsNotDefaultCameras(_usingVCamera.Camera) || _usingVCamera.Camera == cameraIdleVCamera)
             return;
 
-        VCameraConteiner vCam = new VCameraConteiner { _aVCamera = cameraIdleVCamera, _activator = null };
-        RequestToSetPriorityVCamera(vCam);
-    }
-
-    public void SetNewCameraTarget(Transform newTarget)
-    { 
-    
+        RequestToSetPriorityVCamera(_cameraCache[cameraIdleVCamera]);
     }
 
     public VCameraConteiner RequestToSetPriorityVCamera(VCameraConteiner priorityCamera, AltVCameraType altVCType = AltVCameraType.SliderMove)
     {
-        VCameraConteiner lastCamera = null;
-        _usingVCamera._aVCamera.Priority = 0;
+        if (priorityCamera == null)
+            throw new ArgumentNullException(nameof(priorityCamera));
 
-        if (IsNotDefaultCameras(_usingVCamera._aVCamera))
+        VCameraConteiner lastCamera = null;
+        _usingVCamera.Camera.Priority = 0;
+
+        if (IsNotDefaultCameras(_usingVCamera.Camera))
         {
-            _usingVCamera._aVCamera.transform.parent = null;
+            _usingVCamera.Camera.transform.parent = null;
             lastCamera = _usingVCamera;
         }
 
@@ -86,7 +91,7 @@ public class APCameraController : MonoBehaviour
         return lastCamera;
     }
 
-    private async void SetPriorityVCamera(VCameraConteiner priorityCamera, AltVCameraType altVCType)
+    private void SetPriorityVCamera(VCameraConteiner priorityCamera, AltVCameraType altVCType)
     {
         _usingVCamera = priorityCamera;
 
@@ -96,54 +101,42 @@ public class APCameraController : MonoBehaviour
                 //логика движения камеры отрабатывается в классе AlternativeVCameraActivator
                 break;
             case AltVCameraType.PlayerPosMove:
-                _usingVCamera._aVCamera.transform.parent = transform;
+                _usingVCamera.Camera.transform.parent = transform;
                 break;
             case AltVCameraType.BlocedPos:
                 //камера остается дочерней к своему родителю и не двигается
                 break;
-            default:
-                break;
         }
 
-        _usingVCamera._aVCamera.Priority = 1;
-
-        if (IsNotDefaultCameras(_usingVCamera._aVCamera))
-            _currentTarget = _player.transform;
-        else
-            _currentTarget = target;
-
-        _usingVCamera._aVCamera.LookAt = _currentTarget;
+        _usingVCamera.Camera.Priority = 1;
+        _currentTarget = IsNotDefaultCameras(_usingVCamera.Camera) ? _player.transform : target;
+        _usingVCamera.Camera.LookAt = _currentTarget;
     }
 
     public bool ReturnBaseVCamera(VCameraConteiner camera, VCameraConteiner previousCamera)
     {
-        if (IsNotDefaultCameras(_usingVCamera._aVCamera) && _usingVCamera._aVCamera != camera._aVCamera)
+        if (camera == null)
+            throw new ArgumentNullException(nameof(camera));
+
+        if (IsNotDefaultCameras(_usingVCamera.Camera) && _usingVCamera.Camera != camera.Camera)
         {
-            _usingVCamera._activator.ClearPreviousCamera();
+            _usingVCamera.Activator?.ClearPreviousCamera();
             return false;
         }
 
-        VCameraConteiner vCam = previousCamera != null ? previousCamera : new VCameraConteiner { _aVCamera = cameraMoveVCamera, _activator = null };
-        RequestToSetPriorityVCamera(vCam);
+        var nextCamera = previousCamera ?? _cameraCache[cameraMoveVCamera];
+        RequestToSetPriorityVCamera(nextCamera);
 
-        if (previousCamera != null)
-            return false;
-        else
-            return true;
+        return previousCamera == null;
     }
 
-    bool IsNotDefaultCameras(CinemachineCamera camera)
-    {
-        if (camera != cameraIdleVCamera && camera != cameraMoveVCamera)
-            return true;
-        else
-            return false;
-    }
+    private bool IsNotDefaultCameras(CinemachineCamera camera) =>
+        camera != cameraIdleVCamera && camera != cameraMoveVCamera;
 
     public float GetCameraDir()
     {
-        if (_usingVCamera != null)
-            return _usingVCamera._aVCamera.transform.eulerAngles.y;
+        if (_usingVCamera?.Camera != null)
+            return _usingVCamera.Camera.transform.eulerAngles.y;
 
         Debug.LogError("Virtual Camera Missing", gameObject);
         return 0f;
@@ -153,6 +146,41 @@ public class APCameraController : MonoBehaviour
 [Serializable]
 public class VCameraConteiner
 {
-    public AlternativeVCinemachineCameraActivator _activator { get; set; }
-    public CinemachineCamera _aVCamera { get; set; }
+    public AlternativeVCinemachineCameraActivator Activator { get; }
+    public CinemachineCamera Camera { get; }
+
+    public VCameraConteiner(CinemachineCamera camera, AlternativeVCinemachineCameraActivator activator = null)
+    {
+        Camera = camera ?? throw new ArgumentNullException(nameof(camera));
+        Activator = activator;
+    }
+
+    public static VCameraConteiner CreateDefault(CinemachineCamera camera) => 
+        new VCameraConteiner(camera);
+
+    public override bool Equals(object obj)
+    {
+        if (obj is VCameraConteiner other)
+        {
+            return Camera == other.Camera && Activator == other.Activator;
+        }
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Camera, Activator);
+    }
+
+    public static bool operator ==(VCameraConteiner left, VCameraConteiner right)
+    {
+        if (ReferenceEquals(left, null))
+            return ReferenceEquals(right, null);
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(VCameraConteiner left, VCameraConteiner right)
+    {
+        return !(left == right);
+    }
 }

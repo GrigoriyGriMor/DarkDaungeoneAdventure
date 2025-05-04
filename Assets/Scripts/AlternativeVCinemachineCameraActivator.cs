@@ -6,111 +6,141 @@ using UnityEngine;
 public class AlternativeVCinemachineCameraActivator : MonoBehaviour
 {
     [SerializeField] private CinemachineCamera _cinemachineCamera;
-
     [SerializeField] private AltVCameraType _altVCameraType = AltVCameraType.SliderMove;
 
-    private Collider _colider;
-    private CinemachineSplineDolly _dollyTrecker;
-
+    private Collider _collider;
+    private CinemachineSplineDolly _dollyTracker;
     private PlayerController _playerController;
-    bool _dollyTreckerActive = false;
+    private bool _dollyTrackerActive;
+    private VCameraConteiner _previousAltCamera;
+    private VCameraConteiner _cachedCameraContainer;
+    private readonly Color _gizmoColor = Color.blue;
 
-    VCameraConteiner _previousAltCamera;
-
-    private Color _gizmoColor = Color.blue; // Цвет для отображения в Gizmo
+    public CinemachineCamera Camera => _cinemachineCamera;
+    public AltVCameraType CameraType => _altVCameraType;
+    public bool IsDollyTrackerActive => _dollyTrackerActive;
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        if (_colider == null)
-            _colider = GetComponent<Collider>();
+        if (_collider == null)
+            _collider = GetComponent<Collider>();
 
-        if (_colider != null)
+        if (_collider != null)
         {
             Gizmos.color = _gizmoColor;
-            Gizmos.DrawWireCube(_colider.bounds.center, _colider.bounds.size);
+            Gizmos.DrawWireCube(_collider.bounds.center, _collider.bounds.size);
         }
     }
 #endif
 
+    private void Awake()
+    {
+        _cachedCameraContainer = new VCameraConteiner(_cinemachineCamera, this);
+    }
+
     private void Start()
+    {
+        ValidateComponents();
+        InitializeComponents();
+    }
+
+    private void ValidateComponents()
     {
         if (_cinemachineCamera == null)
         {
-            Debug.LogError("Alternative Camera is Null");
+            Debug.LogError("Alternative Camera is Null", this);
+            enabled = false;
             return;
         }
 
         if (_altVCameraType == AltVCameraType.SliderMove)
-        { 
-            _colider = GetComponent<Collider>();
-            _dollyTrecker = _cinemachineCamera.GetComponent<CinemachineSplineDolly>();
+        {
+            _collider = GetComponent<Collider>();
+            _dollyTracker = _cinemachineCamera.GetComponent<CinemachineSplineDolly>();
 
-            if (_colider == null || _dollyTrecker == null)
+            if (_collider == null || _dollyTracker == null)
             {
-                Debug.LogError("You use Dolly Treked, but CinemachineCamera have't CinemachineSplineDolly component, or this object have't collider");
+                Debug.LogError("You use Dolly Tracked, but CinemachineCamera hasn't CinemachineSplineDolly component, or this object hasn't collider", this);
                 _altVCameraType = AltVCameraType.BlocedPos;
             }
         }
     }
 
+    private void InitializeComponents()
+    {
+        if (_altVCameraType == AltVCameraType.SliderMove)
+        {
+            _collider = GetComponent<Collider>();
+            _dollyTracker = _cinemachineCamera.GetComponent<CinemachineSplineDolly>();
+        }
+    }
+
     private void Update()
     {
-        if (!_dollyTreckerActive || _playerController == null) return;
+        if (!_dollyTrackerActive || _playerController == null) return;
 
-        // Get the bounds of the collider in local space
-        Vector3 localMin = _colider.transform.InverseTransformPoint(_colider.bounds.min);
-        Vector3 localMax = _colider.transform.InverseTransformPoint(_colider.bounds.max);
+        UpdateDollyTrackerPosition();
+    }
+
+    private void UpdateDollyTrackerPosition()
+    {
+        if (_collider == null || _dollyTracker == null) return;
+
+        Vector3 localMin = _collider.transform.InverseTransformPoint(_collider.bounds.min);
+        Vector3 localMax = _collider.transform.InverseTransformPoint(_collider.bounds.max);
         
-        // Convert player position to collider's local space and calculate position in one step
         float relativePosition = Mathf.InverseLerp(
             localMax.x,
             localMin.x,
-            _colider.transform.InverseTransformPoint(_playerController.transform.position).x
+            _collider.transform.InverseTransformPoint(_playerController.transform.position).x
         );
         
-        // Update the dolly tracker position
-        _dollyTrecker.CameraPosition = Mathf.Clamp01(relativePosition);
+        _dollyTracker.CameraPosition = Mathf.Clamp01(relativePosition);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent(out _playerController))
-        {
-            _previousAltCamera = _playerController.GetPlayerData().CameraControlBlock.RequestToSetPriorityVCamera(new VCameraConteiner { _aVCamera = _cinemachineCamera, _activator = this }, _altVCameraType);
-            if (_previousAltCamera == null)
-                _playerController.SwitchMode(true);
+        if (!other.TryGetComponent(out _playerController)) return;
 
-            if (_altVCameraType == AltVCameraType.SliderMove)
-                _dollyTreckerActive = true;
+        _previousAltCamera = _playerController.GetPlayerData().CameraControlBlock.RequestToSetPriorityVCamera(_cachedCameraContainer, _altVCameraType);
+        
+        if (_previousAltCamera == null)
+        {
+            _playerController.SwitchMode(true);
+        }
+
+        if (_altVCameraType == AltVCameraType.SliderMove)
+        {
+            _dollyTrackerActive = true;
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.TryGetComponent(out _playerController))
+        if (!other.TryGetComponent(out _playerController)) return;
+
+        bool thisIsActualVC = _playerController.GetPlayerData().CameraControlBlock.ReturnBaseVCamera(_cachedCameraContainer, _previousAltCamera);
+        
+        if (thisIsActualVC)
         {
-            bool thisIsActualVC = _playerController.GetPlayerData().CameraControlBlock.ReturnBaseVCamera(new VCameraConteiner { _aVCamera = _cinemachineCamera, _activator = this }, _previousAltCamera);
-            if (thisIsActualVC)
-                _playerController.SwitchMode(false);
+            _playerController.SwitchMode(false);
         }
 
         _previousAltCamera = null;
-
-        if (_altVCameraType == AltVCameraType.SliderMove)
-            _dollyTreckerActive = false;
-
+        _dollyTrackerActive = false;
         _playerController = null;
-    }
-
-    public VCameraConteiner GetPreviousCameraData()
-    {
-        return _previousAltCamera;
     }
 
     public void ClearPreviousCamera()
     {
         _previousAltCamera = null;
+    }
+
+    private void OnDestroy()
+    {
+        _previousAltCamera = null;
+        _playerController = null;
     }
 }
 
