@@ -54,8 +54,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 40.009315, y: 30, z: 15.392753}
-  m_Center: {x: -1.9325008, y: 9.75, z: 7.696378}
+  m_Size: {x: 29.7013, y: 30, z: 15.392753}
+  m_Center: {x: 3.221509, y: 9.75, z: 7.696378}
 --- !u!114 &5916371632163660836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -70,8 +70,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cinemachineCamera: {fileID: 712733877142592743}
   _altVCameraType: 2
-  _blockCameraMove: 0
-  _useSliderMove: 1
 --- !u!1 &1235742426631197798
 GameObject:
   m_ObjectHideFlags: 0
@@ -152,8 +150,8 @@ MonoBehaviour:
           w: -0.009682005
     - Position:
         x: 5.4967146
-        y: -0.0010175705
-        z: -23.386873
+        y: 0.02898264
+        z: -23.566874
       TangentIn:
         x: 0
         y: 0

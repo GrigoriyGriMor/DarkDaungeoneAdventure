@@ -15,7 +15,7 @@ public class AlternativeVCinemachineCameraActivator : MonoBehaviour
     private PlayerController _playerController;
     bool _dollyTreckerActive = false;
 
-    CinemachineCamera _previousAltCamera;
+    VCameraConteiner _previousAltCamera;
 
     private Color _gizmoColor = Color.blue; // Цвет для отображения в Gizmo
 
@@ -77,27 +77,40 @@ public class AlternativeVCinemachineCameraActivator : MonoBehaviour
     {
         if (other.TryGetComponent(out _playerController))
         {
-            _previousAltCamera = _playerController.GetPlayerData().CameraControlBlock.RequestToSetPriorityVCamera(_cinemachineCamera, _altVCameraType);
-            _playerController.SwitchMode(true);
-        }
+            _previousAltCamera = _playerController.GetPlayerData().CameraControlBlock.RequestToSetPriorityVCamera(new VCameraConteiner { _aVCamera = _cinemachineCamera, _activator = this }, _altVCameraType);
+            if (_previousAltCamera == null)
+                _playerController.SwitchMode(true);
 
-        if (_altVCameraType == AltVCameraType.SliderMove)
-            _dollyTreckerActive = true;
+            if (_altVCameraType == AltVCameraType.SliderMove)
+                _dollyTreckerActive = true;
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.TryGetComponent(out _playerController))
         {
-            bool thisIsActualVC = _playerController.GetPlayerData().CameraControlBlock.ReturnBaseVCamera(_cinemachineCamera, _previousAltCamera);
+            bool thisIsActualVC = _playerController.GetPlayerData().CameraControlBlock.ReturnBaseVCamera(new VCameraConteiner { _aVCamera = _cinemachineCamera, _activator = this }, _previousAltCamera);
             if (thisIsActualVC)
                 _playerController.SwitchMode(false);
         }
+
+        _previousAltCamera = null;
 
         if (_altVCameraType == AltVCameraType.SliderMove)
             _dollyTreckerActive = false;
 
         _playerController = null;
+    }
+
+    public VCameraConteiner GetPreviousCameraData()
+    {
+        return _previousAltCamera;
+    }
+
+    public void ClearPreviousCamera()
+    {
+        _previousAltCamera = null;
     }
 }
 
