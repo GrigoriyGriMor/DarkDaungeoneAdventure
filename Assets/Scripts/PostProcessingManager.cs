@@ -30,6 +30,8 @@ public class PostProcessingManager : MonoBehaviour
 
     public void VignetteActivate(bool _isActive, float _targetValue = 1)
     {
+        return;
+        
         if (vignetteEffectCorutine != null)
             StopCoroutine(vignetteEffectCorutine);
 

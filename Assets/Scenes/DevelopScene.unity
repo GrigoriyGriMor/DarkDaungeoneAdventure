@@ -1806,18 +1806,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6c90ff61dd17e747bf0b0bd98915b28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  body_type: 0
-  type: 0
-  targetGun: {fileID: 0}
-  w_attack: 0
-  minCountDropItems: 0
-  maxCountDropItems: 0
-  radius: 1
-  lootArray: []
-  thisTransform: {fileID: 0}
-  currentTargetPlayer: {fileID: 0}
-  isDead: 0
-  isAggression: 0
+  _maxHealPoints: 100
+  _currentHP: 0
+  _defaultMat: {fileID: 0}
+  _damageMat: {fileID: 7822422530545340917, guid: dfcc40b33aee5334c8ec2d7f8e846a93, type: 3}
+  _damageParticle: {fileID: 0}
   source: {fileID: 0}
   idleClip: {fileID: 0}
   patrolClip: {fileID: 0}
@@ -1909,7 +1902,7 @@ Transform:
   m_GameObject: {fileID: 355903901}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -10.990002, y: 2.58, z: 14.940001}
+  m_LocalPosition: {x: -10.990002, y: 1.22, z: 14.940001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12992,18 +12985,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6c90ff61dd17e747bf0b0bd98915b28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  body_type: 0
-  type: 0
-  targetGun: {fileID: 0}
-  w_attack: 0
-  minCountDropItems: 0
-  maxCountDropItems: 0
-  radius: 1
-  lootArray: []
-  thisTransform: {fileID: 0}
-  currentTargetPlayer: {fileID: 0}
-  isDead: 0
-  isAggression: 0
+  _maxHealPoints: 100
+  _currentHP: 0
+  _defaultMat: {fileID: 0}
+  _damageMat: {fileID: 0}
+  _damageParticle: {fileID: 0}
   source: {fileID: 0}
   idleClip: {fileID: 0}
   patrolClip: {fileID: 0}
@@ -14208,18 +14194,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6c90ff61dd17e747bf0b0bd98915b28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  body_type: 0
-  type: 0
-  targetGun: {fileID: 0}
-  w_attack: 0
-  minCountDropItems: 0
-  maxCountDropItems: 0
-  radius: 1
-  lootArray: []
-  thisTransform: {fileID: 0}
-  currentTargetPlayer: {fileID: 0}
-  isDead: 0
-  isAggression: 0
+  _maxHealPoints: 100
+  _currentHP: 0
+  _defaultMat: {fileID: 0}
+  _damageMat: {fileID: 0}
+  _damageParticle: {fileID: 0}
   source: {fileID: 0}
   idleClip: {fileID: 0}
   patrolClip: {fileID: 0}
@@ -14311,7 +14290,7 @@ Transform:
   m_GameObject: {fileID: 1301195248}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7, y: 2.58, z: 12}
+  m_LocalPosition: {x: -7, y: 1.22, z: 12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -21779,18 +21758,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6c90ff61dd17e747bf0b0bd98915b28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  body_type: 0
-  type: 0
-  targetGun: {fileID: 0}
-  w_attack: 0
-  minCountDropItems: 0
-  maxCountDropItems: 0
-  radius: 1
-  lootArray: []
-  thisTransform: {fileID: 0}
-  currentTargetPlayer: {fileID: 0}
-  isDead: 0
-  isAggression: 0
+  _maxHealPoints: 100
+  _currentHP: 0
+  _defaultMat: {fileID: 0}
+  _damageMat: {fileID: 0}
+  _damageParticle: {fileID: 0}
   source: {fileID: 0}
   idleClip: {fileID: 0}
   patrolClip: {fileID: 0}
@@ -21882,7 +21854,7 @@ Transform:
   m_GameObject: {fileID: 1927419755}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6, y: 2.58, z: 7}
+  m_LocalPosition: {x: -6, y: 1.22, z: 7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -23602,6 +23574,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4620122766887981339}
     m_Modifications:
+    - target: {fileID: 38652715194144894, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 98171518580453738, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -23677,6 +23653,10 @@ PrefabInstance:
     - target: {fileID: 6987790654898172354, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
       propertyPath: _2DModeJumpForce
       value: 600
+      objectReference: {fileID: 0}
+    - target: {fileID: 7350982675225782909, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
+      propertyPath: _jumpAttackRange
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8763624576393213621, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
       propertyPath: m_Name

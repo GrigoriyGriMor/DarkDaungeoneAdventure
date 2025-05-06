@@ -41,6 +41,8 @@ namespace PlayerControllers
         private float _lastAttackTime;
         private const float COMBO_RESET_TIME = 2f;
 
+        private Coroutine _attackCoroutine = null;
+
         protected override void SubscribeToInput()
         {
             if (_inputSystemMN == null) return;
@@ -70,7 +72,7 @@ namespace PlayerControllers
 
         private void StartAttackSequence()
         {
-            if (_isAttacking) return;
+            if (_isAttacking || _attackCoroutine != null) return;
 
             DetectTargets();
             if (_potentialTargets.Count == 0) return;
@@ -200,8 +202,12 @@ namespace PlayerControllers
 
                 if (distanceToTarget <= _attackRange)
                 {
-                    StartMelleAttack();
+                    if (!_playerData.PlayerAnimator.GetBool("Run"))
+                        _playerData.PlayerAnimator.SetBool("Run", false);
+                    _playerData.PlayerAnimator.SetFloat("Move", 0);
                     _playerController.SetMovementBlocked(false);
+
+                    StartMelleAttack();
                     yield break;
                 }
                 //else if (distanceToTarget <= _jumpAttackRange)
@@ -214,12 +220,11 @@ namespace PlayerControllers
             }
 
             _playerController.SetMovementBlocked(false);
-            _isAttacking = false;
         }
 
         private void StartMelleAttack()
         {
-            return;
+            _isAttacking = true;
 
             if (Time.time - _lastAttackTime > COMBO_RESET_TIME)
             {
@@ -230,32 +235,51 @@ namespace PlayerControllers
             float damage = _baseDamage * (_comboCount == 3 ? _comboMultiplier : 1f);
 
             Vector3 directionToTarget = (_currentTarget.GetTransform().position - _playerData.PlayerRB.transform.position).normalized;
-            Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
-            _playerData.PlayerVisual.transform.rotation = Quaternion.Lerp(
-                _playerData.PlayerVisual.transform.rotation,
+
+            float targetYRotation = Mathf.Atan2(directionToTarget.x, directionToTarget.z) * Mathf.Rad2Deg;
+            Quaternion targetRotation = Quaternion.Euler(0, targetYRotation, 0);
+
+            _playerData.PlayerVisual.rotation = Quaternion.Lerp(
+                _playerData.PlayerVisual.rotation,
                 targetRotation,
-                1f
+                _rotationSpeed * Time.deltaTime
             );
 
             _playerData.PlayerAnimator.SetTrigger($"Attack{_comboCount}");
-            
-            StartCoroutine(DealDamageWithDelay(damage));
+
+            _attackCoroutine = StartCoroutine(DealDamageWithDelay(damage));
 
             _lastAttackTime = Time.time;
             
             if (!_currentTarget.IsAlive())
             {
                 FindNextTarget();
+                CancelAttack();
             }
         }
 
         private IEnumerator DealDamageWithDelay(float damage)
         {
-            yield return new WaitForSeconds(_attackDamageDelay);
+            // Ждем, пока анимация атаки не начнется
+            yield return new WaitForSeconds(0.1f);
+
+            // Получаем информацию о текущем состоянии анимации
+            AnimatorStateInfo stateInfo = _playerData.PlayerAnimator.GetCurrentAnimatorStateInfo(0);
+
+            // Ждем, пока анимация не достигнет нужного момента
+            while (stateInfo.normalizedTime < 0.5f)
+            {
+                stateInfo = _playerData.PlayerAnimator.GetCurrentAnimatorStateInfo(0);
+                yield return null;
+            }
+
             if (_currentTarget != null && _currentTarget.IsAlive())
             {
-                _currentTarget.TakeDamage(damage);
+                _currentTarget.TakeDamage(damage);    
             }
+
+            _isAttacking = false;
+            _attackCoroutine = null;
         }
 
         private void StartDashAttack()
@@ -325,10 +349,13 @@ namespace PlayerControllers
                 {
                     StartMelleAttack();
                 }
-                else if (distance <= _jumpAttackRange)
-                {
-                    StartDashAttack();
-                }
+                else 
+                    if (distance <= _jumpAttackRange)
+                    {
+                        StartDashAttack();
+                    }
+                    else
+                        MoveTowardsTarget();
             }
         }
 
@@ -339,6 +366,12 @@ namespace PlayerControllers
                 _isAttacking = false;
                 _currentTarget = null;
                 _comboCount = 0;
+
+                if (_attackCoroutine != null)
+                {
+                    StopCoroutine(_attackCoroutine);
+                    _attackCoroutine = null;
+                }    
             }
         }
 
