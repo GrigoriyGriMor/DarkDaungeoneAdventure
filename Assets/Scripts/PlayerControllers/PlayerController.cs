@@ -267,6 +267,12 @@ namespace PlayerControllers
             _playerData.CameraControlBlock.SetNewCameraTarget(cameraTarget);
         }
 
+        public void OnAttackAnimEvent()
+        {
+            if (_attackModule)
+                _attackModule.OnAttackAnimationEvent();
+        }
+
         #region Collision Methods
         public Action<Collider> OnTriggerEnterAction { get; set; }
         public Action<Collider> OnTriggerExitAction { get; set; }
