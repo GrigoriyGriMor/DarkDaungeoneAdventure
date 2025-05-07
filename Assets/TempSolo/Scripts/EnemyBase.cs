@@ -37,17 +37,10 @@ public class EnemyBase : MonoBehaviour, IAttackable
     public void TakeDamage(float damage)
     {
         _currentHP -= damage;
-        if (_currentHP < 0)
-        {
-            _currentHP = 0;
-            Dead();
-        }
 
         if (_takeDamageCoroutine != null)
             StopCoroutine(_takeDamageCoroutine);
         _takeDamageCoroutine = StartCoroutine(TakeDamage());
-
-        Debug.LogError("Damage = " + damage);
     }
 
     IEnumerator TakeDamage()
@@ -58,8 +51,14 @@ public class EnemyBase : MonoBehaviour, IAttackable
         if (_damageMat != null)
             _meshRenderer.material = _damageMat;
 
-        yield return new WaitForSeconds(0.15f);
+        yield return new WaitForSeconds(0.05f);
         _meshRenderer.material = _defaultMat;
+
+        if (_currentHP < 0)
+        {
+            _currentHP = 0;
+            Dead();
+        }
 
         _takeDamageCoroutine = null;
     }
@@ -77,8 +76,8 @@ public class EnemyBase : MonoBehaviour, IAttackable
         //animator.SetBool(stateRun, false);
         //animator.SetTrigger(stateDead);
         //zoneDamage1.Hide();
-        gameObject.SetActive(false);
         yield return null;
+        gameObject.SetActive(false);
     }
 
     public Transform GetTransform()

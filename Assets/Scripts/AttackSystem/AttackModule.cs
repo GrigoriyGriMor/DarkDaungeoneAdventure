@@ -20,6 +20,8 @@ namespace PlayerControllers
         [SerializeField] private float _rotationSpeed = 10f;
         [SerializeField] private float _attackDamageDelay = 0.3f;
 
+        [SerializeField, Range(1, 10)] private int _jumpAttackAnimCount = 3;
+
         [Header("Move To Target")]
         [SerializeField] private float _moveSpeed = 7f;
         [SerializeField] private float _targetAngleThreshold = 5f;
@@ -42,6 +44,8 @@ namespace PlayerControllers
         private const float COMBO_RESET_TIME = 2f;
 
         private Coroutine _attackCoroutine = null;
+        private Coroutine _attackCooldownCoroutine = null;
+        private Coroutine _blockControlCoroutine = null;
 
         protected override void SubscribeToInput()
         {
@@ -68,11 +72,12 @@ namespace PlayerControllers
             }
 
             _controlIsBlocked = false;
+            _blockControlCoroutine = null;
         }
 
         private void StartAttackSequence()
         {
-            if (_isAttacking || _attackCoroutine != null) return;
+            if (_isAttacking || _attackCoroutine != null || _attackCooldownCoroutine != null) return;
 
             DetectTargets();
             if (_potentialTargets.Count == 0) return;
@@ -80,23 +85,18 @@ namespace PlayerControllers
             _currentTarget = GetPriorityTarget();
             if (_currentTarget == null) return;
 
-            StartCoroutine(BlockControlTimer());
+            if (_blockControlCoroutine != null)
+                StopCoroutine(_blockControlCoroutine);
+            _blockControlCoroutine = StartCoroutine(BlockControlTimer());
 
             float distanceToTarget = Vector3.Distance(_playerData.PlayerBase.position, _currentTarget.GetTransform().position);
-
             if (distanceToTarget <= _attackRange)
-            {
                 StartMelleAttack();
-            }
-            else 
-            if (distanceToTarget <= _jumpAttackRange)
-            {
-                StartDashAttack();
-            }
             else
-            {
-                MoveTowardsTarget();
-            }
+                if (distanceToTarget <= _jumpAttackRange)
+                    StartDashAttack();
+                else
+                    MoveTowardsTarget();
         }
 
         #region Check Targets
@@ -207,14 +207,21 @@ namespace PlayerControllers
                     _playerData.PlayerAnimator.SetFloat("Move", 0);
                     _playerController.SetMovementBlocked(false);
 
-                    StartMelleAttack();
+                    if (_currentTarget.IsAlive())
+                        StartMelleAttack();
                     yield break;
                 }
-                //else if (distanceToTarget <= _jumpAttackRange)
-                //{
-                //    StartDashAttack();
-                //    yield break;
-                //}
+                else if (distanceToTarget <= _jumpAttackRange)
+                {
+                    if (!_playerData.PlayerAnimator.GetBool("Run"))
+                        _playerData.PlayerAnimator.SetBool("Run", false);
+                    _playerData.PlayerAnimator.SetFloat("Move", 0);
+                    _playerController.SetMovementBlocked(false);
+
+                    if (_currentTarget.IsAlive())
+                        StartDashAttack();
+                    yield break;
+                }
 
                 yield return null;
             }
@@ -224,50 +231,35 @@ namespace PlayerControllers
 
         private void StartMelleAttack()
         {
+            if (_currentTarget == null) return;
+
             _isAttacking = true;
-
-            if (Time.time - _lastAttackTime > COMBO_RESET_TIME)
-            {
+            _attackCooldownCoroutine = StartCoroutine(AttackCooldown());
+            
+            if (Time.time - _lastAttackTime > COMBO_RESET_TIME || _comboCount >= 3)
                 _comboCount = 0;
-            }
 
-            _comboCount = (_comboCount + 1) % 4;
+            _comboCount++;
             float damage = _baseDamage * (_comboCount == 3 ? _comboMultiplier : 1f);
 
             Vector3 directionToTarget = (_currentTarget.GetTransform().position - _playerData.PlayerRB.transform.position).normalized;
-
             float targetYRotation = Mathf.Atan2(directionToTarget.x, directionToTarget.z) * Mathf.Rad2Deg;
             Quaternion targetRotation = Quaternion.Euler(0, targetYRotation, 0);
-
-            _playerData.PlayerVisual.rotation = Quaternion.Lerp(
-                _playerData.PlayerVisual.rotation,
-                targetRotation,
-                _rotationSpeed * Time.deltaTime
-            );
-
-            _playerData.PlayerAnimator.SetTrigger($"Attack{_comboCount}");
+            _playerData.PlayerVisual.rotation = targetRotation;
 
             _attackCoroutine = StartCoroutine(DealDamageWithDelay(damage));
-
-            _lastAttackTime = Time.time;
-            
-            if (!_currentTarget.IsAlive())
-            {
-                FindNextTarget();
-                CancelAttack();
-            }
         }
 
         private IEnumerator DealDamageWithDelay(float damage)
         {
+            _lastAttackTime = Time.time;
+            _playerData.PlayerAnimator.SetTrigger($"Attack{_comboCount}");
+
             // Ждем, пока анимация атаки не начнется
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.05f);
 
-            // Получаем информацию о текущем состоянии анимации
             AnimatorStateInfo stateInfo = _playerData.PlayerAnimator.GetCurrentAnimatorStateInfo(0);
-
-            // Ждем, пока анимация не достигнет нужного момента
-            while (stateInfo.normalizedTime < 0.5f)
+            while (stateInfo.normalizedTime < 0.4f)
             {
                 stateInfo = _playerData.PlayerAnimator.GetCurrentAnimatorStateInfo(0);
                 yield return null;
@@ -282,82 +274,67 @@ namespace PlayerControllers
             _attackCoroutine = null;
         }
 
-        private void StartDashAttack()
+        IEnumerator AttackCooldown()
         {
-            return;
+            float cooldown = 0;
+            while (cooldown < _attackDamageDelay)
+            {
+                cooldown += Time.deltaTime;
+                yield return null;
+            }
 
-            _isAttacking = true;
-            StartCoroutine(JumpAttackCoroutine());
+            _attackCooldownCoroutine = null;
         }
 
-        private IEnumerator JumpAttackCoroutine()
+        private void StartDashAttack()
         {
             if (_currentTarget == null)
             {
                 _isAttacking = false;
-                yield break;
+                return;
             }
 
-            Vector3 startPos = _playerData.PlayerRB.transform.position;
+            _isAttacking = true;
+            _attackCoroutine = StartCoroutine(JumpAttackCoroutine());
+        }
+
+        private IEnumerator JumpAttackCoroutine()
+        {
+            _attackCooldownCoroutine = StartCoroutine(AttackCooldown());
+
             Vector3 targetPos = _currentTarget.GetTransform().position;
-            float journeyLength = Vector3.Distance(startPos, targetPos);
-            float startTime = Time.time;
+            _playerData.PlayerAnimator.SetTrigger($"JumpAttack{Random.Range(1, _jumpAttackAnimCount)}");
 
-            _playerData.PlayerAnimator.SetTrigger("JumpAttack");
+            // Rotate towards target during jump
+            Vector3 direction = (targetPos - _playerData.PlayerBase.transform.position).normalized;
+            float targetYRotation = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+            Quaternion targetRotation = Quaternion.Euler(0, targetYRotation, 0);
+            _playerData.PlayerVisual.rotation = targetRotation;
 
-            while (Vector3.Distance(_playerData.PlayerRB.transform.position, targetPos) > 0.1f)
+            while (Vector3.Distance(_playerData.PlayerBase.transform.position, targetPos) > _attackRange)
             {
-                float distanceCovered = (Time.time - startTime) * _jumpAttackSpeed;
-                float fractionOfJourney = distanceCovered / journeyLength;
+                Vector3 moveDirection = (targetPos - _playerData.PlayerBase.transform.position).normalized;
+                Vector3 movementVelocity = moveDirection * _jumpAttackSpeed;
+                _playerData.PlayerRB.linearVelocity = new Vector3(movementVelocity.x, _playerData.PlayerRB.linearVelocity.y, movementVelocity.z);
+                yield return null;
+            }
 
-                _playerData.PlayerRB.transform.position = Vector3.Lerp(startPos, targetPos, fractionOfJourney);
-                
-                // Rotate towards target during jump
-                Vector3 direction = (targetPos - _playerData.PlayerRB.transform.position).normalized;
-                if (direction != Vector3.zero)
-                {
-                    Quaternion targetRotation = Quaternion.LookRotation(direction);
-                    _playerData.PlayerRB.transform.rotation = Quaternion.Lerp(
-                        _playerData.PlayerRB.transform.rotation,
-                        targetRotation,
-                        _rotationSpeed * Time.deltaTime
-                    );
-                }
+            // Останавливаем движение
+            _playerData.PlayerRB.linearVelocity = Vector3.zero;
 
+            AnimatorStateInfo stateInfo = _playerData.PlayerAnimator.GetCurrentAnimatorStateInfo(0);
+            while (stateInfo.normalizedTime < 0.75f)
+            {
+                stateInfo = _playerData.PlayerAnimator.GetCurrentAnimatorStateInfo(0);
                 yield return null;
             }
 
             _currentTarget.TakeDamage(_baseDamage);
-            
-            if (!_currentTarget.IsAlive())
-            {
-                FindNextTarget();
-            }
-
             _isAttacking = false;
+
+            _attackCoroutine = null;
         }
         #endregion
-
-        private void FindNextTarget()
-        {
-            DetectTargets();
-            _currentTarget = GetPriorityTarget();
-            if (_currentTarget != null)
-            {
-                float distance = Vector3.Distance(_playerData.PlayerRB.transform.position, _currentTarget.GetTransform().position);
-                if (distance <= _attackRange)
-                {
-                    StartMelleAttack();
-                }
-                else 
-                    if (distance <= _jumpAttackRange)
-                    {
-                        StartDashAttack();
-                    }
-                    else
-                        MoveTowardsTarget();
-            }
-        }
 
         private void CancelAttack()
         {
@@ -374,50 +351,5 @@ namespace PlayerControllers
                 }    
             }
         }
-
-#if UNITY_EDITOR
-        private void OnDrawGizmos()
-        {
-            if (_playerData == null || _playerData.CameraControlBlock == null) return;
-
-            // Draw detection radius
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(_playerData.PlayerBase.position, _detectionRadius);
-
-            // Draw detection angle
-            Vector3 forward = _playerData.CameraControlBlock.transform.forward;
-            Vector3 right = _playerData.CameraControlBlock.transform.right;
-            Vector3 up = _playerData.CameraControlBlock.transform.up;
-
-            float halfAngle = _detectionAngle * 0.5f;
-            int segments = 20;
-            float angleStep = halfAngle / segments;
-
-            // Draw left side of the angle
-            Gizmos.color = Color.green;
-            for (int i = 0; i < segments; i++)
-            {
-                float angle = -halfAngle + (angleStep * i);
-                Vector3 direction = Quaternion.AngleAxis(angle, up) * forward;
-                Vector3 endPoint1 = _playerData.PlayerBase.position + direction * _detectionRadius;
-                Gizmos.DrawLine(_playerData.PlayerBase.position, endPoint1);
-            }
-
-            // Draw right side of the angle
-            for (int i = 0; i < segments; i++)
-            {
-                float angle = angleStep * i;
-                Vector3 direction = Quaternion.AngleAxis(angle, up) * forward;
-                Vector3 endPoint2 = _playerData.PlayerBase.position + direction * _detectionRadius;
-                Gizmos.DrawLine(_playerData.PlayerBase.position, endPoint2);
-            }
-
-            // Draw arc connecting the sides
-            Gizmos.color = Color.cyan;
-            Vector3 startPoint = _playerData.PlayerBase.position + Quaternion.AngleAxis(-halfAngle, up) * forward * _detectionRadius;
-            Vector3 endPoint3 = _playerData.PlayerBase.position + Quaternion.AngleAxis(halfAngle, up) * forward * _detectionRadius;
-            Gizmos.DrawLine(startPoint, endPoint3);
-        }
-#endif
     }
 } 

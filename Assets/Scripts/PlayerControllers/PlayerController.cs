@@ -262,6 +262,11 @@ namespace PlayerControllers
                 _movementModul.BoostJumpForce(mode2D);
         }
 
+        public void SetCameraTarget(Transform cameraTarget)
+        {
+            _playerData.CameraControlBlock.SetNewCameraTarget(cameraTarget);
+        }
+
         #region Collision Methods
         public Action<Collider> OnTriggerEnterAction { get; set; }
         public Action<Collider> OnTriggerExitAction { get; set; }
