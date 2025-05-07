@@ -113,6 +113,11 @@ public class APCameraController : MonoBehaviour
         _usingVCamera.Camera.LookAt = _currentTarget;
     }
 
+    public void SetNewCameraTarget(Transform target)
+    {
+        _usingVCamera.Camera.LookAt = target;
+    }
+
     public bool ReturnBaseVCamera(VCameraConteiner camera, VCameraConteiner previousCamera)
     {
         if (camera == null)

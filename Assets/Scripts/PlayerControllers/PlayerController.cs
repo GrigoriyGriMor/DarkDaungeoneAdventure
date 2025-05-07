@@ -262,12 +262,30 @@ namespace PlayerControllers
                 _movementModul.BoostJumpForce(mode2D);
         }
 
+        public void SetCameraTarget(Transform cameraTarget)
+        {
+            _playerData.CameraControlBlock.SetNewCameraTarget(cameraTarget);
+        }
+
+        public void OnAttackAnimEvent()
+        {
+            if (_attackModule)
+                _attackModule.OnAttackAnimationEvent();
+        }
+
+        public void SetDamage(float damage)
+        {
+            if (_healModule != null && _healModule.moduleIsActive)
+            {
+                _healModule.SetDamage(damage);
+            }
+        }
+
         #region Collision Methods
         public Action<Collider> OnTriggerEnterAction { get; set; }
         public Action<Collider> OnTriggerExitAction { get; set; }
         public Action<Collision> OnCollisionEnterAction { get; set; }
         public Action<Collision> OnCollisionExitAction { get; set; }
-
 
         private void OnTriggerEnter(Collider other)
         {

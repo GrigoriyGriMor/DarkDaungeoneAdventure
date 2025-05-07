@@ -8,6 +8,10 @@ namespace PlayerControllers
 {
     public class AttackModule : AbstractModul
     {
+        private const float ANIMATION_DAMAGE_POINT = 0.75f;
+        private const float MIN_DISTANCE_THRESHOLD = 0.1f;
+        private const int MAX_COMBO_COUNT = 3;
+
         [Header("Detection Settings")]
         [SerializeField] private float _detectionRadius = 5f;
         [SerializeField] private float _detectionAngle = 90f;
@@ -19,6 +23,14 @@ namespace PlayerControllers
         [SerializeField] private float _jumpAttackSpeed = 10f;
         [SerializeField] private float _rotationSpeed = 10f;
         [SerializeField] private float _attackDamageDelay = 0.3f;
+        [SerializeField, Range(1, 10)] private int _jumpAttackAnimCount = 3;
+
+        [Header("Air Attack Settings")]
+        [SerializeField] private float _airAttackSpeed = 12f;
+        [SerializeField] private float _airAttackDamage = 30f;
+        [SerializeField] private ParticleSystem _airAttackParticle;
+        [SerializeField] private ParticleSystem _airAttackExplosionParticle;
+        [SerializeField] private string _endFlyAnimTriggerName = "EndFly";
 
         [Header("Move To Target")]
         [SerializeField] private float _moveSpeed = 7f;
@@ -32,7 +44,6 @@ namespace PlayerControllers
         [Header("Return Control To Player")]
         [SerializeField] private float _blockControlTime = 0.2f;
         [SerializeField] private float _minInputThreshold = 0.1f;
-        private bool _controlIsBlocked = false;
 
         private List<IAttackable> _potentialTargets = new();
         private IAttackable _currentTarget;
@@ -41,11 +52,18 @@ namespace PlayerControllers
         private float _lastAttackTime;
         private const float COMBO_RESET_TIME = 2f;
 
+        private Coroutine _attackCoroutine;
+        private Coroutine _attackCooldownCoroutine;
+        private Coroutine _blockControlCoroutine;
+        private bool _controlIsBlocked;
+
+        private float _pendingDamage;
+        private bool _isWaitingForAnimationEvent;
+
         protected override void SubscribeToInput()
         {
             if (_inputSystemMN == null) return;
-
-            _inputSystemMN._attackAction._clickAction += () => StartAttackSequence();
+            _inputSystemMN._attackAction._clickAction += StartAttackSequence;
         }
 
         private void FixedUpdate()
@@ -57,8 +75,8 @@ namespace PlayerControllers
         private IEnumerator BlockControlTimer()
         {
             _controlIsBlocked = true;
-
             float timer = 0;
+
             while (timer < _blockControlTime)
             {
                 timer += Time.deltaTime;
@@ -66,11 +84,12 @@ namespace PlayerControllers
             }
 
             _controlIsBlocked = false;
+            _blockControlCoroutine = null;
         }
 
         private void StartAttackSequence()
         {
-            if (_isAttacking) return;
+            if (!CanStartAttack()) return;
 
             DetectTargets();
             if (_potentialTargets.Count == 0) return;
@@ -78,22 +97,196 @@ namespace PlayerControllers
             _currentTarget = GetPriorityTarget();
             if (_currentTarget == null) return;
 
-            StartCoroutine(BlockControlTimer());
+            StartBlockControl();
+            HandleAttackBasedOnDistance();
+        }
 
+        private bool CanStartAttack()
+        {
+            return !_isAttacking && _attackCoroutine == null && _attackCooldownCoroutine == null;
+        }
+
+        private void StartBlockControl()
+        {
+            if (_blockControlCoroutine != null)
+                StopCoroutine(_blockControlCoroutine);
+            _blockControlCoroutine = StartCoroutine(BlockControlTimer());
+        }
+
+        private void HandleAttackBasedOnDistance()
+        {
+            if (_currentTarget == null) return;
             float distanceToTarget = Vector3.Distance(_playerData.PlayerBase.position, _currentTarget.GetTransform().position);
 
             if (distanceToTarget <= _attackRange)
-            {
                 StartMelleAttack();
-            }
-            else 
-            if (distanceToTarget <= _jumpAttackRange)
+            else if (distanceToTarget <= _jumpAttackRange)
             {
-                StartDashAttack();
+                if (!_isGround)
+                    StartAirAttack();
+                else
+                    StartDashAttack();
             }
             else
             {
-                MoveTowardsTarget();
+                if (!_isGround)
+                    StartAirAttack();
+                else
+                    MoveTowardsTarget();
+            }
+        }
+
+        private void StartMelleAttack()
+        {
+            if (_currentTarget == null) return;
+
+            _isAttacking = true;
+            _attackCooldownCoroutine = StartCoroutine(AttackCooldown());
+            
+            UpdateComboCount();
+            _pendingDamage = CalculateDamage();
+            RotateTowardsTarget();
+            _attackCoroutine = StartCoroutine(DealDamageWithDelay());
+        }
+
+        private void UpdateComboCount()
+        {
+            if (Time.time - _lastAttackTime > COMBO_RESET_TIME || _comboCount >= MAX_COMBO_COUNT)
+                _comboCount = 0;
+            _comboCount++;
+        }
+
+        private float CalculateDamage()
+        {
+            return _baseDamage * (_comboCount == MAX_COMBO_COUNT ? _comboMultiplier : 1f);
+        }
+
+        private void RotateTowardsTarget()
+        {
+            if (_currentTarget == null) return;
+
+            Vector3 directionToTarget = (_currentTarget.GetTransform().position - _playerData.PlayerBase.position).normalized;
+            float targetYRotation = Mathf.Atan2(directionToTarget.x, directionToTarget.z) * Mathf.Rad2Deg;
+            Quaternion targetRotation = Quaternion.Euler(0, targetYRotation, 0);
+            _playerData.PlayerVisual.rotation = targetRotation;
+        }
+
+        private IEnumerator DealDamageWithDelay()
+        {
+            _lastAttackTime = Time.time;
+            _playerData.PlayerAnimator.SetTrigger($"Attack{_comboCount}");
+            _isWaitingForAnimationEvent = true;
+
+            while (_isWaitingForAnimationEvent && _isAttacking)
+            {
+                yield return null;
+            }
+
+            _isAttacking = false;
+            _attackCoroutine = null;
+        }
+
+        public void OnAttackAnimationEvent()
+        {
+            if (_currentTarget != null && _currentTarget.IsAlive())
+            {
+                _currentTarget.TakeDamage(_pendingDamage);
+            }
+            _isWaitingForAnimationEvent = false;
+        }
+
+        private IEnumerator AttackCooldown()
+        {
+            float cooldown = 0;
+            while (cooldown < _attackDamageDelay)
+            {
+                cooldown += Time.deltaTime;
+                yield return null;
+            }
+            _attackCooldownCoroutine = null;
+        }
+
+        private void StartDashAttack()
+        {
+            if (_currentTarget == null)
+            {
+                _isAttacking = false;
+                return;
+            }
+
+            _isAttacking = true;
+            _pendingDamage = _baseDamage;
+            _attackCoroutine = StartCoroutine(JumpAttackCoroutine());
+        }
+
+        private IEnumerator JumpAttackCoroutine()
+        {
+            _attackCooldownCoroutine = StartCoroutine(AttackCooldown());
+
+            _playerData.PlayerRB.linearVelocity = Vector3.zero;
+            yield return new WaitForSeconds(0.05f);
+            if (_currentTarget == null)
+                yield break;
+
+            Vector3 targetPos = _currentTarget.GetTransform().position;
+            _playerData.PlayerAnimator.SetTrigger($"JumpAttack{Random.Range(1, _jumpAttackAnimCount + 1)}");
+            _isWaitingForAnimationEvent = true;
+
+            RotateTowardsTarget();
+
+            while (Vector3.Distance(_playerData.PlayerBase.transform.position, targetPos) > _attackRange)
+            {
+                if (!_isAttacking || _currentTarget == null || !_currentTarget.IsAlive())
+                {
+                    CancelAttack();
+                    yield break;
+                }
+
+                Vector3 moveDirection = (targetPos - _playerData.PlayerBase.transform.position).normalized;
+                Vector3 movementVelocity = moveDirection * _jumpAttackSpeed;
+                _playerData.PlayerRB.linearVelocity = new Vector3(movementVelocity.x, _playerData.PlayerRB.linearVelocity.y, movementVelocity.z);
+                yield return null;
+            }
+
+            _playerData.PlayerRB.linearVelocity = Vector3.zero;
+
+            while (_isWaitingForAnimationEvent && _isAttacking)
+            {
+                if (_currentTarget == null || !_currentTarget.IsAlive())
+                {
+                    CancelAttack();
+                    yield break;
+                }
+                yield return null;
+            }
+
+            ResetAttackState();
+        }
+
+        private void ResetAttackState()
+        {
+            _isAttacking = false;
+            _isWaitingForAnimationEvent = false;
+            _attackCoroutine = null;
+            _playerData.PlayerRB.linearVelocity = Vector3.zero;
+            
+            // Отключаем эффекты
+            if (_airAttackParticle != null)
+                _airAttackParticle.gameObject.SetActive(false);
+        }
+
+        private void CancelAttack()
+        {
+            if (!_isAttacking) return;
+
+            ResetAttackState();
+            _currentTarget = null;
+            _comboCount = 0;
+
+            if (_attackCoroutine != null)
+            {
+                StopCoroutine(_attackCoroutine);
+                _attackCoroutine = null;
             }
         }
 
@@ -200,191 +393,101 @@ namespace PlayerControllers
 
                 if (distanceToTarget <= _attackRange)
                 {
-                    StartMelleAttack();
+                    if (!_playerData.PlayerAnimator.GetBool("Run"))
+                        _playerData.PlayerAnimator.SetBool("Run", false);
+                    _playerData.PlayerAnimator.SetFloat("Move", 0);
                     _playerController.SetMovementBlocked(false);
+
+                    if (_currentTarget.IsAlive())
+                        StartMelleAttack();
                     yield break;
                 }
-                //else if (distanceToTarget <= _jumpAttackRange)
-                //{
-                //    StartDashAttack();
-                //    yield break;
-                //}
+                else if (distanceToTarget <= _jumpAttackRange)
+                {
+                    if (!_playerData.PlayerAnimator.GetBool("Run"))
+                        _playerData.PlayerAnimator.SetBool("Run", false);
+                    _playerData.PlayerAnimator.SetFloat("Move", 0);
+                    _playerController.SetMovementBlocked(false);
+
+                    if (_currentTarget.IsAlive())
+                        StartDashAttack();
+                    yield break;
+                }
 
                 yield return null;
             }
 
             _playerController.SetMovementBlocked(false);
-            _isAttacking = false;
-        }
-
-        private void StartMelleAttack()
-        {
-            return;
-
-            if (Time.time - _lastAttackTime > COMBO_RESET_TIME)
-            {
-                _comboCount = 0;
-            }
-
-            _comboCount = (_comboCount + 1) % 4;
-            float damage = _baseDamage * (_comboCount == 3 ? _comboMultiplier : 1f);
-
-            Vector3 directionToTarget = (_currentTarget.GetTransform().position - _playerData.PlayerRB.transform.position).normalized;
-            Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
-            _playerData.PlayerVisual.transform.rotation = Quaternion.Lerp(
-                _playerData.PlayerVisual.transform.rotation,
-                targetRotation,
-                1f
-            );
-
-            _playerData.PlayerAnimator.SetTrigger($"Attack{_comboCount}");
-            
-            StartCoroutine(DealDamageWithDelay(damage));
-
-            _lastAttackTime = Time.time;
-            
-            if (!_currentTarget.IsAlive())
-            {
-                FindNextTarget();
-            }
-        }
-
-        private IEnumerator DealDamageWithDelay(float damage)
-        {
-            yield return new WaitForSeconds(_attackDamageDelay);
-            if (_currentTarget != null && _currentTarget.IsAlive())
-            {
-                _currentTarget.TakeDamage(damage);
-            }
-        }
-
-        private void StartDashAttack()
-        {
-            return;
-
-            _isAttacking = true;
-            StartCoroutine(JumpAttackCoroutine());
-        }
-
-        private IEnumerator JumpAttackCoroutine()
-        {
-            if (_currentTarget == null)
-            {
-                _isAttacking = false;
-                yield break;
-            }
-
-            Vector3 startPos = _playerData.PlayerRB.transform.position;
-            Vector3 targetPos = _currentTarget.GetTransform().position;
-            float journeyLength = Vector3.Distance(startPos, targetPos);
-            float startTime = Time.time;
-
-            _playerData.PlayerAnimator.SetTrigger("JumpAttack");
-
-            while (Vector3.Distance(_playerData.PlayerRB.transform.position, targetPos) > 0.1f)
-            {
-                float distanceCovered = (Time.time - startTime) * _jumpAttackSpeed;
-                float fractionOfJourney = distanceCovered / journeyLength;
-
-                _playerData.PlayerRB.transform.position = Vector3.Lerp(startPos, targetPos, fractionOfJourney);
-                
-                // Rotate towards target during jump
-                Vector3 direction = (targetPos - _playerData.PlayerRB.transform.position).normalized;
-                if (direction != Vector3.zero)
-                {
-                    Quaternion targetRotation = Quaternion.LookRotation(direction);
-                    _playerData.PlayerRB.transform.rotation = Quaternion.Lerp(
-                        _playerData.PlayerRB.transform.rotation,
-                        targetRotation,
-                        _rotationSpeed * Time.deltaTime
-                    );
-                }
-
-                yield return null;
-            }
-
-            _currentTarget.TakeDamage(_baseDamage);
-            
-            if (!_currentTarget.IsAlive())
-            {
-                FindNextTarget();
-            }
-
-            _isAttacking = false;
         }
         #endregion
 
-        private void FindNextTarget()
+        private void StartAirAttack()
         {
-            DetectTargets();
-            _currentTarget = GetPriorityTarget();
-            if (_currentTarget != null)
+            if (_currentTarget == null) return;
+
+            _isAttacking = true;
+            _pendingDamage = _airAttackDamage;
+            _attackCoroutine = StartCoroutine(AirAttackCoroutine());
+        }
+
+        private IEnumerator AirAttackCoroutine()
+        {
+            // Поворачиваемся к цели
+            RotateTowardsTarget();
+            yield return new WaitForSeconds(0.1f);
+
+            // Запускаем анимацию и эффекты
+            if (_airAttackParticle != null)
             {
-                float distance = Vector3.Distance(_playerData.PlayerRB.transform.position, _currentTarget.GetTransform().position);
-                if (distance <= _attackRange)
+                _playerData.PlayerVisual.gameObject.SetActive(false);
+                _airAttackParticle.gameObject.SetActive(true);
+            }
+
+            Vector3 targetPos = _currentTarget.GetTransform().position;
+            _isWaitingForAnimationEvent = true;
+
+            // Двигаемся к цели
+            while (Vector3.Distance(_playerData.PlayerBase.transform.position, targetPos) > _attackRange)
+            {
+                if (!_isAttacking || _currentTarget == null || !_currentTarget.IsAlive())
                 {
-                    StartMelleAttack();
+                    CancelAttack();
+                    yield break;
                 }
-                else if (distance <= _jumpAttackRange)
+
+                Vector3 moveDirection = (targetPos - _playerData.PlayerBase.transform.position).normalized;
+                Vector3 movementVelocity = moveDirection * _airAttackSpeed;
+                _playerData.PlayerRB.linearVelocity = new Vector3(movementVelocity.x, _playerData.PlayerRB.linearVelocity.y, movementVelocity.z);
+                yield return null;
+            }
+
+            // Достигли цели - замедляем движение
+            _playerData.PlayerRB.linearVelocity = Vector3.zero;
+
+            // Проигрываем эффект взрыва при нанесении урона
+            if (_airAttackExplosionParticle != null)
+                _airAttackExplosionParticle.Play();
+
+            // Отключаем эффекты
+            if (_airAttackParticle != null)
+            {
+                _playerData.PlayerVisual.gameObject.SetActive(true);
+                _airAttackParticle.gameObject.SetActive(false);
+                _playerData.PlayerAnimator.SetTrigger(_endFlyAnimTriggerName);
+            }
+
+            // Ждем завершения анимации
+            while (_isWaitingForAnimationEvent && _isAttacking)
+            {
+                if (_currentTarget == null || !_currentTarget.IsAlive())
                 {
-                    StartDashAttack();
+                    CancelAttack();
+                    yield break;
                 }
+                yield return null;
             }
+
+            ResetAttackState();
         }
-
-        private void CancelAttack()
-        {
-            if (_isAttacking)
-            {
-                _isAttacking = false;
-                _currentTarget = null;
-                _comboCount = 0;
-            }
-        }
-
-#if UNITY_EDITOR
-        private void OnDrawGizmos()
-        {
-            if (_playerData == null || _playerData.CameraControlBlock == null) return;
-
-            // Draw detection radius
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(_playerData.PlayerBase.position, _detectionRadius);
-
-            // Draw detection angle
-            Vector3 forward = _playerData.CameraControlBlock.transform.forward;
-            Vector3 right = _playerData.CameraControlBlock.transform.right;
-            Vector3 up = _playerData.CameraControlBlock.transform.up;
-
-            float halfAngle = _detectionAngle * 0.5f;
-            int segments = 20;
-            float angleStep = halfAngle / segments;
-
-            // Draw left side of the angle
-            Gizmos.color = Color.green;
-            for (int i = 0; i < segments; i++)
-            {
-                float angle = -halfAngle + (angleStep * i);
-                Vector3 direction = Quaternion.AngleAxis(angle, up) * forward;
-                Vector3 endPoint1 = _playerData.PlayerBase.position + direction * _detectionRadius;
-                Gizmos.DrawLine(_playerData.PlayerBase.position, endPoint1);
-            }
-
-            // Draw right side of the angle
-            for (int i = 0; i < segments; i++)
-            {
-                float angle = angleStep * i;
-                Vector3 direction = Quaternion.AngleAxis(angle, up) * forward;
-                Vector3 endPoint2 = _playerData.PlayerBase.position + direction * _detectionRadius;
-                Gizmos.DrawLine(_playerData.PlayerBase.position, endPoint2);
-            }
-
-            // Draw arc connecting the sides
-            Gizmos.color = Color.cyan;
-            Vector3 startPoint = _playerData.PlayerBase.position + Quaternion.AngleAxis(-halfAngle, up) * forward * _detectionRadius;
-            Vector3 endPoint3 = _playerData.PlayerBase.position + Quaternion.AngleAxis(halfAngle, up) * forward * _detectionRadius;
-            Gizmos.DrawLine(startPoint, endPoint3);
-        }
-#endif
     }
 } 
