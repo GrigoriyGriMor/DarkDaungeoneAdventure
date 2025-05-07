@@ -25,6 +25,13 @@ namespace PlayerControllers
         [SerializeField] private float _attackDamageDelay = 0.3f;
         [SerializeField, Range(1, 10)] private int _jumpAttackAnimCount = 3;
 
+        [Header("Air Attack Settings")]
+        [SerializeField] private float _airAttackSpeed = 12f;
+        [SerializeField] private float _airAttackDamage = 30f;
+        [SerializeField] private ParticleSystem _airAttackParticle;
+        [SerializeField] private ParticleSystem _airAttackExplosionParticle;
+        [SerializeField] private string _endFlyAnimTriggerName = "EndFly";
+
         [Header("Move To Target")]
         [SerializeField] private float _moveSpeed = 7f;
         [SerializeField] private float _targetAngleThreshold = 5f;
@@ -83,10 +90,13 @@ namespace PlayerControllers
         private void StartAttackSequence()
         {
             if (!CanStartAttack()) return;
+
             DetectTargets();
             if (_potentialTargets.Count == 0) return;
+
             _currentTarget = GetPriorityTarget();
             if (_currentTarget == null) return;
+
             StartBlockControl();
             HandleAttackBasedOnDistance();
         }
@@ -107,13 +117,23 @@ namespace PlayerControllers
         {
             if (_currentTarget == null) return;
             float distanceToTarget = Vector3.Distance(_playerData.PlayerBase.position, _currentTarget.GetTransform().position);
-            
+
             if (distanceToTarget <= _attackRange)
                 StartMelleAttack();
             else if (distanceToTarget <= _jumpAttackRange)
-                StartDashAttack();
+            {
+                if (!_isGround)
+                    StartAirAttack();
+                else
+                    StartDashAttack();
+            }
             else
-                MoveTowardsTarget();
+            {
+                if (!_isGround)
+                    StartAirAttack();
+                else
+                    MoveTowardsTarget();
+            }
         }
 
         private void StartMelleAttack()
@@ -249,6 +269,10 @@ namespace PlayerControllers
             _isWaitingForAnimationEvent = false;
             _attackCoroutine = null;
             _playerData.PlayerRB.linearVelocity = Vector3.zero;
+            
+            // Отключаем эффекты
+            if (_airAttackParticle != null)
+                _airAttackParticle.gameObject.SetActive(false);
         }
 
         private void CancelAttack()
@@ -396,5 +420,74 @@ namespace PlayerControllers
             _playerController.SetMovementBlocked(false);
         }
         #endregion
+
+        private void StartAirAttack()
+        {
+            if (_currentTarget == null) return;
+
+            _isAttacking = true;
+            _pendingDamage = _airAttackDamage;
+            _attackCoroutine = StartCoroutine(AirAttackCoroutine());
+        }
+
+        private IEnumerator AirAttackCoroutine()
+        {
+            // Поворачиваемся к цели
+            RotateTowardsTarget();
+            yield return new WaitForSeconds(0.1f);
+
+            // Запускаем анимацию и эффекты
+            if (_airAttackParticle != null)
+            {
+                _playerData.PlayerVisual.gameObject.SetActive(false);
+                _airAttackParticle.gameObject.SetActive(true);
+            }
+
+            Vector3 targetPos = _currentTarget.GetTransform().position;
+            _isWaitingForAnimationEvent = true;
+
+            // Двигаемся к цели
+            while (Vector3.Distance(_playerData.PlayerBase.transform.position, targetPos) > _attackRange)
+            {
+                if (!_isAttacking || _currentTarget == null || !_currentTarget.IsAlive())
+                {
+                    CancelAttack();
+                    yield break;
+                }
+
+                Vector3 moveDirection = (targetPos - _playerData.PlayerBase.transform.position).normalized;
+                Vector3 movementVelocity = moveDirection * _airAttackSpeed;
+                _playerData.PlayerRB.linearVelocity = new Vector3(movementVelocity.x, _playerData.PlayerRB.linearVelocity.y, movementVelocity.z);
+                yield return null;
+            }
+
+            // Достигли цели - замедляем движение
+            _playerData.PlayerRB.linearVelocity = Vector3.zero;
+
+            // Проигрываем эффект взрыва при нанесении урона
+            if (_airAttackExplosionParticle != null)
+                _airAttackExplosionParticle.Play();
+
+            // Отключаем эффекты
+            if (_airAttackParticle != null)
+            {
+                _playerData.PlayerVisual.gameObject.SetActive(true);
+                _airAttackParticle.gameObject.SetActive(false);
+                _playerData.PlayerAnimator.SetTrigger(_endFlyAnimTriggerName);
+            }
+
+            // Ждем завершения анимации
+            while (_isWaitingForAnimationEvent && _isAttacking)
+            {
+                if (_currentTarget == null || !_currentTarget.IsAlive())
+                {
+                    CancelAttack();
+                    yield break;
+                }
+                yield return null;
+            }
+
+            ResetAttackState();
+        }
     }
 } 

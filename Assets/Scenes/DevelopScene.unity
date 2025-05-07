@@ -26575,6 +26575,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 647ed4e6023646b43a7f824c114161b7, type: 3}
+--- !u!198 &430265667 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5487790936496005247, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
+  m_PrefabInstance: {fileID: 3604160977325839462}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &456552138
 GameObject:
   m_ObjectHideFlags: 0
@@ -79873,6 +79878,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1746557792}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!198 &1761904736 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 8211968106137478500, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
+  m_PrefabInstance: {fileID: 3604160977325839462}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1806002868
 GameObject:
   m_ObjectHideFlags: 0
@@ -82343,9 +82353,21 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7350982675225782909, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
+      propertyPath: _airAttackParticle
+      value: 
+      objectReference: {fileID: 430265667}
+    - target: {fileID: 7350982675225782909, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
       propertyPath: _attackDamageDelay
       value: 0.7
       objectReference: {fileID: 0}
+    - target: {fileID: 7350982675225782909, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
+      propertyPath: _endFlyAnimTriggerName
+      value: Attack3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7350982675225782909, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
+      propertyPath: _airAttackExplosionParticle
+      value: 
+      objectReference: {fileID: 1761904736}
     - target: {fileID: 8763624576393213621, guid: 506b1ec199e19dd4b82cda98db276ae6, type: 3}
       propertyPath: m_Name
       value: Player
